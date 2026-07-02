@@ -1,0 +1,92 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: loki-ingress-zero-trust
+  namespace: loki
+  labels:
+    app.kubernetes.io/name: loki
+    app.kubernetes.io/component: network-policy
+    managed-by: argocd
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: loki
+  policyTypes:
+    - Ingress
+  ingress:
+    # Loki 내부 컴포넌트 간 통신
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: loki
+      ports:
+        - protocol: TCP
+          port: 3100
+        - protocol: TCP
+          port: 9095
+        - protocol: TCP
+          port: 7946
+        - protocol: UDP
+          port: 7946
+    # Fluent Bit → Loki push
+    - from:
+        - namespaceSelector:
+            matchExpressions:
+              - key: kubernetes.io/metadata.name
+                operator: In
+                values:
+                  - monitoring
+                  - loki
+          podSelector:
+            matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                  - fluent-bit
+        - namespaceSelector:
+            matchExpressions:
+              - key: kubernetes.io/metadata.name
+                operator: In
+                values:
+                  - monitoring
+                  - loki
+          podSelector:
+            matchExpressions:
+              - key: app
+                operator: In
+                values:
+                  - fluent-bit
+      ports:
+        - protocol: TCP
+          port: 3100
+    # Grafana → Loki query
+    - from:
+        - namespaceSelector:
+            matchExpressions:
+              - key: kubernetes.io/metadata.name
+                operator: In
+                values:
+                  - monitoring
+                  - loki
+          podSelector:
+            matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                  - grafana
+        - namespaceSelector:
+            matchExpressions:
+              - key: kubernetes.io/metadata.name
+                operator: In
+                values:
+                  - monitoring
+                  - loki
+          podSelector:
+            matchExpressions:
+              - key: app
+                operator: In
+                values:
+                  - grafana
+      ports:
+        - protocol: TCP
+          port: 3100

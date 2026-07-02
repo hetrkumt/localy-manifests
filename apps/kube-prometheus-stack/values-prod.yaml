@@ -1,0 +1,224 @@
+grafana:
+  adminPassword: "<PLACEHOLDER_GRAFANA_ADMIN_PASSWORD>"
+
+  serviceAccount:
+    create: true
+    annotations:
+      eks.amazonaws.com/role-arn: "<PLACEHOLDER_GRAFANA_IRSA_ARN>"
+
+  additionalDataSources:
+    - name: "Prometheus TF"
+      type: "prometheus"
+      uid: "Prometheus_TF"
+      url: "http://kube-prometheus-stack-prometheus.monitoring:9090"
+      access: "proxy"
+    - name: "Prometheus LBC"
+      type: "prometheus"
+      uid: "Prometheus_LBC"
+      url: "http://kube-prometheus-stack-prometheus.monitoring:9090"
+      access: "proxy"
+    - name: "CloudWatch"
+      type: "cloudwatch"
+      uid: "CloudWatch_TF"
+      access: "proxy"
+      jsonData:
+        authType: "default"
+        defaultRegion: "ap-northeast-2"
+    - name: "Loki"
+      type: "loki"
+      uid: "Loki_TF"
+      url: "http://loki-gateway.loki.svc.cluster.local:3100"
+      access: "proxy"
+      jsonData:
+        httpHeaderName1: "X-Scope-OrgID"
+      secureJsonData:
+        httpHeaderValue1: "default"
+    - name: "Loki SecOps VIP"
+      type: "loki"
+      uid: "Loki_SecOps_VIP"
+      url: "http://loki-gateway.loki.svc.cluster.local:3100"
+      access: "proxy"
+      jsonData:
+        httpHeaderName1: "X-Scope-OrgID"
+      secureJsonData:
+        httpHeaderValue1: "secops-admin"
+
+  sidecar:
+    dashboards:
+      enabled: true
+      label: "grafana_dashboard"
+      labelValue: "1"
+
+  ingress:
+    enabled: true
+    ingressClassName: "alb"
+    annotations:
+      alb.ingress.kubernetes.io/scheme: "internet-facing"
+      alb.ingress.kubernetes.io/group.name: "prod-ingress-group"
+      alb.ingress.kubernetes.io/target-type: "ip"
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+      alb.ingress.kubernetes.io/certificate-arn: "<PLACEHOLDER_ACM_CERTIFICATE_ARN>"
+      alb.ingress.kubernetes.io/wafv2-acl-arn: "<PLACEHOLDER_WAFV2_ACL_ARN>"
+    hosts:
+      - "grafana.feifo.click"
+    paths:
+      - "/*"
+
+prometheus:
+  prometheusSpec:
+    retention: "14d"
+    nodeSelector:
+      topology.kubernetes.io/zone: "ap-northeast-2a"
+      karpenter.sh/capacity-type: "on-demand"
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: "gp3"
+          accessModes:
+            - "ReadWriteOnce"
+          resources:
+            requests:
+              storage: "50Gi"
+    resources:
+      requests:
+        cpu: "500m"
+        memory: "2Gi"
+      limits:
+        cpu: "1000m"
+        memory: "4Gi"
+
+alertmanager:
+  serviceAccount:
+    create: true
+    name: "alarm-pipeline-sns-publisher"
+    annotations:
+      eks.amazonaws.com/role-arn: "arn:aws:iam::533003975005:role/prod-k8s-alarm-pipeline-sns-role"
+    automountServiceAccountToken: true
+
+  podDisruptionBudget:
+    enabled: true
+    minAvailable: 1
+
+  config:
+    global:
+      resolve_timeout: "5m"
+    inhibit_rules:
+      - source_matchers:
+          - 'severity="critical"'
+        target_matchers:
+          - 'severity=~"warning|info"'
+        equal:
+          - "namespace"
+          - "alertname"
+      - source_matchers:
+          - 'severity="warning"'
+        target_matchers:
+          - 'severity="info"'
+        equal:
+          - "namespace"
+          - "alertname"
+      - source_matchers:
+          - 'alertname="InfoInhibitor"'
+        target_matchers:
+          - 'severity="info"'
+        equal:
+          - "namespace"
+      - target_matchers:
+          - 'alertname="InfoInhibitor"'
+    route:
+      group_by:
+        - "namespace"
+      group_wait: "30s"
+      group_interval: "5m"
+      repeat_interval: "12h"
+      receiver: "null"
+      routes:
+        - receiver: "null"
+          matchers:
+            - 'alertname="Watchdog"'
+    receivers:
+      - name: "null"
+    templates:
+      - "/etc/alertmanager/config/*.tmpl"
+      - "/etc/alertmanager/configmaps/alertmanager-templates/*.tmpl"
+
+  alertmanagerSpec:
+    replicas: 2
+    nodeSelector:
+      karpenter.sh/capacity-type: "on-demand"
+    affinity:
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: "alertmanager"
+                app.kubernetes.io/instance: "kube-prometheus-stack-alertmanager"
+            topologyKey: "topology.kubernetes.io/zone"
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "256Mi"
+      limits:
+        cpu: "200m"
+        memory: "512Mi"
+    automountServiceAccountToken: true
+    configMaps:
+      - "alertmanager-templates"
+    clusterLabel: "<PLACEHOLDER_ENV_NAME>-alertmanager-core"
+    clusterGossipInterval: "2s"
+    clusterPushpullInterval: "3m"
+    additionalConfig:
+      clusterTLS:
+        server:
+          cert:
+            secret:
+              name: "alertmanager-cluster-tls"
+              key: "tls.crt"
+          keySecret:
+            name: "alertmanager-cluster-tls"
+            key: "tls.key"
+          clientCA:
+            secret:
+              name: "alertmanager-cluster-tls"
+              key: "ca.crt"
+          clientAuthType: "RequireAndVerifyClientCert"
+        client:
+          ca:
+            secret:
+              name: "alertmanager-cluster-tls"
+              key: "ca.crt"
+          cert:
+            secret:
+              name: "alertmanager-cluster-tls"
+              key: "tls.crt"
+          keySecret:
+            name: "alertmanager-cluster-tls"
+            key: "tls.key"
+
+    alertmanagerConfigSelector:
+      matchLabels:
+        alertmanagerconfig: "alarm-pipeline"
+    alertmanagerConfigNamespaceSelector:
+      matchLabels:
+        kubernetes.io/metadata.name: "monitoring"
+    alertmanagerConfigMatcherStrategy:
+      type: "None"
+
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 1000
+      runAsGroup: 2000
+      fsGroup: 2000
+      seccompProfile:
+        type: "RuntimeDefault"
+    containers:
+      - name: "alertmanager"
+        securityContext:
+          readOnlyRootFilesystem: true
+          allowPrivilegeEscalation: false
+          privileged: false
+          capabilities:
+            drop:
+              - "ALL"
+          seccompProfile:
+            type: "RuntimeDefault"

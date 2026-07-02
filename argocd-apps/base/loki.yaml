@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: loki
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+spec:
+  project: default
+  sources:
+    - repoURL: "https://grafana.github.io/helm-charts"
+      chart: "loki"
+      targetRevision: "5.47.2"
+      helm:
+        valueFiles:
+          - $values/apps/loki/values-prod.yaml
+    - repoURL: "https://github.com/my-org/localy-manifests.git"
+      targetRevision: HEAD
+      ref: values
+    - repoURL: "https://github.com/my-org/localy-manifests.git"
+      targetRevision: HEAD
+      path: apps/loki
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: loki
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

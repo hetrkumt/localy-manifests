@@ -1,0 +1,36 @@
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: alertmanager-cluster-ca
+  namespace: monitoring
+spec:
+  selfSigned: {}
+
+---
+
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: alertmanager-cluster-tls
+  namespace: monitoring
+spec:
+  secretName: alertmanager-cluster-tls
+  duration: 8760h
+  renewBefore: 720h
+  issuerRef:
+    name: alertmanager-cluster-ca
+    kind: Issuer
+  commonName: alertmanager-cluster
+  dnsNames:
+    - kube-prometheus-stack-alertmanager
+    - kube-prometheus-stack-alertmanager.monitoring
+    - kube-prometheus-stack-alertmanager.monitoring.svc
+    - kube-prometheus-stack-alertmanager.monitoring.svc.cluster.local
+    - alertmanager-operated
+    - alertmanager-operated.monitoring
+    - alertmanager-operated.monitoring.svc
+    - alertmanager-operated.monitoring.svc.cluster.local
+    - alertmanager-kube-prometheus-stack-alertmanager-0.alertmanager-operated
+    - alertmanager-kube-prometheus-stack-alertmanager-1.alertmanager-operated
+  ipAddresses:
+    - 127.0.0.1

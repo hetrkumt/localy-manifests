@@ -1,0 +1,116 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../base
+
+patches:
+  # =========================================================
+  # 1. 단일 source 구조인 애플리케이션 (3종) - targetRevision 치환
+  # =========================================================
+  - target:
+      kind: Application
+      name: ingress-core
+    patch: |
+      - op: replace
+        path: /spec/source/targetRevision
+        value: release/prod
+  - target:
+      kind: Application
+      name: karpenter-provisioner
+    patch: |
+      - op: replace
+        path: /spec/source/targetRevision
+        value: release/prod
+  - target:
+      kind: Application
+      name: storage
+    patch: |
+      - op: replace
+        path: /spec/source/targetRevision
+        value: release/prod
+
+  # =========================================================
+  # 2. 다중 sources (2개 소스) 구조인 애플리케이션 (5종)
+  # index 1이 localy-manifests 레포지토리를 참조하는 source
+  # =========================================================
+  - target:
+      kind: Application
+      name: alb-controller
+    patch: |
+      - op: replace
+        path: /spec/sources/1/targetRevision
+        value: release/prod
+  - target:
+      kind: Application
+      name: cert-manager
+    patch: |
+      - op: replace
+        path: /spec/sources/1/targetRevision
+        value: release/prod
+  - target:
+      kind: Application
+      name: external-dns
+    patch: |
+      - op: replace
+        path: /spec/sources/1/targetRevision
+        value: release/prod
+  - target:
+      kind: Application
+      name: karpenter-controller
+    patch: |
+      - op: replace
+        path: /spec/sources/1/targetRevision
+        value: release/prod
+  - target:
+      kind: Application
+      name: node-local-dns
+    patch: |
+      - op: replace
+        path: /spec/sources/1/targetRevision
+        value: release/prod
+
+  # =========================================================
+  # 3. 다중 sources (3개 소스) 구조인 애플리케이션 (4종)
+  # index 1(ref: values)과 index 2(path)가 localy-manifests 레포지토리 참조 source
+  # =========================================================
+  - target:
+      kind: Application
+      name: kube-prometheus-stack
+    patch: |
+      - op: replace
+        path: /spec/sources/1/targetRevision
+        value: release/prod
+      - op: replace
+        path: /spec/sources/2/targetRevision
+        value: release/prod
+  - target:
+      kind: Application
+      name: loki
+    patch: |
+      - op: replace
+        path: /spec/sources/1/targetRevision
+        value: release/prod
+      - op: replace
+        path: /spec/sources/2/targetRevision
+        value: release/prod
+  - target:
+      kind: Application
+      name: kyverno
+    patch: |
+      - op: replace
+        path: /spec/sources/1/targetRevision
+        value: release/prod
+      - op: replace
+        path: /spec/sources/2/targetRevision
+        value: release/prod
+  - target:
+      kind: Application
+      name: fluent-bit
+    patch: |
+      - op: replace
+        path: /spec/sources/1/targetRevision
+        value: release/prod
+      - op: replace
+        path: /spec/sources/2/targetRevision
+        value: release/prod

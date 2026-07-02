@@ -1,0 +1,32 @@
+config:
+  dnsDomain: "cluster.local"
+  localDns: "169.254.20.10"
+  dnsServer: "<PLACEHOLDER_KUBE_DNS_IP>"
+  bindIp: true
+  prefetch:
+    enabled: true
+
+serviceMonitor:
+  enabled: true
+  labels:
+    release: "kube-prometheus-stack"
+
+prometheusScraping:
+  enabled: true
+
+updateStrategy:
+  rollingUpdate:
+    maxUnavailable: 1
+
+lifecycle:
+  preStop:
+    exec:
+      command: 
+        - "/bin/sh"
+        - "-c"
+        - "sleep 5"
+
+resources:
+  requests:
+    cpu: "10m"
+    memory: "30Mi"

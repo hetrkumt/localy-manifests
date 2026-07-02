@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: node-local-dns
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+spec:
+  project: default
+  sources:
+    - repoURL: "ghcr.io/deliveryhero/helm-charts"
+      chart: "node-local-dns"
+      targetRevision: "2.8.0"
+      helm:
+        valueFiles:
+          - $values/apps/node-local-dns/values-prod.yaml
+    - repoURL: "https://github.com/my-org/localy-manifests.git"
+      targetRevision: HEAD
+      ref: values
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: kube-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

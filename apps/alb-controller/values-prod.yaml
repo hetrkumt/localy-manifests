@@ -1,0 +1,12 @@
+clusterName: "prod-eks"
+region: "ap-northeast-2"
+vpcId: "<PLACEHOLDER_VPC_ID>"
+
+serviceAccount:
+  create: true
+  name: "aws-load-balancer-controller"
+  annotations:
+    eks.amazonaws.com/role-arn: "<PLACEHOLDER_ALB_CONTROLLER_IAM_ROLE_ARN>"
+
+serviceMonitor:
+  enabled: false

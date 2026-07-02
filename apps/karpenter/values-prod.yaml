@@ -1,0 +1,16 @@
+settings:
+  clusterName: "prod-eks"
+  clusterEndpoint: "<PLACEHOLDER_EKS_CLUSTER_ENDPOINT>"
+  interruptionQueue: "<PLACEHOLDER_KARPENTER_INTERRUPTION_QUEUE>"
+
+serviceAccount:
+  annotations:
+    eks.amazonaws.com/role-arn: "<PLACEHOLDER_KARPENTER_CONTROLLER_ROLE_ARN>"
+
+nodeSelector:
+  role: "system"
+
+serviceMonitor:
+  enabled: true
+  additionalLabels:
+    release: "kube-prometheus-stack"

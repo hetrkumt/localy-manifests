@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: alb-controller
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-5"
+spec:
+  project: default
+  sources:
+    - repoURL: "https://aws.github.io/eks-charts"
+      chart: "aws-load-balancer-controller"
+      targetRevision: "1.7.2"
+      helm:
+        valueFiles:
+          - $values/apps/alb-controller/values-prod.yaml
+    - repoURL: "https://github.com/my-org/localy-manifests.git"
+      targetRevision: HEAD
+      ref: values
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: kube-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
