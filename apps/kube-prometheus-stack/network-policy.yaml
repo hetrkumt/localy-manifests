@@ -15,7 +15,7 @@ spec:
     - Ingress
     - Egress
   ingress:
-    # Prometheus → Alertmanager
+    # Prometheus ??Alertmanager
     - from:
         - namespaceSelector:
             matchExpressions:
@@ -30,7 +30,7 @@ spec:
       ports:
         - protocol: TCP
           port: 9093
-    # Loki Ruler → Alertmanager (observability -> loki 변경)
+    # Loki Ruler ??Alertmanager (observability -> loki 蹂寃?
     - from:
         - namespaceSelector:
             matchExpressions:
@@ -44,7 +44,7 @@ spec:
       ports:
         - protocol: TCP
           port: 9093
-    # Alertmanager HA 멤버리스트
+    # Alertmanager HA 硫ㅻ쾭由ъ뒪??
     - from:
         - podSelector:
             matchLabels:
@@ -55,7 +55,7 @@ spec:
         - protocol: UDP
           port: 9094
   egress:
-    # Alertmanager HA 멤버리스트
+    # Alertmanager HA 硫ㅻ쾭由ъ뒪??
     - to:
         - podSelector:
             matchLabels:
@@ -65,7 +65,7 @@ spec:
           port: 9094
         - protocol: UDP
           port: 9094
-    # CoreDNS 이름 풀이
+    # CoreDNS ?대쫫 ???
     - to:
         - namespaceSelector:
             matchExpressions:

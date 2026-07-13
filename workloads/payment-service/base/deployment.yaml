@@ -24,7 +24,7 @@ spec:
             - containerPort: 8092
           env:
             - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
-              value: "localhost:9092" # 임시 플레이스홀더 (KEDA 트리거 참조용)
+              value: "localhost:9092" # ?꾩떆 ?뚮젅?댁뒪???(KEDA ?몃━嫄?李몄“??
           envFrom:
             - secretRef:
                 name: payment-service-secret

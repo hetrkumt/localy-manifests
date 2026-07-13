@@ -9,8 +9,8 @@ metadata:
     managed-by: terraform
 spec:
   # ---------------------------------------------------------------------------
-  # [Phase 3] Inhibition — Phase 2 Double-Fire 방어
-  # MemorySaturation(security-critical) 선행 시 CrashLoop / OOM 사후 알람 억제
+  # [Phase 3] Inhibition ??Phase 2 Double-Fire 諛⑹뼱
+  # MemorySaturation(security-critical) ?좏뻾 ??CrashLoop / OOM ?ы썑 ?뚮엺 ?듭젣
   # ---------------------------------------------------------------------------
   inhibitRules:
     - sourceMatch:
@@ -44,8 +44,8 @@ spec:
         - pod
 
   # ---------------------------------------------------------------------------
-  # [Phase 3] Routing — tier × severity 정적 티어링
-  # root: origin=alarm-pipeline only → chart default null receiver 유지
+  # [Phase 3] Routing ??tier 횞 severity ?뺤쟻 ?곗뼱留?
+  # root: origin=alarm-pipeline only ??chart default null receiver ?좎?
   # ---------------------------------------------------------------------------
   route:
     receiver: sns-chatops
@@ -64,7 +64,7 @@ spec:
         value: alarm-pipeline
 
     routes:
-      # 하이패스: security-critical (Tier 무관) — 즉시 발송
+      # ?섏씠?⑥뒪: security-critical (Tier 臾닿?) ??利됱떆 諛쒖넚
       - receiver: sns-chatops
         matchers:
           - name: severity
@@ -75,7 +75,7 @@ spec:
         repeatInterval: 1h
         continue: false
 
-      # 핵심 코어: tier=1
+      # ?듭떖 肄붿뼱: tier=1
       - receiver: sns-chatops
         matchers:
           - name: tier
@@ -86,7 +86,7 @@ spec:
         repeatInterval: 4h
         continue: false
 
-      # 일반 서비스: tier=2
+      # ?쇰컲 ?쒕퉬?? tier=2
       - receiver: sns-chatops
         matchers:
           - name: tier
@@ -97,7 +97,7 @@ spec:
         repeatInterval: 8h
         continue: false
 
-      # 테스트/영수증: tier=3 — Daily Digest
+      # ?뚯뒪???곸닔利? tier=3 ??Daily Digest
       - receiver: sns-chatops
         matchers:
           - name: tier
@@ -109,10 +109,10 @@ spec:
         continue: false
 
   # ---------------------------------------------------------------------------
-  # [Phase 6] Receiver — SNS Decoupling (Slack 직결 소각 완료)
-  #   K8s UI 렌더링 책임 0 — __JIT_CTX__ 초경량 JSON만 SNS body에 실음
-  #   Pod IRSA (alarm-pipeline-sns-publisher) → sns:Publish
-  #   Downstream: Dispatch Lambda → Slack Block Kit 조립
+  # [Phase 6] Receiver ??SNS Decoupling (Slack 吏곴껐 ?뚭컖 ?꾨즺)
+  #   K8s UI ?뚮뜑留?梨낆엫 0 ??__JIT_CTX__ 珥덇꼍??JSON留?SNS body???ㅼ쓬
+  #   Pod IRSA (alarm-pipeline-sns-publisher) ??sns:Publish
+  #   Downstream: Dispatch Lambda ??Slack Block Kit 議곕┰
   # ---------------------------------------------------------------------------
   receivers:
     - name: sns-chatops

@@ -58,7 +58,7 @@ spec:
       validate:
           message: Container name must match its authorized image (alertmanager or config-reloader only). IRSA identity hijacking is denied.
           foreach:
-          # 1. alertmanager 이름인데 공식 이미지가 아닌 경우 차단
+          # 1. alertmanager ?대쫫?몃뜲 怨듭떇 ?대?吏媛 ?꾨땶 寃쎌슦 李⑤떒
           - list: request.object.spec.containers
             deny:
               conditions:
@@ -70,7 +70,7 @@ spec:
                   operator: NotEquals
                   value: quay.io/prometheus/alertmanager:*
 
-          # 2. config-reloader 이름인데 공식 이미지가 아닌 경우 차단
+          # 2. config-reloader ?대쫫?몃뜲 怨듭떇 ?대?吏媛 ?꾨땶 寃쎌슦 李⑤떒
           - list: request.object.spec.containers
             deny:
               conditions:
@@ -82,7 +82,7 @@ spec:
                   operator: NotEquals
                   value: quay.io/prometheus-operator/prometheus-config-reloader:*
 
-          # 3. 아예 허용되지 않은 엉뚱한 컨테이너 이름인 경우 차단
+          # 3. ?꾩삁 ?덉슜?섏? ?딆? ?됰슧??而⑦뀒?대꼫 ?대쫫??寃쎌슦 李⑤떒
           - list: request.object.spec.containers
             deny:
               conditions:
@@ -93,7 +93,7 @@ spec:
                   - alertmanager
                   - config-reloader
 
-          # 4. initContainers: alertmanager 이름인데 공식 이미지가 아닌 경우 차단
+          # 4. initContainers: alertmanager ?대쫫?몃뜲 怨듭떇 ?대?吏媛 ?꾨땶 寃쎌슦 李⑤떒
           - list: request.object.spec.initContainers
             deny:
               conditions:
@@ -105,7 +105,7 @@ spec:
                   operator: NotEquals
                   value: quay.io/prometheus/alertmanager:*
 
-          # 5. initContainers: config-reloader 이름인데 공식 이미지가 아닌 경우 차단
+          # 5. initContainers: config-reloader ?대쫫?몃뜲 怨듭떇 ?대?吏媛 ?꾨땶 寃쎌슦 李⑤떒
           - list: request.object.spec.initContainers
             deny:
               conditions:
@@ -117,7 +117,7 @@ spec:
                   operator: NotEquals
                   value: quay.io/prometheus-operator/prometheus-config-reloader:*
 
-          # 6. initContainers: 아예 허용되지 않은 엉뚱한 컨테이너 이름인 경우 차단
+          # 6. initContainers: ?꾩삁 ?덉슜?섏? ?딆? ?됰슧??而⑦뀒?대꼫 ?대쫫??寃쎌슦 李⑤떒
           - list: request.object.spec.initContainers
             deny:
               conditions:

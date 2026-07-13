@@ -1,7 +1,7 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-# Helm Chart 렌더링 결과물과 순수 K8s 매니페스트들을 하나로 묶어줍니다.
+# Helm Chart ?뚮뜑留?寃곌낵臾쇨낵 ?쒖닔 K8s 留ㅻ땲?섏뒪?몃뱾???섎굹濡?臾띠뼱以띾땲??
 resources:
   - network-policy.yaml
   - policies/kyverno-policy.yaml

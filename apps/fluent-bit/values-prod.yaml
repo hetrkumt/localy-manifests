@@ -110,14 +110,14 @@ luaScripts:
 
         local log = record["log"]
 
-        -- 카드번호 (고정길이 앵커)
+        -- 移대뱶踰덊샇 (怨좎젙湲몄씠 ?듭빱)
         log = string.gsub(log, "%d%d%d%d%-%d%d%d%d%-%d%d%d%d%-%d%d%d%d", "[REDACTED_CARD]")
         log = string.gsub(log, "%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d", "[REDACTED_CARD]")
         
-        -- 이메일 (단순 bounded 패턴)
+        -- ?대찓??(?⑥닚 bounded ?⑦꽩)
         log = string.gsub(log, "[%w%.%-]+@[%w%.%-]+%.%w+", "[REDACTED_EMAIL]")
 
-        -- 전화번호 KR (+82 / 010)
+        -- ?꾪솕踰덊샇 KR (+82 / 010)
         log = string.gsub(log, "(%+82%-?)[%d%-]+", "%1[REDACTED_PHONE]")
         log = string.gsub(log, "010%-[%d%-]+", "[REDACTED_PHONE]")
 

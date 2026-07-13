@@ -5,9 +5,6 @@ resources:
   - ../../base
 
 patches:
-  # =========================================================
-  # 1. ?¨ì¼ source êµ¬ì¡°??? í”Œë¦¬ì??´ì…˜ (3ì¢? - targetRevision ì¹˜í™˜
-  # =========================================================
   - target:
       kind: Application
       name: ingress-core
@@ -30,10 +27,6 @@ patches:
         path: /spec/source/targetRevision
         value: main
 
-  # =========================================================
-  # 2. ?¤ì¤‘ sources (2ê°??ŒìŠ¤) êµ¬ì¡°??? í”Œë¦¬ì??´ì…˜ (5ì¢?
-  # index 1??localy-manifests ?ˆí¬ì§€? ë¦¬ë¥?ì°¸ì¡°?˜ëŠ” source
-  # =========================================================
   - target:
       kind: Application
       name: alb-controller
@@ -70,10 +63,6 @@ patches:
         path: /spec/sources/1/targetRevision
         value: main
 
-  # =========================================================
-  # 3. ?¤ì¤‘ sources (3ê°??ŒìŠ¤) êµ¬ì¡°??? í”Œë¦¬ì??´ì…˜ (4ì¢?
-  # index 1(ref: values)ê³?index 2(path)ê°€ localy-manifests ?ˆí¬ì§€? ë¦¬ ì°¸ì¡° source
-  # =========================================================
   - target:
       kind: Application
       name: kube-prometheus-stack

@@ -14,7 +14,7 @@ spec:
   policyTypes:
     - Ingress
   ingress:
-    # Loki 내부 컴포넌트 간 통신
+    # Loki ?대? 而댄룷?뚰듃 媛??듭떊
     - from:
         - podSelector:
             matchLabels:
@@ -28,7 +28,7 @@ spec:
           port: 7946
         - protocol: UDP
           port: 7946
-    # Fluent Bit → Loki push
+    # Fluent Bit ??Loki push
     - from:
         - namespaceSelector:
             matchExpressions:
@@ -59,7 +59,7 @@ spec:
       ports:
         - protocol: TCP
           port: 3100
-    # Grafana → Loki query
+    # Grafana ??Loki query
     - from:
         - namespaceSelector:
             matchExpressions:

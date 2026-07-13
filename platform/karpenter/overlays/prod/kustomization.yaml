@@ -7,7 +7,7 @@ resources:
   - ec2-node-class.yaml
 
 patches:
-  # 1. Karpenter 컨트롤러를 정적 system 노드 그룹으로 격리 피닝 (데드락 방지)
+  # 1. Karpenter 而⑦듃濡ㅻ윭瑜??뺤쟻 system ?몃뱶 洹몃９?쇰줈 寃⑸━ ?쇰떇 (?곕뱶??諛⑹?)
   - target:
       group: apps
       version: v1
@@ -20,7 +20,7 @@ patches:
         value:
           role: system
 
-  # 2. Karpenter Controller IRSA 권한(Role ARN) 패치
+  # 2. Karpenter Controller IRSA 沅뚰븳(Role ARN) ?⑥튂
   - target:
       version: v1
       kind: ServiceAccount
@@ -32,7 +32,7 @@ patches:
         value:
           eks.amazonaws.com/role-arn: arn:aws:iam::123456789012:role/localy-prod-karpenter-controller
 
-  # 3. EC2NodeClass의 Node Role Name을 패치
+  # 3. EC2NodeClass??Node Role Name???⑥튂
   - target:
       group: karpenter.k8s.aws
       version: v1beta1

@@ -618,7 +618,7 @@ prometheus:
       port: metrics
       # -- Name or number of the target port of the Pod behind the Service, the port must be specified with container port property. Mutually exclusive with port
       targetPort: ""
-      # -- Interval at which metrics should be scraped If not specified Prometheus’ global scrape interval is used.
+      # -- Interval at which metrics should be scraped If not specified Prometheus??global scrape interval is used.
       interval: ""
       # -- Timeout after which the scrape is ended If not specified, the Prometheus global scrape timeout is used unless it is less than Interval in which the latter is used
       scrapeTimeout: ""
@@ -672,7 +672,7 @@ prometheus:
       # -- Name or number of the target port of the Pod behind the Service,
       # the port must be specified with container port property. Mutually exclusive with port
       targetPort: ""
-      # -- Interval at which metrics should be scraped If not specified Prometheus’ global scrape interval is used.
+      # -- Interval at which metrics should be scraped If not specified Prometheus??global scrape interval is used.
       interval: ""
       # -- Timeout after which the scrape is ended If not specified, the Prometheus global scrape timeout is used unless it is less than Interval in which the latter is used
       scrapeTimeout: ""
@@ -742,7 +742,7 @@ prometheus:
       port: metrics
       # -- Name or number of the target port of the Pod behind the Service, the port must be specified with container port property. Mutually exclusive with port
       targetPort: ""
-      # -- Interval at which metrics should be scraped If not specified Prometheus’ global scrape interval is used.
+      # -- Interval at which metrics should be scraped If not specified Prometheus??global scrape interval is used.
       interval: ""
       # -- Timeout after which the scrape is ended If not specified, the Prometheus global scrape timeout is used unless it is less than Interval in which the latter is used
       scrapeTimeout: ""

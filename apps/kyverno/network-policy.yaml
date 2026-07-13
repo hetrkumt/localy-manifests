@@ -15,14 +15,14 @@ spec:
     - Ingress
     - Egress
   ingress:
-    # [방어선 1] Control Plane 웹훅 수신
+    # [諛⑹뼱??1] Control Plane ?뱁썒 ?섏떊
     - from:
         - ipBlock:
             cidr: <PLACEHOLDER_EKS_CP_SUBNET_CIDR>
       ports:
         - protocol: TCP
           port: 9443
-    # Kyverno 내부 컴포넌트 간 통신 허용
+    # Kyverno ?대? 而댄룷?뚰듃 媛??듭떊 ?덉슜
     - from:
         - podSelector:
             matchLabels:
@@ -31,14 +31,14 @@ spec:
         - protocol: TCP
           port: 9443
   egress:
-    # [방어선 2] K8s API 서버 통신
+    # [諛⑹뼱??2] K8s API ?쒕쾭 ?듭떊
     - to:
         - ipBlock:
             cidr: <PLACEHOLDER_KUBERNETES_API_CLUSTER_IP>/32
       ports:
         - protocol: TCP
           port: 443
-    # CoreDNS 이름 풀이 허용
+    # CoreDNS ?대쫫 ????덉슜
     - to:
         - namespaceSelector:
             matchExpressions:
