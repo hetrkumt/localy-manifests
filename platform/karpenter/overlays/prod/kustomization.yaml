@@ -1,0 +1,44 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../base
+  - node-pool.yaml
+  - ec2-node-class.yaml
+
+patches:
+  # 1. Karpenter 컨트롤러를 정적 system 노드 그룹으로 격리 피닝 (데드락 방지)
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: karpenter
+      namespace: kube-system
+    patch: |
+      - op: add
+        path: /spec/template/spec/nodeSelector
+        value:
+          role: system
+
+  # 2. Karpenter Controller IRSA 권한(Role ARN) 패치
+  - target:
+      version: v1
+      kind: ServiceAccount
+      name: karpenter
+      namespace: kube-system
+    patch: |
+      - op: add
+        path: /metadata/annotations
+        value:
+          eks.amazonaws.com/role-arn: arn:aws:iam::123456789012:role/localy-prod-karpenter-controller
+
+  # 3. EC2NodeClass의 Node Role Name을 패치
+  - target:
+      group: karpenter.k8s.aws
+      version: v1beta1
+      kind: EC2NodeClass
+      name: default
+    patch: |
+      - op: replace
+        path: /spec/role
+        value: localy-prod-karpenter-node-role

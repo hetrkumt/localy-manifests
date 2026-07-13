@@ -1,0 +1,39 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - service-account.yaml
+  - secret-store.yaml
+  - external-secret.yaml
+  - network-policy.yaml
+  - ../../base
+
+patches:
+  - target:
+      group: elbv2.k8s.aws
+      version: v1beta1
+      kind: TargetGroupBinding
+      name: user-service-tgb
+      namespace: user-service
+    patch: |
+      - op: replace
+        path: /spec/targetGroupARN
+        value: arn:aws:elasticloadbalancing:ap-northeast-2:123456789012:targetgroup/localy-prod-user-tg/abcdef123456
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: user-service
+      namespace: user-service
+    path: deployment-patch.yaml
+  - target:
+      version: v1
+      kind: Service
+      name: user-service-svc
+      namespace: user-service
+    path: service-patch.yaml
+
+images:
+  - name: localy/user-service
+    newName: asfas244/user-service
+    newTag: latest

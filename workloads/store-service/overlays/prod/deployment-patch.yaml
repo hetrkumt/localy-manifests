@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: store-service
+  namespace: store-service
+  annotations:
+    reloader.stakater.com/auto: "true"
+spec:
+  template:
+    spec:
+      terminationGracePeriodSeconds: 45
+      readinessGates:
+        - conditionType: target-health.elbv2.k8s.aws
+      containers:
+        - name: app
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "512Mi"
+            limits:
+              memory: "512Mi"
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "sleep 15"]
+          envFrom:
+            - secretRef:
+                name: localy-store-secret

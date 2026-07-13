@@ -1,0 +1,11 @@
+apiVersion: elbv2.k8s.aws/v1beta1
+kind: TargetGroupBinding
+metadata:
+  name: cart-service-tgb
+  namespace: cart-service
+spec:
+  serviceRef:
+    name: cart-service-svc
+    port: 8080
+  targetGroupARN: "PLACEHOLDER_ARN"
+  targetType: ip

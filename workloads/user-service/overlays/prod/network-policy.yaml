@@ -1,0 +1,24 @@
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: user-service-zero-trust-egress
+  namespace: user-service
+spec:
+  endpointSelector:
+    matchLabels:
+      app: user-service
+  egress:
+    - toEndpoints:
+      - matchLabels:
+          k8s:io.kubernetes.pod.namespace: kube-system
+          k8s-app: kube-dns
+      toPorts:
+      - ports:
+        - port: "53"
+          protocol: UDP
+    - toFQDNs:
+      - matchName: "*.keycloak.com"
+      toPorts:
+      - ports:
+        - port: "443"
+          protocol: TCP

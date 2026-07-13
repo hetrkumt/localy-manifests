@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-service
+  labels:
+    app: payment-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payment-service
+  template:
+    metadata:
+      labels:
+        app: payment-service
+    spec:
+      serviceAccountName: payment-service-sa
+      terminationGracePeriodSeconds: 45
+      containers:
+        - name: payment-service
+          image: localy-payment-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8092
+          env:
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              value: "localhost:9092" # 임시 플레이스홀더 (KEDA 트리거 참조용)
+          envFrom:
+            - secretRef:
+                name: payment-service-secret
+          lifecycle:
+            preStop:
+              exec:
+                command: ["sleep", "15"]
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8092
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8092
+            initialDelaySeconds: 30
+            periodSeconds: 15

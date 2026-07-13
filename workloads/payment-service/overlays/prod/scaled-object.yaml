@@ -1,0 +1,17 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: payment-service-scaledobject
+spec:
+  scaleTargetRef:
+    name: payment-service
+  minReplicaCount: 1
+  maxReplicaCount: 10
+  triggers:
+    - type: kafka
+      metadata:
+        bootstrapServersFromEnv: SPRING_KAFKA_BOOTSTRAP_SERVERS
+        consumerGroup: payment-approved-group
+        topic: order-approved
+        lagThreshold: "10"
+        offsetResetPolicy: earliest

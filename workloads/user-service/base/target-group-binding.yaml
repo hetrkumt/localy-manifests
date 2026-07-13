@@ -1,0 +1,11 @@
+apiVersion: elbv2.k8s.aws/v1beta1
+kind: TargetGroupBinding
+metadata:
+  name: user-service-tgb
+  namespace: user-service
+spec:
+  serviceRef:
+    name: user-service-svc
+    port: 9001
+  targetGroupARN: "PLACEHOLDER_ARN"
+  targetType: ip
