@@ -14,3 +14,6 @@ resources:
   - loki.yaml
   - node-local-dns.yaml
   - storage.yaml
+  - user-service.yaml
+  - payment-service.yaml
+  - store-service.yaml
