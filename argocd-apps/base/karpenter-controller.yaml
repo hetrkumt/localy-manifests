@@ -14,7 +14,7 @@ spec:
       helm:
         valueFiles:
           - $values/apps/karpenter/values-prod.yaml
-    - repoURL: "https://github.com/my-org/localy-manifests.git"
+    - repoURL: "https://github.com/hetrkumt/localy-manifests.git"
       targetRevision: HEAD
       ref: values
   destination:

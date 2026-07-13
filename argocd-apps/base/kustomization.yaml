@@ -14,3 +14,5 @@ resources:
   - loki.yaml
   - node-local-dns.yaml
   - storage.yaml
+  - external-secrets.yaml
+  - keda.yaml

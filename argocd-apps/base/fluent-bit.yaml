@@ -14,10 +14,10 @@ spec:
       helm:
         valueFiles:
           - $values/apps/fluent-bit/values-prod.yaml
-    - repoURL: "https://github.com/my-org/localy-manifests.git"
+    - repoURL: "https://github.com/hetrkumt/localy-manifests.git"
       targetRevision: HEAD
       ref: values
-    - repoURL: "https://github.com/my-org/localy-manifests.git"
+    - repoURL: "https://github.com/hetrkumt/localy-manifests.git"
       targetRevision: HEAD
       path: apps/fluent-bit
   destination:

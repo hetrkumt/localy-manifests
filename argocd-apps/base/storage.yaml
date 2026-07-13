@@ -8,7 +8,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: "https://github.com/my-org/localy-manifests.git"
+    repoURL: "https://github.com/hetrkumt/localy-manifests.git"
     path: apps/storage
     targetRevision: HEAD
   destination:

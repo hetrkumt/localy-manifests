@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: platform-keda
+  name: external-secrets-operator
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "0"
@@ -10,10 +10,10 @@ spec:
   source:
     repoURL: "https://github.com/hetrkumt/localy-manifests.git"
     targetRevision: HEAD
-    path: platform/keda/overlays/prod
+    path: platform/external-secrets-operator/overlays/prod
   destination:
     server: "https://kubernetes.default.svc"
-    namespace: keda
+    namespace: external-secrets
   syncPolicy:
     automated:
       prune: true
