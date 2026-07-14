@@ -4,6 +4,7 @@ settings:
   interruptionQueue: "prod-eks-karpenter-interruption-queue"
 
 serviceAccount:
+  name: "karpenter"
   annotations:
     eks.amazonaws.com/role-arn: "arn:aws:iam::533003975005:role/prod-eks-karpenter-controller-role"
 
