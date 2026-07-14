@@ -8,3 +8,4 @@ resources:
   - service-account.yaml
 patchesStrategicMerge:
   - deployment-patch.yaml
+- secret-store.yaml
