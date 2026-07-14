@@ -7,6 +7,8 @@ global:
   security:
     allowInsecureImages: true
 
+enableDefaultInitContainers: false
+
 image:
   registry: quay.io
   repository: keycloak/keycloak
