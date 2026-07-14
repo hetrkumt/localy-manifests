@@ -3,6 +3,9 @@
 # 고가용성 (HA) 설정
 replicaCount: 3
 
+image:
+  tag: 24.0.5-debian-12-r0
+
 auth:
   adminUser: admin
   # ESO가 만들어준 K8s Secret 참조
