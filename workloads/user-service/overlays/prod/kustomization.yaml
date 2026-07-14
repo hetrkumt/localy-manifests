@@ -5,6 +5,7 @@ resources:
   - service-account.yaml
   - secret-store.yaml
   - external-secret.yaml
+  - configmap.yaml
   - ../../base
 
 patches:

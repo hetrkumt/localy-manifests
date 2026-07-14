@@ -26,3 +26,5 @@ spec:
           envFrom:
             - secretRef:
                 name: localy-user-keycloak-secret
+            - configMapRef:
+                name: user-service-config

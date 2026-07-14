@@ -14,3 +14,8 @@ spec:
             preStop:
               exec:
                 command: ["/bin/sh", "-c", "sleep 15"]
+          envFrom:
+            - secretRef:
+                name: localy-cart-db-secret
+            - configMapRef:
+                name: cart-service-config
