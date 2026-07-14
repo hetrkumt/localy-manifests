@@ -4,4 +4,4 @@ metadata:
   name: store-service-config
   namespace: store-service
 data:
-  SPRING_R2DBC_URL: "r2dbc:postgresql://prod-localy-rds.cd2ukiwmqfml.ap-northeast-2.rds.amazonaws.com:5432/storedb"
+  SPRING_R2DBC_URL: "r2dbc:postgresql://prod-localy-rds.cd2ukiwmqfml.ap-northeast-2.rds.amazonaws.com:5432/storedb?sslMode=REQUIRE"
