@@ -1,0 +1,35 @@
+{
+  "realm": "localy",
+  "enabled": true,
+  "displayName": "Localy Microservices Authentication",
+  "clients": [
+    {
+      "clientId": "user-service",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "7f9a1b2c-3d4e-5f6a-7b8c-9d0e1f2a3b4c",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": true,
+      "publicClient": false,
+      "protocol": "openid-connect"
+    }
+  ],
+  "users": [
+    {
+      "username": "testuser",
+      "enabled": true,
+      "email": "testuser@feifo.click",
+      "firstName": "Test",
+      "lastName": "User",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "password123",
+          "temporary": false
+        }
+      ]
+    }
+  ]
+}

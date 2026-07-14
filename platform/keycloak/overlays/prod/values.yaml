@@ -1,0 +1,63 @@
+# Bitnami Keycloak Helm Chart values for Production
+
+# 고가용성 (HA) 설정
+replicaCount: 3
+
+auth:
+  adminUser: admin
+  # ESO가 만들어준 K8s Secret 참조
+  existingSecret: localy-keycloak-secret
+  passwordSecretKey: KEYCLOAK_ADMIN_PASSWORD
+
+# PostgreSQL 내장 인스턴스 끄기 (외부 공유 RDS 사용)
+postgresql:
+  enabled: false
+
+externalDatabase:
+  # Host는 외부 주입을 위해 빈칸
+  host: ""
+  port: 5432
+  user: postgres
+  database: keycloak
+  existingSecret: localy-keycloak-secret
+  existingSecretPasswordKey: KEYCLOAK_DATABASE_PASSWORD
+
+extraEnvVars:
+  - name: KEYCLOAK_DATABASE_HOST
+    valueFrom:
+      secretKeyRef:
+        name: localy-keycloak-secret
+        key: KEYCLOAK_DATABASE_HOST
+  - name: KEYCLOAK_EXTRA_ARGS
+    value: "--import-realm"
+
+extraVolumes:
+  - name: realm-import
+    configMap:
+      name: keycloak-realm-config
+
+extraVolumeMounts:
+  - name: realm-import
+    mountPath: /opt/bitnami/keycloak/data/import
+
+# 클러스터 스케줄링 (Pod Anti-Affinity & Topology Spread)
+podAntiAffinityPreset: hard
+topologySpreadConstraints:
+  - maxSkew: 1
+    topologyKey: topology.kubernetes.io/zone
+    whenUnsatisfiable: DoNotSchedule
+    labelSelector:
+      matchLabels:
+        app.kubernetes.io/name: keycloak
+
+# Karpenter workload-pool 배치
+nodeSelector:
+  karpenter.sh/nodepool: workload-pool
+
+# 프로브 넉넉하게 조정 (느린 부팅 대응)
+startupProbe:
+  enabled: true
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 30
