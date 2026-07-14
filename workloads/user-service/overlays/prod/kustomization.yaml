@@ -34,5 +34,5 @@ patches:
 
 images:
   - name: localy/user-service
-    newName: asfas244/user-service
+    newName: 533003975005.dkr.ecr.ap-northeast-2.amazonaws.com/user-service
     newTag: latest

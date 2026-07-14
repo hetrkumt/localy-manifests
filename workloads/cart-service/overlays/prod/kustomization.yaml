@@ -31,3 +31,8 @@ patches:
       name: cart-service-svc
       namespace: cart-service
     path: service-patch.yaml
+
+images:
+  - name: localy/cart-service
+    newName: 533003975005.dkr.ecr.ap-northeast-2.amazonaws.com/cart-service
+    newTag: latest
