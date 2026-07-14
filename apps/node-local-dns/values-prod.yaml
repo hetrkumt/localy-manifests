@@ -1,7 +1,7 @@
 config:
   dnsDomain: "cluster.local"
   localDns: "169.254.20.10"
-  dnsServer: "<PLACEHOLDER_KUBE_DNS_IP>"
+  dnsServer: "10.100.0.10"
   bindIp: true
   prefetch:
     enabled: true

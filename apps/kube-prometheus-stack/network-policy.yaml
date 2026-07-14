@@ -30,7 +30,7 @@ spec:
       ports:
         - protocol: TCP
           port: 9093
-    # Loki Ruler ??Alertmanager (observability -> loki 蹂寃?
+    # Loki Ruler ??Alertmanager (observability -> loki 蹂�?
     - from:
         - namespaceSelector:
             matchExpressions:
@@ -44,7 +44,7 @@ spec:
       ports:
         - protocol: TCP
           port: 9093
-    # Alertmanager HA 硫ㅻ쾭由ъ뒪??
+    # Alertmanager HA 硫ㅻ�?��????
     - from:
         - podSelector:
             matchLabels:
@@ -55,7 +55,7 @@ spec:
         - protocol: UDP
           port: 9094
   egress:
-    # Alertmanager HA 硫ㅻ쾭由ъ뒪??
+    # Alertmanager HA 硫ㅻ�?��????
     - to:
         - podSelector:
             matchLabels:
@@ -65,7 +65,7 @@ spec:
           port: 9094
         - protocol: UDP
           port: 9094
-    # CoreDNS ?대쫫 ???
+    # CoreDNS ??��?????
     - to:
         - namespaceSelector:
             matchExpressions:
@@ -84,9 +84,9 @@ spec:
     # SNS/STS Interface VPC Endpoint ENIs
     - to:
         - ipBlock:
-            cidr: <PLACEHOLDER_AWS_VPCE_CIDR_1>
+            cidr: 10.0.11.93/32
         - ipBlock:
-            cidr: <PLACEHOLDER_AWS_VPCE_CIDR_2>
+            cidr: 10.0.11.60/32
       ports:
         - protocol: TCP
           port: 443

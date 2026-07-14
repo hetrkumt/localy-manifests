@@ -7,7 +7,7 @@ serviceAccount:
   create: true
   name: loki
   annotations:
-    eks.amazonaws.com/role-arn: "<PLACEHOLDER_LOKI_IAM_ROLE_ARN>"
+    eks.amazonaws.com/role-arn: "arn:aws:iam::533003975005:role/prod-loki-irsa-role"
 
 write:
   replicas: 3
@@ -100,8 +100,8 @@ loki:
   storage:
     type: s3
     bucketNames:
-      chunks: "<PLACEHOLDER_LOKI_S3_BUCKET_NAME>"
-      ruler: "<PLACEHOLDER_LOKI_S3_BUCKET_NAME>"
+      chunks: "prod-eks-loki-logs-vault"
+      ruler: "prod-eks-loki-logs-vault"
     s3:
       region: "ap-northeast-2"
       s3ForcePathStyle: false
@@ -136,4 +136,4 @@ loki:
       type: s3
       s3:
         region: "ap-northeast-2"
-        bucketnames: "<PLACEHOLDER_LOKI_S3_BUCKET_NAME>"
+        bucketnames: "prod-eks-loki-logs-vault"

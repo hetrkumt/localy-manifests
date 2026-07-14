@@ -15,4 +15,4 @@ serviceAccount:
   create: true
   name: "external-dns-sa"
   annotations:
-    eks.amazonaws.com/role-arn: "<PLACEHOLDER_EXTERNAL_DNS_IAM_ROLE_ARN>"
+    eks.amazonaws.com/role-arn: "arn:aws:iam::533003975005:role/prod-externaldns-irsa-role"

@@ -1,11 +1,11 @@
 settings:
   clusterName: "prod-eks"
-  clusterEndpoint: "<PLACEHOLDER_EKS_CLUSTER_ENDPOINT>"
-  interruptionQueue: "<PLACEHOLDER_KARPENTER_INTERRUPTION_QUEUE>"
+  clusterEndpoint: "https://DFF45B54F6421B40D6B4A02BD951B403.yl4.ap-northeast-2.eks.amazonaws.com"
+  interruptionQueue: "prod-eks-karpenter-interruption-queue"
 
 serviceAccount:
   annotations:
-    eks.amazonaws.com/role-arn: "<PLACEHOLDER_KARPENTER_CONTROLLER_ROLE_ARN>"
+    eks.amazonaws.com/role-arn: "arn:aws:iam::533003975005:role/prod-eks-karpenter-controller-role"
 
 nodeSelector:
   role: "system"

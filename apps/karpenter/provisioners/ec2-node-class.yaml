@@ -4,7 +4,7 @@ metadata:
   name: default
 spec:
   amiFamily: AL2
-  role: "<PLACEHOLDER_KARPENTER_NODE_IAM_ROLE_NAME>"
+  role: "prod-eks-karpenter-node-role"
   subnetSelectorTerms:
     - tags:
         karpenter.sh/discovery: "prod-eks"

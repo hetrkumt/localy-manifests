@@ -1,10 +1,10 @@
 grafana:
-  adminPassword: "<PLACEHOLDER_GRAFANA_ADMIN_PASSWORD>"
+  adminPassword: "SuperSecret123!"
 
   serviceAccount:
     create: true
     annotations:
-      eks.amazonaws.com/role-arn: "<PLACEHOLDER_GRAFANA_IRSA_ARN>"
+      eks.amazonaws.com/role-arn: "arn:aws:iam::533003975005:role/prod-eks-grafana-role"
 
   additionalDataSources:
     - name: "Prometheus TF"
@@ -57,8 +57,8 @@ grafana:
       alb.ingress.kubernetes.io/group.name: "prod-ingress-group"
       alb.ingress.kubernetes.io/target-type: "ip"
       alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
-      alb.ingress.kubernetes.io/certificate-arn: "<PLACEHOLDER_ACM_CERTIFICATE_ARN>"
-      alb.ingress.kubernetes.io/wafv2-acl-arn: "<PLACEHOLDER_WAFV2_ACL_ARN>"
+      alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:ap-northeast-2:533003975005:certificate/ba159581-fb9b-4097-9a49-45a8568fe6da"
+      alb.ingress.kubernetes.io/wafv2-acl-arn: "arn:aws:wafv2:ap-northeast-2:533003975005:regional/webacl/prod-ingress-waf/19272c25-c193-4fee-8d24-c8ebda74014d"
     hosts:
       - "grafana.feifo.click"
     paths:
@@ -164,7 +164,7 @@ alertmanager:
     automountServiceAccountToken: true
     configMaps:
       - "alertmanager-templates"
-    clusterLabel: "<PLACEHOLDER_ENV_NAME>-alertmanager-core"
+    clusterLabel: "prod-alertmanager-core"
     clusterGossipInterval: "2s"
     clusterPushpullInterval: "3m"
     additionalConfig:

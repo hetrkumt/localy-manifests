@@ -17,7 +17,7 @@ patches:
     patch: |
       - op: replace
         path: /spec/targetGroupARN
-        value: arn:aws:elasticloadbalancing:ap-northeast-2:123456789012:targetgroup/localy-prod-user-tg/abcdef123456
+        value: "arn:aws:elasticloadbalancing:ap-northeast-2:533003975005:targetgroup/user-20260714063210199500000002/48cad98e5ca65328"
   - target:
       group: apps
       version: v1

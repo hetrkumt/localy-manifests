@@ -1,21 +1,19 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: external-secrets-operator
+  name: cart-service
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "-1"
+    argocd.argoproj.io/sync-wave: "10"
 spec:
   project: default
   source:
     repoURL: "https://github.com/hetrkumt/localy-manifests.git"
-    targetRevision: main
-    path: platform/external-secrets-operator/overlays/prod
-    kustomize:
-      buildOptions: --enable-helm
+    targetRevision: HEAD
+    path: workloads/cart-service/overlays/prod
   destination:
     server: "https://kubernetes.default.svc"
-    namespace: external-secrets
+    namespace: cart-service
   syncPolicy:
     automated:
       prune: true
@@ -29,3 +27,9 @@ spec:
         duration: 5s
         factor: 2
         maxDuration: 3m
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/replicas
+
