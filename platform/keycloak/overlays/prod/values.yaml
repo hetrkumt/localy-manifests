@@ -7,12 +7,12 @@ global:
   security:
     allowInsecureImages: true
 
-enableDefaultInitContainers: false
+enableDefaultInitContainers: true
 
 image:
-  registry: quay.io
-  repository: keycloak/keycloak
-  tag: 24.0.5
+  registry: docker.io
+  repository: bitnamilegacy/keycloak
+  tag: 24.0.5-debian-12-r0
 
 auth:
   adminUser: admin
