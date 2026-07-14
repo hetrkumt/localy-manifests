@@ -4,8 +4,9 @@ namespace: store-service
 bases:
   - ../../base
 resources:
+  - secret-store.yaml
   - external-secret.yaml
   - service-account.yaml
 patchesStrategicMerge:
   - deployment-patch.yaml
-  - secret-store.yaml
+
