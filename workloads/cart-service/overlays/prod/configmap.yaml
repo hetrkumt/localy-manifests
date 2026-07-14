@@ -6,5 +6,4 @@ metadata:
 data:
   SPRING_DATA_REDIS_HOST: "prod-localy-redis.z1ouwd.ng.0001.apn2.cache.amazonaws.com"
   SPRING_DATA_REDIS_PORT: "6379"
-  SPRING_KAFKA_BOOTSTRAP_SERVERS: "b-1.prodlocalymsk.3nhtew.c2.kafka.ap-northeast-2.amazonaws.com:9092,b-2.prodlocalymsk.3nhtew.c2.kafka.ap-northeast-2.amazonaws.com:9092,b-3.prodlocalymsk.3nhtew.c2.kafka.ap-northeast-2.amazonaws.com:9092"
   ORDER_SERVICE_URL: "http://order-service-svc.order-service.svc.cluster.local:8080"
