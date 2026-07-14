@@ -3,6 +3,10 @@
 # 고가용성 (HA) 설정
 replicaCount: 3
 
+global:
+  security:
+    allowInsecureImages: true
+
 image:
   registry: quay.io
   repository: keycloak/keycloak
