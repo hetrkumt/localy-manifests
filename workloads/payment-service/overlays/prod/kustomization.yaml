@@ -9,6 +9,6 @@ resources:
   - secret-store.yaml
 
 images:
-  - name: localy/payment-service
+  - name: localy-payment-service
     newName: 533003975005.dkr.ecr.ap-northeast-2.amazonaws.com/payment-service
     newTag: latest
