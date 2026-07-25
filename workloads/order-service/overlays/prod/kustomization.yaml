@@ -9,3 +9,7 @@ resources:
   - network-policy.yaml
   - configmap.yaml
 
+images:
+  - name: localy-order-service
+    newName: 533003975005.dkr.ecr.ap-northeast-2.amazonaws.com/order-service
+    newTag: latest

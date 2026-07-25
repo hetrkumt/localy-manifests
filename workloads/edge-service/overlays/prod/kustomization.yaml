@@ -8,9 +8,11 @@ resources:
   - network-policy.yaml
   - hpa.yaml
   - configmap.yaml
-  # - external-secret.yaml
-  # - service-account.yaml
-  # - secret-store.yaml
+
+images:
+  - name: edge-service
+    newName: 533003975005.dkr.ecr.ap-northeast-2.amazonaws.com/edge-service
+    newTag: latest
 
 patches:
   - path: deployment-patch.yaml
