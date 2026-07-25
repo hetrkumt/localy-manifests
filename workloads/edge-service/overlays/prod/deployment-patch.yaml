@@ -5,12 +5,13 @@ metadata:
 spec:
   template:
     spec:
-      # [Spot 인스턴스 뇌관 해체 1]: K8s 강제 종료 유예 60초 (스프링 45초 + sleep 15초)
       terminationGracePeriodSeconds: 60
       containers:
         - name: edge-service
+          envFrom:
+            - configMapRef:
+                name: edge-service-config
           lifecycle:
-            # [Spot 인스턴스 뇌관 해체 2]: 15초간 신규 커넥션 수신 중단 및 AWS ALB 타겟 드레인 시간 확보
             preStop:
               exec:
                 command: ["sh", "-c", "sleep 15"]

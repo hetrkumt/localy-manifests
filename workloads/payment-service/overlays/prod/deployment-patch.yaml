@@ -7,9 +7,19 @@ spec:
     spec:
       containers:
         - name: payment-service
+          env:
+            - name: JAVA_TOOL_OPTIONS
+              value: "-XX:MaxRAMPercentage=70.0"
           envFrom:
             - configMapRef:
                 name: payment-service-config
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "768Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1536Mi"
           volumeMounts:
             - name: secret-volume
               mountPath: /workspace/configtree
