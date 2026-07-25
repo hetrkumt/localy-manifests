@@ -11,6 +11,8 @@ spec:
             - name: JAVA_TOOL_OPTIONS
               value: "-XX:MaxRAMPercentage=70.0"
           envFrom:
+            - secretRef:
+                name: payment-service-secret
             - configMapRef:
                 name: payment-service-config
           resources:
