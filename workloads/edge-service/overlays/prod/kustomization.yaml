@@ -12,7 +12,7 @@ resources:
 images:
   - name: edge-service
     newName: 533003975005.dkr.ecr.ap-northeast-2.amazonaws.com/edge-service
-    newTag: latest
+    newTag: e2e1
 
 patches:
   - path: deployment-patch.yaml
