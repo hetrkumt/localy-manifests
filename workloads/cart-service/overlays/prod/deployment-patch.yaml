@@ -7,8 +7,8 @@ spec:
   template:
     spec:
       terminationGracePeriodSeconds: 60 # [핵심] Spring Boot의 45s 타임아웃보다 길게 설정하여 강제 Kill 방지
-      readinessGates:
-        - conditionType: target-health.elbv2.k8s.aws
+      # ALB target-health gate only applies when TargetGroupBinding exists (edge entry).
+      readinessGates: []
       containers:
         - name: app
           lifecycle:

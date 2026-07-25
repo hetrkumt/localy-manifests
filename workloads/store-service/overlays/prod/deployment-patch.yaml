@@ -9,8 +9,8 @@ spec:
   template:
     spec:
       terminationGracePeriodSeconds: 45
-      readinessGates:
-        - conditionType: target-health.elbv2.k8s.aws
+      # ALB target-health gate only applies when TargetGroupBinding exists (edge entry).
+      readinessGates: []
       containers:
         - name: app
           resources:
