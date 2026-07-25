@@ -14,7 +14,7 @@ spec:
   policyTypes:
     - Egress
   egress:
-    # CoreDNS ?대쫫 ???
+    # CoreDNS
     - to:
         - namespaceSelector:
             matchExpressions:
@@ -30,7 +30,7 @@ spec:
           port: 53
         - protocol: TCP
           port: 53
-    # Loki Gateway push (observability -> loki 蹂寃?
+    # Loki Gateway push
     - to:
         - namespaceSelector:
             matchExpressions:

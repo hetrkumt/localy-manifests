@@ -15,14 +15,18 @@ spec:
     - Ingress
     - Egress
   ingress:
-    # [è«›â‘¹ë¼??1] Control Plane ?ë±ì’ ??ë–Š
+    # Control plane / node CIDRs to admission webhook
     - from:
         - ipBlock:
-            cidr: 10.0.12.0/24,10.0.13.0/24,10.0.11.0/24
+            cidr: 10.0.11.0/24
+        - ipBlock:
+            cidr: 10.0.12.0/24
+        - ipBlock:
+            cidr: 10.0.13.0/24
       ports:
         - protocol: TCP
           port: 9443
-    # Kyverno ??€? ?ŒëŒ„ë£??°ë“ƒ åª????–Š ??‰ìŠœ
+    # Kyverno internal components
     - from:
         - podSelector:
             matchLabels:
@@ -31,14 +35,14 @@ spec:
         - protocol: TCP
           port: 9443
   egress:
-    # [è«›â‘¹ë¼??2] K8s API ??•ì¾­ ???–Š
+    # Kubernetes API server
     - to:
         - ipBlock:
             cidr: 10.100.0.1/32
       ports:
         - protocol: TCP
           port: 443
-    # CoreDNS ??€ì«???????‰ìŠœ
+    # CoreDNS
     - to:
         - namespaceSelector:
             matchExpressions:
