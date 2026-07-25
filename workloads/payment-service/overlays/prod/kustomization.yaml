@@ -3,11 +3,14 @@ kind: Kustomization
 bases:
   - ../../base
 resources:
+  - pod-disruption-budget.yaml
+  - service-monitor.yaml
   - service-account.yaml
   - external-secret.yaml
   - scaled-object.yaml
   - secret-store.yaml
   - configmap.yaml
+  - network-policy.yaml
 
 images:
   - name: localy-payment-service

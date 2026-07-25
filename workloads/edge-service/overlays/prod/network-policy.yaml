@@ -1,0 +1,60 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: edge-service-network-policy
+  namespace: edge-service
+spec:
+  podSelector:
+    matchLabels:
+      app: edge-service
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+      ports:
+        - protocol: TCP
+          port: 9090
+    - from:
+        - ipBlock:
+            cidr: 10.0.0.0/16 # [보안 교정] 0.0.0.0/0 전면 개방을 취소하고 AWS VPC 내부(ALB 노드) 대역폭만 허용
+      ports:
+        - protocol: TCP
+          port: 9000
+  egress:
+    # 1. 인프라 필수 통신 (CoreDNS)
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # 2. 보안 필수 통신 (Keycloak OIDC)
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: keycloak
+      ports:
+        - protocol: TCP
+          port: 8080
+    # 3. [역제안 적용]: 내부 마이크로서비스 단일 블록 압축 개방 (Redis 6379 포트는 명시하지 않아 Default-Deny 처리)
+    - to:
+        - namespaceSelector:
+            matchExpressions:
+              - key: kubernetes.io/metadata.name
+                operator: In
+                values:
+                  - user-service
+                  - cart-service
+                  - order-service
+                  - payment-service
+                  - store-service
+      ports:
+        - protocol: TCP
+          port: 80

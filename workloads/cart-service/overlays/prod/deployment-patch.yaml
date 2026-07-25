@@ -6,6 +6,7 @@ metadata:
 spec:
   template:
     spec:
+      terminationGracePeriodSeconds: 60 # [핵심] Spring Boot의 45s 타임아웃보다 길게 설정하여 강제 Kill 방지
       readinessGates:
         - conditionType: target-health.elbv2.k8s.aws
       containers:
@@ -13,9 +14,18 @@ spec:
           lifecycle:
             preStop:
               exec:
-                command: ["/bin/sh", "-c", "sleep 15"]
+                command: ["/bin/sh", "-c", "sleep 15"] # [핵심] ALB/Ingress에서 파드 IP가 빠질 때까지 트래픽 드레이닝
+          env:
+            - name: JAVA_OPTS
+              value: "-XX:MaxRAMPercentage=75.0 -XX:+UseG1GC" # [핵심] 컨테이너 메모리의 75%만 힙으로 사용 (OOM Kill 방어)
           envFrom:
-            - secretRef:
-                name: localy-cart-db-secret
             - configMapRef:
                 name: cart-service-config
+          volumeMounts:
+            - name: secret-volume
+              mountPath: /workspace/configtree
+              readOnly: true
+      volumes:
+        - name: secret-volume
+          secret:
+            secretName: localy-cart-db-secret

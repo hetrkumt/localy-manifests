@@ -1,0 +1,16 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: store-service-monitor
+  namespace: store-service
+  labels:
+    app: store-service
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: store-service
+  endpoints:
+  - port: management
+    path: /actuator/prometheus
+    interval: 15s

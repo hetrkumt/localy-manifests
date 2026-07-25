@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: edge-service
+  labels:
+    app: edge-service
+spec:
+  replicas: 2 # Base 기본값 (무중단 배포를 위한 최소 수량)
+  selector:
+    matchLabels:
+      app: edge-service
+  template:
+    metadata:
+      labels:
+        app: edge-service
+    spec:
+      containers:
+        - name: edge-service
+          image: edge-service:latest # Base 더미 (추후 CI/CD에서 이미지 태그 오버라이드)
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9000
+          env:
+            - name: HOST_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          # [역제안 적용]: 기동 방어용 Startup Probe
+          startupProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 9090
+            failureThreshold: 20
+            periodSeconds: 3 # 최대 60초(20*3) 대기, 성공 시 즉각 통과
+          # 생존 검증 Probe (가볍게 세팅)
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 9090
+            failureThreshold: 3
+            periodSeconds: 10
+          # 트래픽 수신 가능 검증 Probe
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 9090
+            failureThreshold: 3
+            periodSeconds: 10

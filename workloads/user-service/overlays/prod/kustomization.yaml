@@ -2,23 +2,16 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
+  - pod-disruption-budget.yaml
+  - service-monitor.yaml
   - service-account.yaml
   - secret-store.yaml
   - external-secret.yaml
   - configmap.yaml
+  - network-policy.yaml
   - ../../base
 
 patches:
-  - target:
-      group: elbv2.k8s.aws
-      version: v1beta1
-      kind: TargetGroupBinding
-      name: user-service-tgb
-      namespace: user-service
-    patch: |
-      - op: replace
-        path: /spec/targetGroupARN
-        value: "arn:aws:elasticloadbalancing:ap-northeast-2:533003975005:targetgroup/user-20260714063210199500000002/48cad98e5ca65328"
   - target:
       group: apps
       version: v1

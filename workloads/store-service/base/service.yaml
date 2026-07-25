@@ -4,9 +4,15 @@ metadata:
   name: store-service
   namespace: store-service
 spec:
+  type: ClusterIP
   selector:
     app: store-service
   ports:
-    - protocol: TCP
+    - name: http
+      protocol: TCP
       port: 80
       targetPort: 8071
+    - name: management
+      protocol: TCP
+      port: 9090
+      targetPort: 9090

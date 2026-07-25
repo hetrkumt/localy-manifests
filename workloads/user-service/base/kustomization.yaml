@@ -4,4 +4,6 @@ kind: Kustomization
 resources:
   - deployment.yaml
   - service.yaml
-  - target-group-binding.yaml
+
+components:
+  - ../../../common/guardrails

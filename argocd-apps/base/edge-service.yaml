@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: edge-service
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "30"
+spec:
+  project: default
+  source:
+    repoURL: "https://github.com/hetrkumt/localy-manifests.git"
+    targetRevision: main
+    path: workloads/edge-service/overlays/prod
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: edge-service
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true

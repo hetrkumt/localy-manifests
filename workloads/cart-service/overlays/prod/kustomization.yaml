@@ -1,39 +1,15 @@
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-
-resources:
-  - service-account.yaml
-  - secret-store.yaml
-  - external-secret.yaml
-  - configmap.yaml
+﻿resources:
+  - pod-disruption-budget.yaml
+  - service-monitor.yaml
   - ../../base
+  - external-secret.yaml
+  - secret-store.yaml
+  - configmap.yaml
+  - service-account.yaml
+  - hpa.yaml # ?좉퇋 二쇱엯
+  - network-policy.yaml # ?좉퇋 二쇱엯
 
 patches:
-  - target:
-      group: elbv2.k8s.aws
-      version: v1beta1
-      kind: TargetGroupBinding
-      name: cart-service-tgb
-      namespace: cart-service
-    patch: |
-      - op: replace
-        path: /spec/targetGroupARN
-        value: "arn:aws:elasticloadbalancing:ap-northeast-2:533003975005:targetgroup/cart-20260714063210200300000004/71cbeec4e39e9530"
-  - target:
-      group: apps
-      version: v1
-      kind: Deployment
-      name: cart-service
-      namespace: cart-service
-    path: deployment-patch.yaml
-  - target:
-      version: v1
-      kind: Service
-      name: cart-service-svc
-      namespace: cart-service
-    path: service-patch.yaml
+  - path: deployment-patch.yaml
+  - path: service-patch.yaml
 
-images:
-  - name: localy/cart-service
-    newName: 533003975005.dkr.ecr.ap-northeast-2.amazonaws.com/cart-service
-    newTag: latest

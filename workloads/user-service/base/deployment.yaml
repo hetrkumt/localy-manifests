@@ -18,3 +18,8 @@ spec:
           image: localy/user-service:latest
           ports:
             - containerPort: 9001
+          env:
+            - name: HOST_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP

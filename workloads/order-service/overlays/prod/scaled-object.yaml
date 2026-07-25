@@ -1,0 +1,26 @@
+apiVersion: keda.sh/v1alpha1
+kind: TriggerAuthentication
+metadata:
+  name: keda-aws-credentials
+spec:
+  podIdentity:
+    provider: aws-eks
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: order-service-scaler
+spec:
+  scaleTargetRef:
+    name: order-service
+  minReplicaCount: 2
+  maxReplicaCount: 10
+  triggers:
+    - type: aws-msk
+      metadata:
+        bootstrapServers: b-1.mskcluster.amazonaws.com:9098,b-2.mskcluster.amazonaws.com:9098
+        topic: payment-result
+        consumerGroup: order-payment-result-group
+        lagThreshold: "50"
+      authenticationRef:
+        name: keda-aws-credentials

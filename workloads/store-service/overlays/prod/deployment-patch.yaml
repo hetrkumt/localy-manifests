@@ -24,7 +24,13 @@ spec:
               exec:
                 command: ["/bin/sh", "-c", "sleep 15"]
           envFrom:
-            - secretRef:
-                name: localy-store-secret
             - configMapRef:
                 name: store-service-config
+          volumeMounts:
+            - name: secret-volume
+              mountPath: /workspace/configtree
+              readOnly: true
+      volumes:
+        - name: secret-volume
+          secret:
+            secretName: localy-store-secret

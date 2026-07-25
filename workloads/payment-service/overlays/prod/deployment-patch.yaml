@@ -11,5 +11,11 @@ spec:
           envFrom:
             - configMapRef:
                 name: payment-service-config
-            - secretRef:
-                name: payment-service-secret
+          volumeMounts:
+            - name: secret-volume
+              mountPath: /workspace/configtree
+              readOnly: true
+      volumes:
+        - name: secret-volume
+          secret:
+            secretName: payment-service-secret

@@ -1,0 +1,25 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: edge-service-hpa
+  namespace: edge-service
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: edge-service
+  minReplicas: 2 # 무중단 배포를 위한 최소 2중화
+  maxReplicas: 5 # 트래픽 스파이크 대비 최대치
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 60 # 공격적인 CPU 오토스케일링
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 75 # 공격적인 Memory 오토스케일링

@@ -1,0 +1,28 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - pod-disruption-budget.yaml
+  - service-monitor.yaml
+  - ../../base
+  - network-policy.yaml
+  - hpa.yaml
+  - configmap.yaml
+  # - external-secret.yaml
+  # - service-account.yaml
+  # - secret-store.yaml
+
+patches:
+  - path: deployment-patch.yaml
+    target:
+      kind: Deployment
+      name: edge-service
+  - target:
+      group: elbv2.k8s.aws
+      version: v1beta1
+      kind: TargetGroupBinding
+      name: edge-service-tgb
+    patch: |
+      - op: replace
+        path: /spec/targetGroupARN
+        value: "<PLACEHOLDER_EDGE_SERVICE_TARGET_GROUP_ARN>"

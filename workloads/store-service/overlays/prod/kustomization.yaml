@@ -4,10 +4,13 @@ namespace: store-service
 bases:
   - ../../base
 resources:
+  - pod-disruption-budget.yaml
+  - service-monitor.yaml
   - secret-store.yaml
   - external-secret.yaml
   - service-account.yaml
   - configmap.yaml
+  - network-policy.yaml
 patchesStrategicMerge:
   - deployment-patch.yaml
 
@@ -16,3 +19,4 @@ images:
   - name: localy/store-service
     newName: 533003975005.dkr.ecr.ap-northeast-2.amazonaws.com/store-service
     newTag: latest
+

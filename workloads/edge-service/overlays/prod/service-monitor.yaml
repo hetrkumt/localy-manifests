@@ -1,0 +1,16 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: edge-service-monitor
+  namespace: edge-service
+  labels:
+    app: edge-service
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: edge-service
+  endpoints:
+  - port: management
+    path: /actuator/prometheus
+    interval: 15s

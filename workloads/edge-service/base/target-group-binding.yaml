@@ -1,0 +1,10 @@
+apiVersion: elbv2.k8s.aws/v1beta1
+kind: TargetGroupBinding
+metadata:
+  name: edge-service-tgb
+spec:
+  serviceRef:
+    name: edge-service
+    port: 80
+  targetType: ip
+  targetGroupARN: arn:aws:elasticloadbalancing:ap-northeast-2:111122223333:targetgroup/dummy-tg/placeholder # 2차 타격 overlays에서 실제 ARN 패치

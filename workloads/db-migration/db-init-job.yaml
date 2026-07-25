@@ -1,0 +1,70 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: iam-db-init-strike-force
+  namespace: payment-service
+spec:
+  ttlSecondsAfterFinished: 60
+  backoffLimit: 2
+  template:
+    metadata:
+      labels:
+        app: payment-service
+    spec:
+      serviceAccountName: payment-service-sa
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+      volumes:
+        - name: secret-volume
+          secret:
+            secretName: payment-service-secret
+      containers:
+      - name: psql-striker
+        image: postgres:15-alpine
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "256m"
+            memory: "256Mi"
+        volumeMounts:
+          - name: secret-volume
+            mountPath: /etc/secrets
+            readOnly: true
+        command:
+        - "sh"
+        - "-c"
+        - |
+          set -e
+          URL=$(cat /etc/secrets/SPRING_DATASOURCE_URL)
+          DB_URL=${URL#jdbc:postgresql://}
+          DB_HOST_PORT=$(echo $DB_URL | cut -d'/' -f1)
+          DB_HOST=$(echo $DB_HOST_PORT | cut -d':' -f1)
+          DB_NAME_PARAMS=$(echo $DB_URL | cut -d'/' -f2)
+          DB_NAME=$(echo $DB_NAME_PARAMS | cut -d'?' -f1)
+          DB_USER=$(cat /etc/secrets/SPRING_DATASOURCE_USERNAME)
+          
+          until pg_isready -h $DB_HOST -U $DB_USER; do
+            echo "Waiting for DB..."
+            sleep 2
+          done
+          
+          PGPASSWORD=$(cat /etc/secrets/SPRING_DATASOURCE_PASSWORD) psql -h $DB_HOST -U $DB_USER -d $DB_NAME -v ON_ERROR_STOP=1 -c "
+            BEGIN;
+            DO \$\$
+            BEGIN
+              IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'storeuser') THEN CREATE ROLE storeuser LOGIN; END IF;
+              IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'orderuser') THEN CREATE ROLE orderuser LOGIN; END IF;
+              IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'paymentuser') THEN CREATE ROLE paymentuser LOGIN; END IF;
+            END
+            \$\$;
+            GRANT rds_iam TO storeuser, orderuser, paymentuser;
+            GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO storeuser, orderuser, paymentuser;
+            GRANT USAGE, SELECT, UPDATE ON ALL SEQUENCES IN SCHEMA public TO storeuser, orderuser, paymentuser;
+            ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO storeuser, orderuser, paymentuser;
+            ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT USAGE, SELECT, UPDATE ON SEQUENCES TO storeuser, orderuser, paymentuser;
+            COMMIT;
+          "
+      restartPolicy: Never

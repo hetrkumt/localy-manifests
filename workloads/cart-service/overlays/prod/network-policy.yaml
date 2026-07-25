@@ -1,0 +1,47 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: cart-service-network-policy
+  namespace: cart-service
+spec:
+  podSelector:
+    matchLabels:
+      app: cart-service
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+      ports:
+        - protocol: TCP
+          port: 9090
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: edge-service # [핵심] API Gateway에서의 인바운드 트래픽만 단독 허용
+      ports:
+        - protocol: TCP
+          port: 8090
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system # [핵심] EKS CoreDNS 통신 허용
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+
+    - ports: # [핵심] 외부(AWS VPC) 인프라 아웃바운드 개방 (ElastiCache, MSK)
+        - protocol: TCP
+          port: 6379 # Redis ElastiCache
+        - protocol: TCP
+          port: 9092 # Kafka Plaintext
+        - protocol: TCP
+          port: 9094 # Kafka TLS
+        - protocol: TCP
+          port: 9098 # Kafka IAM Auth

@@ -17,3 +17,9 @@ resources:
   - external-secrets.yaml
   - keda.yaml
   - keycloak.yaml
+  - user-service.yaml
+  - store-service.yaml
+  - cart-service.yaml
+  - order-service.yaml
+  - payment-service.yaml
+  - edge-service.yaml

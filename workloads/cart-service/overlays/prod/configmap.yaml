@@ -6,4 +6,4 @@ metadata:
 data:
   SPRING_DATA_REDIS_HOST: "prod-localy-redis.z1ouwd.ng.0001.apn2.cache.amazonaws.com"
   SPRING_DATA_REDIS_PORT: "6379"
-  ORDER_SERVICE_URL: "http://order-service-svc.order-service.svc.cluster.local:8080"
+  ORDER_SERVICE_URL: "http://order-service.order-service.svc.cluster.local:80"
