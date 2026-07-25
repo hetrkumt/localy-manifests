@@ -11,3 +11,7 @@ data:
   STORE_SERVICE_URL: "http://store-service.store-service.svc.cluster.local:80"
   KEYCLOAK_BASE_URL: "http://keycloak.auth-namespace.svc.cluster.local"
   KEYCLOAK_ISSUER_URI: "http://keycloak.auth-namespace.svc.cluster.local/realms/localy"
+  # Downstream store/user cold starts exceed the default 2s TimeLimiter
+  RESILIENCE4J_TIMELIMITER_CONFIGS_DEFAULT_TIMEOUTDURATION: "15s"
+  SPRING_CLOUD_GATEWAY_HTTPCLIENT_CONNECT_TIMEOUT: "10000"
+  SPRING_CLOUD_GATEWAY_HTTPCLIENT_RESPONSE_TIMEOUT: "15s"
