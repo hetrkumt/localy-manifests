@@ -35,8 +35,17 @@ spec:
           port: 53
         - protocol: TCP
           port: 53
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: auth-namespace
+      ports:
+        - protocol: TCP
+          port: 80
+        - protocol: TCP
+          port: 8080
     - ports:
         - protocol: TCP
           port: 5432
         - protocol: TCP
-          port: 8080
+          port: 443

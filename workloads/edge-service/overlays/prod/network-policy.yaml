@@ -35,12 +35,14 @@ spec:
           port: 53
         - protocol: TCP
           port: 53
-    # 2. 보안 필수 통신 (Keycloak OIDC)
+    # 2. Keycloak OIDC (auth-namespace service on port 80)
     - to:
         - namespaceSelector:
             matchLabels:
-              kubernetes.io/metadata.name: keycloak
+              kubernetes.io/metadata.name: auth-namespace
       ports:
+        - protocol: TCP
+          port: 80
         - protocol: TCP
           port: 8080
     # 3. [역제안 적용]: 내부 마이크로서비스 단일 블록 압축 개방 (Redis 6379 포트는 명시하지 않아 Default-Deny 처리)

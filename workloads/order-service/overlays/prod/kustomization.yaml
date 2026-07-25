@@ -8,8 +8,11 @@ resources:
   - scaled-object.yaml
   - network-policy.yaml
   - configmap.yaml
+  - service-account.yaml
+  - secret-store.yaml
+  - external-secret.yaml
 
 images:
   - name: localy-order-service
     newName: 533003975005.dkr.ecr.ap-northeast-2.amazonaws.com/order-service
-    newTag: latest
+    newTag: e2e1
