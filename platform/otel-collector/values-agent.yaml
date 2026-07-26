@@ -1,0 +1,89 @@
+# ========================================================================
+# OTel Collector - Tier 1: Agent (DaemonSet)
+# ========================================================================
+mode: daemonset
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    memory: 512Mi
+
+# [DevSecOps Red-Team Fix] 루트 권한 탈취 방어 (최소 권한 원칙)
+securityContext:
+  runAsUser: 10001
+  runAsGroup: 10001
+  runAsNonRoot: true
+  readOnlyRootFilesystem: true
+
+presets:
+  hostMetrics:
+    enabled: true
+  kubeletMetrics:
+    enabled: true
+
+config:
+  extensions:
+    health_check: {}
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: 0.0.0.0:4317
+        http:
+          endpoint: 0.0.0.0:4318
+
+  processors:
+    memory_limiter:
+      check_interval: 1s
+      limit_percentage: 75
+      spike_limit_percentage: 15
+    batch:
+      send_batch_size: 1000
+      timeout: 1s
+
+  exporters:
+    # [Platform/App Architect Fix] Tail-Sampling 붕괴 방지를 위한 traceID 기반 라우팅
+    loadbalancing:
+      protocol:
+        otlp:
+          tls:
+            insecure: true
+          # [SRE Fix] Gateway 재시작 시 데이터 증발 방지 (인메모리 버퍼링)
+          sending_queue:
+            enabled: true
+            queue_size: 5000
+          retry_on_failure:
+            enabled: true
+      resolver:
+        dns:
+          hostname: "otel-gateway-opentelemetry-collector.platform.svc.cluster.local"
+      routing_key: "traceID"
+
+  service:
+    extensions: [health_check]
+    pipelines:
+      traces:
+        receivers: [otlp]
+        processors: [memory_limiter, batch]
+        exporters: [loadbalancing]
+      logs: null
+
+# 서비스 객체 생성 활성화
+service:
+  enabled: true
+  # [FinOps Fix] AZ(가용영역) 간 전송료 폭탄 방지: 무조건 같은 노드의 Agent로만 트래픽 전송
+  internalTrafficPolicy: Local
+
+ports:
+  otlp:
+    enabled: true
+    containerPort: 4317
+    servicePort: 4317
+    protocol: TCP
+  otlp-http:
+    enabled: true
+    containerPort: 4318
+    servicePort: 4318
+    protocol: TCP

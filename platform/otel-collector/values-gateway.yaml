@@ -1,0 +1,115 @@
+# ========================================================================
+# OTel Collector - Tier 2: Gateway (StatefulSet)
+# ========================================================================
+mode: statefulset
+
+# 1. 넉넉한 메모리 할당 (샘플링 판단 및 대기열 처리를 위해 메모리 확장)
+resources:
+  requests:
+    cpu: 1
+    memory: 1Gi
+  limits:
+    memory: 2Gi
+
+# 2. 영구 큐(EBS 볼륨) 자동 프로비저닝 (AWS gp3 5GB)
+statefulset:
+  volumeClaimTemplates:
+    - metadata:
+        name: file-storage-queue
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: "gp3" # 암호화된 고성능 디스크
+        resources:
+          requests:
+            storage: 5Gi
+  volumeMounts:
+    - name: file-storage-queue
+      mountPath: /var/lib/otelcol/pq
+
+# [SRE Red-Team Fix] StatefulSet + HPA는 데이터 유실(고아 볼륨)을 유발하므로 고정 레플리카(3대) 사용
+replicaCount: 3
+
+config:
+  # 3. 파일 스토리지 확장 기능 켜기 (EBS 볼륨과 연결)
+  extensions:
+    health_check: {}
+    file_storage:
+      directory: /var/lib/otelcol/pq
+      timeout: 1s
+
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: 0.0.0.0:4317
+        http:
+          endpoint: 0.0.0.0:4318
+
+  processors:
+    # 4. 메모리 폭발 방지: Drop 임계점을 75%(90-15)로 상향 조정
+    memory_limiter:
+      check_interval: 1s
+      limit_percentage: 90
+      spike_limit_percentage: 15
+      
+    # 5. 지능형 샘플링 (에러 100%, 정상 1%, 느린 응답 100%)
+    tail_sampling:
+      decision_wait: 10s # [Fix] 무한 대기로 인한 OOM 방지
+      num_traces: 50000
+      policies:
+        - name: errors-only
+          type: status_code
+          status_code:
+            status_codes: [ERROR]
+        - name: slow-traces
+          type: latency
+          latency:
+            threshold_ms: 2000 # [Fix] 2초 이상 지연된 200 OK 트레이스 수집
+        - name: probabilistic-normal
+          type: probabilistic
+          probabilistic:
+            sampling_percentage: 1
+
+    batch:
+      send_batch_size: 5000
+      timeout: 1s
+
+  exporters:
+    # 6. 영구 큐(PQ) 가동: Jaeger로 보낼 때 EBS 디스크(PQ)를 거쳐서 안전하게 발송
+    otlp/jaeger:
+      endpoint: "jaeger-collector.platform.svc.cluster.local:4317"
+      tls:
+        insecure: true
+      sending_queue:
+        enabled: true
+        storage: file_storage
+
+  service:
+    extensions: [health_check, file_storage]
+    pipelines:
+      traces:
+        receivers: [otlp]
+        processors: [memory_limiter, tail_sampling, batch]
+        exporters: [otlp/jaeger]
+      metrics: null
+      logs: null
+
+# 서비스 객체 생성 활성화
+service:
+  enabled: true
+
+ports:
+  otlp:
+    enabled: true
+    containerPort: 4317
+    servicePort: 4317
+    protocol: TCP
+  otlp-http:
+    enabled: true
+    containerPort: 4318
+    servicePort: 4318
+    protocol: TCP
+
+# [SRE Red-Team Fix] HPA 제거 (StatefulSet PQ 데이터 인질 방지)
+autoscaling:
+  enabled: false

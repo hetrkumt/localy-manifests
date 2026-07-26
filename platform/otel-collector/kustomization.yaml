@@ -1,0 +1,19 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+helmCharts:
+  # 1. Tier 1: 최전방 Agent (DaemonSet)
+  - name: opentelemetry-collector
+    repo: https://open-telemetry.github.io/opentelemetry-helm-charts
+    version: 0.87.0
+    releaseName: otel-agent
+    namespace: platform
+    valuesFile: values-agent.yaml
+
+  # 2. Tier 2: 중앙 지휘소 Gateway (StatefulSet)
+  - name: opentelemetry-collector
+    repo: https://open-telemetry.github.io/opentelemetry-helm-charts
+    version: 0.87.0
+    releaseName: otel-gateway
+    namespace: platform
+    valuesFile: values-gateway.yaml

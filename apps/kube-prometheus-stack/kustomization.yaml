@@ -1,15 +1,12 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-# (李멸퀬) RBAC?대굹 Network Policy ??吏곸젒 留뚮뱺 K8s 留ㅻ땲?섏뒪?멸? ?덈떎硫??ш린??異붽?
 resources:
   - network-policy.yaml
   - rbac/role-binding.yaml
   - cert-manager-tls.yaml
 
-# [?듭떖] ?대뜑???덈뒗 ?뚯씪?ㅼ쓣 諛고룷 ?쒖젏???먮룞?쇰줈 ConfigMap?쇰줈 留먯븘二쇰뒗 留덈쾿???ㅼ젙
 configMapGenerator:
-  # 1. 洹몃씪?뚮굹 ??쒕낫???듯빀
   - name: grafana-dashboards-custom
     files:
       - dashboards/14361_rev1.json
@@ -18,10 +15,8 @@ configMapGenerator:
       - dashboards/karpenter-metrics.json
     options:
       labels:
-        # ???쇰꺼???덉뼱??洹몃씪?뚮굹媛 "?? ?닿굔 ??쒕낫?쒓뎄?? ?섍퀬 ?먮룞?쇰줈 ?쎌뼱媛묐땲??
         grafana_dashboard: "1"
 
-  # 2. ?뚮엺 猷?Rules) ?듯빀
   - name: prometheus-rules-custom
     files:
       - rules/alarm-pipeline.yaml
@@ -29,7 +24,6 @@ configMapGenerator:
       labels:
         prometheus_rule: "1"
 
-  # 3. ?쇰읉留ㅻ땲? ?쒗뵆由?ChatOps ?? ?듯빀
   - name: alertmanager-templates
     files:
       - alertmanager/chatops-top3.tmpl

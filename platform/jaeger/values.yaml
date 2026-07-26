@@ -1,0 +1,59 @@
+provisionDataStore:
+  cassandra: false
+
+storage:
+  type: opensearch
+  options:
+    es:
+      server-urls: https://vpc-localy-opensearch-domain.ap-northeast-2.es.amazonaws.com:443
+      index-prefix: localy-traces
+      num-shards: 3
+      num-replicas: 1
+
+query:
+  ingress:
+    enabled: true
+    ingressClassName: alb
+    annotations:
+      alb.ingress.kubernetes.io/scheme: internal
+      alb.ingress.kubernetes.io/group.name: prod-ingress-group
+      alb.ingress.kubernetes.io/target-type: ip
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+      alb.ingress.kubernetes.io/auth-type: oidc
+      alb.ingress.kubernetes.io/auth-idp-oidc: '{"issuer":"https://keycloak.localy.com/realms/localy","authorizationEndpoint":"https://keycloak.localy.com/realms/localy/protocol/openid-connect/auth","tokenEndpoint":"https://keycloak.localy.com/realms/localy/protocol/openid-connect/token","userInfoEndpoint":"https://keycloak.localy.com/realms/localy/protocol/openid-connect/userinfo","secretName":"oauth2-proxy-secret"}'
+    hosts:
+      - jaeger.localy.internal
+
+collector:
+  service:
+    grpc:
+      port: 4317
+    http:
+      port: 4318
+  resources:
+    requests:
+      cpu: 500m
+      memory: 512Mi
+    limits:
+      memory: 2Gi
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 75
+  podDisruptionBudget:
+    enabled: true
+    maxUnavailable: 1
+  topologySpreadConstraints:
+    - maxSkew: 1
+      topologyKey: topology.kubernetes.io/zone
+      whenUnsatisfiable: DoNotSchedule
+      labelSelector:
+        matchLabels:
+          app.kubernetes.io/component: collector
+
+esIndexCleaner:
+  enabled: true
+  numberOfDays: 7
+  schedule: "0 2 * * *"

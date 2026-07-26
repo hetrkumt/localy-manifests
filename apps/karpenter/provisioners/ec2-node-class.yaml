@@ -15,3 +15,9 @@ spec:
   tags:
     karpenter.sh/discovery: "prod-eks"
     Name: "karpenter-node-prod-eks"
+  blockDeviceMappings:
+    - deviceName: /dev/xvda
+      ebs:
+        volumeSize: 50Gi
+        volumeType: gp3
+        encrypted: true

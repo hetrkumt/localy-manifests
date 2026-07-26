@@ -1,0 +1,56 @@
+mode: daemonset
+
+config:
+  # 1. 수신부 (Receivers): 스프링 부트 앱들이 던지는 OTLP 트레이스를 받기 위해 포트 개방
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: 0.0.0.0:4317
+        http:
+          endpoint: 0.0.0.0:4318
+
+  # 2. 가공부 (Processors): 메모리가 터지지 않게 조절하고, 데이터를 1초마다 혹은 1000개씩 묶어서(Batch) 효율적으로 발송
+  processors:
+    batch:
+      send_batch_size: 1000
+      timeout: 1s
+    memory_limiter:
+      check_interval: 1s
+      limit_percentage: 75
+      spike_limit_percentage: 15
+
+  # 3. 송신부 (Exporters): 수집한 데이터를 Jaeger 서버로 쏘거나, 로그창에 간략히 출력
+  exporters:
+    otlp/jaeger:
+      endpoint: "jaeger-collector.platform.svc.cluster.local:4317"
+      tls:
+        insecure: true
+    logging:
+      verbosity: normal
+
+  # 4. 라우팅 파이프라인 개통 (Service Pipelines): 위 1, 2, 3번을 끈으로 묶어줌
+  service:
+    pipelines:
+      traces:
+        receivers: [otlp]
+        processors: [memory_limiter, batch]
+        exporters: [otlp/jaeger, logging]
+      # 메트릭과 로그는 프로메테우스/로키(Loki)가 따로 수집하므로 OTel에서는 파이프라인 오프(null)
+      metrics: null
+      logs: null
+ports:
+  otlp:
+    enabled: true
+    containerPort: 4317
+    servicePort: 4317
+    protocol: TCP
+  otlp-http:
+    enabled: true
+    containerPort: 4318
+    servicePort: 4318
+    protocol: TCP
+
+# [치명적 버그 픽스] DaemonSet 모드일지라도 K8s Service 객체를 강제 생성하도록 활성화
+service:
+  enabled: true

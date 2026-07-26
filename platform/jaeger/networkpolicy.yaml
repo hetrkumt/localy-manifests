@@ -1,0 +1,31 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: jaeger-collector-policy
+  namespace: platform
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/instance: jaeger
+      app.kubernetes.io/component: collector
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: opentelemetry-collector
+      ports:
+        - protocol: TCP
+          port: 4317
+        - protocol: TCP
+          port: 4318
+  egress:
+    - ports:
+        - protocol: TCP
+          port: 443
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53

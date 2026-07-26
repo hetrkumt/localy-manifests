@@ -1,0 +1,35 @@
+grafana:
+  enabled: true
+  sidecar:
+    dashboards:
+      enabled: true
+      label: grafana_dashboard
+      labelValue: "1"
+      searchNamespace: ALL
+prometheus:
+  prometheusSpec:
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    
+    # 1. 보존 주기 (Retention) 방어벽
+    retention: 10d
+    retentionSize: 40GB
+    
+    # 2. 메모리 폭탄 방어 (Resource Limits)
+    resources:
+      requests:
+        cpu: 500m
+        memory: 2Gi
+      limits:
+        cpu: 1000m
+        memory: 4Gi
+        
+    # 3. 영구 스토리지 (Storage PVC)
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: gp3
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 50Gi
