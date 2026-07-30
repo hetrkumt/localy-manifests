@@ -28,6 +28,20 @@ spec:
   destination:
     server: "https://kubernetes.default.svc"
     namespace: auth-namespace
+  # ESO-managed Secret must not be reconciled by Argo (label was previously
+  # copied from ExternalSecret → dual-writer / SecretSyncedError).
+  ignoreDifferences:
+    - group: ""
+      kind: Secret
+      name: localy-keycloak-secret
+      jqPathExpressions:
+        - .data
+        - .metadata
+        - .type
+    - group: external-secrets.io
+      kind: ExternalSecret
+      jqPathExpressions:
+        - .status
   syncPolicy:
     automated:
       prune: false
@@ -37,3 +51,4 @@ spec:
       - ServerSideApply=true
       - Delete=false
       - Prune=false
+      - RespectIgnoreDifferences=true
