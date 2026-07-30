@@ -1,0 +1,121 @@
+# Idempotent keycloak DB bootstrap on shared RDS (db_name=localy).
+# RDS aws_db_instance can only create one initial database; additional DBs
+# must be created in-cluster (L3 TF has no VPC path to private RDS).
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: keycloak-create-db
+  namespace: auth-namespace
+  annotations:
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/sync-wave: "1"
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+    localy.io/secret-policy: "volume-mount-only"
+spec:
+  ttlSecondsAfterFinished: 300
+  backoffLimit: 6
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: keycloak-create-db
+        app.kubernetes.io/part-of: keycloak
+    spec:
+      restartPolicy: Never
+      nodeSelector:
+        karpenter.sh/nodepool: workload
+      tolerations:
+        - key: workload-only
+          operator: Equal
+          value: "true"
+          effect: NoSchedule
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 70
+        runAsGroup: 70
+        fsGroup: 70
+        seccompProfile:
+          type: RuntimeDefault
+      volumes:
+        - name: secret-volume
+          secret:
+            # optional: ExternalSecret (wave 0) may still be syncing when this Job starts
+            secretName: localy-keycloak-secret
+            optional: true
+            defaultMode: 0400
+            items:
+              - key: KEYCLOAK_DATABASE_HOST
+                path: host
+              - key: KEYCLOAK_DATABASE_PASSWORD
+                path: password
+        - name: tmp
+          emptyDir:
+            medium: Memory
+            sizeLimit: 32Mi
+      containers:
+        - name: psql
+          image: postgres:15-alpine
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+          volumeMounts:
+            - name: secret-volume
+              mountPath: /etc/secrets
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+          env:
+            - name: PGUSER
+              value: postgres
+            - name: PGDATABASE
+              value: localy
+            - name: PGHOSTFILE
+              value: /etc/secrets/host
+            - name: PGPASSFILE
+              value: /etc/secrets/password
+          command:
+            - sh
+            - -c
+            - |
+              set -eu
+              echo "Waiting for ExternalSecret-backed credentials..."
+              i=0
+              while [ ! -s "$PGHOSTFILE" ] || [ ! -s "$PGPASSFILE" ]; do
+                i=$((i + 1))
+                if [ "$i" -gt 60 ]; then
+                  echo "Timed out waiting for /etc/secrets/{host,password}"
+                  exit 1
+                fi
+                sleep 2
+              done
+              export PGHOST="$(cat "$PGHOSTFILE")"
+              export PGPASSWORD="$(cat "$PGPASSFILE")"
+
+              echo "Waiting for PostgreSQL at ${PGHOST}..."
+              i=0
+              until pg_isready -h "$PGHOST" -U "$PGUSER" -d "$PGDATABASE" >/dev/null 2>&1; do
+                i=$((i + 1))
+                if [ "$i" -gt 60 ]; then
+                  echo "Timed out waiting for pg_isready"
+                  exit 1
+                fi
+                sleep 2
+              done
+
+              exists="$(psql -Atc "SELECT 1 FROM pg_database WHERE datname = 'keycloak'")"
+              if [ "$exists" = "1" ]; then
+                echo "Database keycloak already exists — nothing to do"
+                exit 0
+              fi
+
+              echo "Creating database keycloak..."
+              psql -v ON_ERROR_STOP=1 -c "CREATE DATABASE keycloak OWNER postgres"
+              echo "Database keycloak created"
