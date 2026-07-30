@@ -1,4 +1,5 @@
 # Phase 8 — Karpenter controller (Wave -3)
+# Multi-source: Helm chart + values + ESO cluster settings (SSM endpoint).
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -22,9 +23,24 @@ spec:
     - repoURL: "https://github.com/hetrkumt/localy-manifests.git"
       targetRevision: main
       ref: values
+    - repoURL: "https://github.com/hetrkumt/localy-manifests.git"
+      targetRevision: main
+      path: apps/karpenter/cluster-settings
   destination:
     server: "https://kubernetes.default.svc"
     namespace: kube-system
+  ignoreDifferences:
+    - group: ""
+      kind: Secret
+      name: karpenter-cluster-settings
+      jqPathExpressions:
+        - .data
+        - .metadata
+        - .type
+    - group: external-secrets.io
+      kind: ExternalSecret
+      jqPathExpressions:
+        - .status
   syncPolicy:
     automated:
       prune: false
@@ -34,3 +50,4 @@ spec:
       - ServerSideApply=true
       - Delete=false
       - Prune=false
+      - RespectIgnoreDifferences=true

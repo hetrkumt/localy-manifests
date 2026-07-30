@@ -1,12 +1,25 @@
 settings:
   clusterName: "prod-eks"
-  clusterEndpoint: "https://A3DAFF463A698E5ECAC4DAFBC8249BF0.gr7.ap-northeast-2.eks.amazonaws.com"
+  # clusterEndpoint: owned by ESO Secret karpenter-cluster-settings (SSM /localy/prod/eks/cluster_endpoint).
+  # Hardcoding here drifts after EKS recreate (E583CF… vs A3DAFF…).
   interruptionQueue: "prod-eks-karpenter-interruption-queue"
 
 serviceAccount:
   name: "karpenter"
   annotations:
     eks.amazonaws.com/role-arn: "arn:aws:iam::533003975005:role/prod-eks-karpenter-controller-role"
+
+# Inject live endpoint from ESO; Reloader restarts pods when SSM→Secret changes.
+controller:
+  env:
+    - name: CLUSTER_ENDPOINT
+      valueFrom:
+        secretKeyRef:
+          name: karpenter-cluster-settings
+          key: CLUSTER_ENDPOINT
+
+podAnnotations:
+  secret.reloader.stakater.com/reload: "karpenter-cluster-settings"
 
 # Bootstrap on EKS managed system nodes (role=system).
 # Do NOT require karpenter.sh/nodepool=system — that label only appears on
