@@ -67,6 +67,17 @@ config:
       timeout: 5s
   exporters:
     opensearch:
+      # otelcol-contrib 0.98 has NO traces_index; it always uses
+      # ss4o_traces-{dataset}-{namespace} (data stream) when mapping.mode=ss4o.
+      # OpenSearch's built-in ss4o_traces_template conflicts with OTel docs
+      # (KeywordFieldMapper vs ObjectMapper). We:
+      #  1) use an explicit dataset/namespace
+      #  2) use flatten_attributes mapping to avoid nested attr clashes
+      #  3) rely on SS4O template being removed/replaced in the domain
+      dataset: localy
+      namespace: traces
+      mapping:
+        mode: flatten_attributes
       http:
         # VPC endpoint from L3 aws_opensearch_domain.jaeger_backend (private DNS alias TBD)
         endpoint: "https://vpc-prod-jaeger-backend-sanyd6apx4tikocssvd2lbx3le.ap-northeast-2.es.amazonaws.com:443"

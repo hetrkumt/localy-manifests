@@ -30,6 +30,10 @@ data:
         timeout: 5s
     exporters:
       opensearch:
+        dataset: localy
+        namespace: traces
+        mapping:
+          mode: flatten_attributes
         http:
           endpoint: "https://vpc-prod-jaeger-backend-sanyd6apx4tikocssvd2lbx3le.ap-northeast-2.es.amazonaws.com:443"
           tls:
