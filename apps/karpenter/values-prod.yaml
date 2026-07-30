@@ -8,9 +8,13 @@ serviceAccount:
   annotations:
     eks.amazonaws.com/role-arn: "arn:aws:iam::533003975005:role/prod-eks-karpenter-controller-role"
 
+# Bootstrap on EKS managed system nodes (role=system).
+# Do NOT require karpenter.sh/nodepool=system — that label only appears on
+# Karpenter-provisioned nodes (chicken-and-egg; also conflicts with chart
+# affinity karpenter.sh/nodepool DoesNotExist).
 nodeSelector:
   role: "system"
-  karpenter.sh/nodepool: "system"
+  kubernetes.io/os: "linux"
 
 tolerations:
   - key: "system-only"

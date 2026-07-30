@@ -26,8 +26,9 @@ securityContext:
 networkPolicy:
   enabled: true
 
+# Schedule on managed system NG (role=system) until Karpenter pools exist.
 nodeSelector:
-  karpenter.sh/nodepool: system
+  role: system
 
 tolerations:
   - key: system-only
@@ -60,7 +61,7 @@ podDisruptionBudget:
 webhook:
   replicaCount: 2
   nodeSelector:
-    karpenter.sh/nodepool: system
+    role: system
   tolerations:
     - key: system-only
       operator: Equal
@@ -89,7 +90,7 @@ webhook:
 certController:
   replicaCount: 2
   nodeSelector:
-    karpenter.sh/nodepool: system
+    role: system
   tolerations:
     - key: system-only
       operator: Equal
