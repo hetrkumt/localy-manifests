@@ -7,32 +7,7 @@ resources:
   - ec2-node-class.yaml
 
 patches:
-  # 1. Karpenter ?�⑦?�濡?�윭???뺤쟻 system ?몃뱶 洹몃�??�줈 寃⑸????�떇 (?곕뱶??諛⑹?)
-  - target:
-      group: apps
-      version: v1
-      kind: Deployment
-      name: karpenter
-      namespace: kube-system
-    patch: |
-      - op: add
-        path: /spec/template/spec/nodeSelector
-        value:
-          role: system
-
-  # 2. Karpenter Controller IRSA 沅뚰�?Role ARN) ??�튂
-  - target:
-      version: v1
-      kind: ServiceAccount
-      name: karpenter
-      namespace: kube-system
-    patch: |
-      - op: add
-        path: /metadata/annotations
-        value:
-          eks.amazonaws.com/role-arn: "arn:aws:iam::533003975005:role/prod-eks-karpenter-controller-role"
-
-  # 3. EC2NodeClass??Node Role Name????�튂
+  # EC2NodeClass node IAM role (IRSA node role name)
   - target:
       group: karpenter.k8s.aws
       version: v1beta1
