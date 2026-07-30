@@ -1,5 +1,6 @@
 # Phase 8 — Karpenter controller (Wave -3)
-# Multi-source: Helm chart + values + ESO cluster settings (SSM endpoint).
+# Multi-source: Helm chart + (values ref AND ESO cluster-settings on same git source).
+# Combining ref+path avoids Argo 2.9 empty-path ref source / nil-pointer sync errors.
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -23,8 +24,6 @@ spec:
     - repoURL: "https://github.com/hetrkumt/localy-manifests.git"
       targetRevision: main
       ref: values
-    - repoURL: "https://github.com/hetrkumt/localy-manifests.git"
-      targetRevision: main
       path: apps/karpenter/cluster-settings
   destination:
     server: "https://kubernetes.default.svc"
