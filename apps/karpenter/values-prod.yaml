@@ -1,6 +1,6 @@
 settings:
   clusterName: "prod-eks"
-  clusterEndpoint: "https://E583CF0454E256924147D1439D485B87.gr7.ap-northeast-2.eks.amazonaws.com"
+  clusterEndpoint: "https://A3DAFF463A698E5ECAC4DAFBC8249BF0.gr7.ap-northeast-2.eks.amazonaws.com"
   interruptionQueue: "prod-eks-karpenter-interruption-queue"
 
 serviceAccount:
