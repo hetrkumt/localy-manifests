@@ -7,6 +7,11 @@ image:
   repository: otel/opentelemetry-collector-contrib
   tag: "0.98.0"
 
+serviceAccount:
+  create: true
+  annotations:
+    eks.amazonaws.com/role-arn: "arn:aws:iam::533003975005:role/prod-eks-otel-gateway-irsa-role"
+
 resources:
   requests:
     cpu: 200m
@@ -63,7 +68,8 @@ config:
   exporters:
     opensearch:
       http:
-        endpoint: "https://opensearch.prod.localy.internal:443"
+        # VPC endpoint from L3 aws_opensearch_domain.jaeger_backend (private DNS alias TBD)
+        endpoint: "https://vpc-prod-jaeger-backend-sanyd6apx4tikocssvd2lbx3le.ap-northeast-2.es.amazonaws.com:443"
         tls:
           insecure: false
         # otelcol-contrib >=0.9x: auth belongs under http (confighttp), not exporter root

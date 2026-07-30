@@ -31,11 +31,11 @@ data:
     exporters:
       opensearch:
         http:
-          endpoint: "https://opensearch.prod.localy.internal:443"
+          endpoint: "https://vpc-prod-jaeger-backend-sanyd6apx4tikocssvd2lbx3le.ap-northeast-2.es.amazonaws.com:443"
           tls:
             insecure: false
-        auth:
-          authenticator: sigv4auth
+          auth:
+            authenticator: sigv4auth
     extensions:
       health_check: {}
       sigv4auth:
