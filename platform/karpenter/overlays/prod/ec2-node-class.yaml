@@ -4,13 +4,15 @@ metadata:
   name: default
 spec:
   amiFamily: AL2
-  role: "localy-prod-karpenter-node-role"
+  # Must match L2 IAM role: ${cluster_name}-karpenter-node-role
+  role: "prod-eks-karpenter-node-role"
   subnetSelectorTerms:
     - tags:
-        karpenter.sh/discovery: localy-prod-eks
+        # Must match EKS/VPC subnet tags from Terraform
+        karpenter.sh/discovery: prod-eks
   securityGroupSelectorTerms:
     - tags:
-        karpenter.sh/discovery: localy-prod-eks
+        karpenter.sh/discovery: prod-eks
   metadataOptions:
     httpTokens: required
     httpPutResponseHopLimit: 1

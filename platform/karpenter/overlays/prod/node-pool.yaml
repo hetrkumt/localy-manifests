@@ -34,7 +34,6 @@ spec:
         name: default
   disruption:
     consolidationPolicy: WhenUnderutilized
-    consolidateAfter: 10m
     expireAfter: 336h
   limits:
     cpu: "200"
@@ -77,7 +76,6 @@ spec:
         name: default
   disruption:
     consolidationPolicy: WhenUnderutilized
-    consolidateAfter: 10m
     expireAfter: 336h
   limits:
     cpu: "100"
@@ -134,7 +132,6 @@ spec:
         name: default
   disruption:
     consolidationPolicy: WhenUnderutilized
-    consolidateAfter: 30s
     expireAfter: 168h
   limits:
     cpu: "800"
@@ -188,7 +185,6 @@ spec:
         name: default
   disruption:
     consolidationPolicy: WhenUnderutilized
-    consolidateAfter: 30s
     expireAfter: 72h
   limits:
     cpu: "200"
