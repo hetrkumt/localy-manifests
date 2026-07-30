@@ -66,8 +66,9 @@ config:
         endpoint: "https://opensearch.prod.localy.internal:443"
         tls:
           insecure: false
-      auth:
-        authenticator: sigv4auth
+        # otelcol-contrib >=0.9x: auth belongs under http (confighttp), not exporter root
+        auth:
+          authenticator: sigv4auth
   service:
     extensions: [health_check, sigv4auth]
     pipelines:
