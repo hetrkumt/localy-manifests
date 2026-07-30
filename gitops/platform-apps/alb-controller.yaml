@@ -1,0 +1,36 @@
+# Phase 8 — AWS Load Balancer Controller (Wave -6)
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: alb-controller
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-6"
+    argocd.argoproj.io/sync-options: ServerSideApply=true,Delete=false,Prune=false
+    localy.io/phase: "8"
+    localy.io/cutover-mode: "gate-8a"
+spec:
+  project: platform-project
+  sources:
+    - repoURL: "https://aws.github.io/eks-charts"
+      chart: "aws-load-balancer-controller"
+      targetRevision: "1.7.2"
+      helm:
+        releaseName: "aws-load-balancer-controller"
+        valueFiles:
+          - $values/apps/alb-controller/values-prod.yaml
+    - repoURL: "https://github.com/hetrkumt/localy-manifests.git"
+      targetRevision: main
+      ref: values
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: kube-system
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+      - Delete=false
+      - Prune=false

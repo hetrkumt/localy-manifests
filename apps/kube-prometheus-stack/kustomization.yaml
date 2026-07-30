@@ -5,6 +5,8 @@ resources:
   - network-policy.yaml
   - rbac/role-binding.yaml
   - cert-manager-tls.yaml
+  - grafana-eso-sa.yaml
+  - grafana-admin-external-secret.yaml
 
 configMapGenerator:
   - name: grafana-dashboards-custom

@@ -11,6 +11,7 @@ resources:
   - secret-store.yaml
   - configmap.yaml
   - network-policy.yaml
+  - resource-guards.yaml
 
 images:
   - name: localy-payment-service

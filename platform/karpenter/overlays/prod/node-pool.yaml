@@ -1,15 +1,19 @@
 apiVersion: karpenter.sh/v1beta1
 kind: NodePool
 metadata:
-  name: platform-pool
+  name: system
+  labels:
+    localy.io/cost-center: "platform"
+    localy.io/finops-pool: "system"
 spec:
   template:
     metadata:
       labels:
-        role: platform
+        role: system
+        localy.io/nodepool: system
     spec:
       taints:
-        - key: platform-only
+        - key: system-only
           value: "true"
           effect: NoSchedule
       requirements:
@@ -18,49 +22,174 @@ spec:
           values: ["on-demand"]
         - key: kubernetes.io/arch
           operator: In
-          values: ["arm64"]
+          values: ["amd64"]
+        - key: node.kubernetes.io/instance-type
+          operator: In
+          values:
+            - r6i.large
+            - r6a.large
+            - m6i.large
+            - m6a.large
       nodeClassRef:
         name: default
   disruption:
-    consolidationPolicy: WhenEmpty
+    consolidationPolicy: WhenUnderutilized
+    consolidateAfter: 10m
     expireAfter: 336h
+  limits:
+    cpu: "200"
+    memory: "800Gi"
+
 ---
 apiVersion: karpenter.sh/v1beta1
 kind: NodePool
 metadata:
-  name: workload-pool
+  name: observability
+  labels:
+    localy.io/cost-center: "observability"
+    localy.io/finops-pool: "observability"
+spec:
+  template:
+    metadata:
+      labels:
+        role: observability
+        localy.io/nodepool: observability
+    spec:
+      taints:
+        - key: observability-only
+          value: "true"
+          effect: NoSchedule
+      requirements:
+        - key: karpenter.sh/capacity-type
+          operator: In
+          values: ["on-demand"]
+        - key: kubernetes.io/arch
+          operator: In
+          values: ["amd64"]
+        - key: node.kubernetes.io/instance-type
+          operator: In
+          values:
+            - r6i.large
+            - r6a.large
+            - m6i.large
+            - m6a.large
+      nodeClassRef:
+        name: default
+  disruption:
+    consolidationPolicy: WhenUnderutilized
+    consolidateAfter: 10m
+    expireAfter: 336h
+  limits:
+    cpu: "100"
+    memory: "400Gi"
+
+---
+apiVersion: karpenter.sh/v1beta1
+kind: NodePool
+metadata:
+  name: workload
+  labels:
+    localy.io/cost-center: "workload"
+    localy.io/finops-pool: "workload"
 spec:
   template:
     metadata:
       labels:
         role: workload
+        localy.io/nodepool: workload
     spec:
+      taints:
+        - key: workload-only
+          value: "true"
+          effect: NoSchedule
       requirements:
         - key: karpenter.sh/capacity-type
           operator: In
           values: ["spot", "on-demand"]
         - key: kubernetes.io/arch
           operator: In
-          values: ["arm64"]
+          values: ["amd64", "arm64"]
         - key: node.kubernetes.io/instance-type
-          operator: NotIn
+          operator: In
           values:
-            - t3.nano
-            - t3.micro
-            - t3.small
-            - t3.medium
-            - t3.large
-            - t3.xlarge
-            - t3.2xlarge
-            - t4g.nano
-            - t4g.micro
-            - t4g.small
-            - t4g.medium
-            - t4g.large
-            - t4g.xlarge
-            - t4g.2xlarge
+            - c6i.large
+            - c6i.xlarge
+            - c6i.2xlarge
+            - c6a.large
+            - c6a.xlarge
+            - c6a.2xlarge
+            - c7g.large
+            - c7g.xlarge
+            - c7g.2xlarge
+            - m6i.large
+            - m6i.xlarge
+            - m6i.2xlarge
+            - m6a.large
+            - m6a.xlarge
+            - m6a.2xlarge
+            - m7g.large
+            - m7g.xlarge
+            - m7g.2xlarge
       nodeClassRef:
         name: default
   disruption:
     consolidationPolicy: WhenUnderutilized
-    expireAfter: 336h
+    consolidateAfter: 30s
+    expireAfter: 168h
+  limits:
+    cpu: "800"
+    memory: "3200Gi"
+
+---
+apiVersion: karpenter.sh/v1beta1
+kind: NodePool
+metadata:
+  name: finops-batch
+  labels:
+    localy.io/cost-center: "finops-batch"
+    localy.io/finops-pool: "finops-batch"
+spec:
+  template:
+    metadata:
+      labels:
+        role: finops-batch
+        localy.io/nodepool: finops-batch
+    spec:
+      taints:
+        - key: finops-batch-only
+          value: "true"
+          effect: NoSchedule
+      requirements:
+        - key: karpenter.sh/capacity-type
+          operator: In
+          values: ["spot"]
+        - key: kubernetes.io/arch
+          operator: In
+          values: ["amd64"]
+        - key: node.kubernetes.io/instance-type
+          operator: In
+          values:
+            - c6i.large
+            - c6i.xlarge
+            - c6i.2xlarge
+            - c6a.large
+            - c6a.xlarge
+            - c6a.2xlarge
+            - m6i.large
+            - m6i.xlarge
+            - m6i.2xlarge
+            - m6a.large
+            - m6a.xlarge
+            - m6a.2xlarge
+            - t3.large
+            - t3.xlarge
+            - t3.2xlarge
+      nodeClassRef:
+        name: default
+  disruption:
+    consolidationPolicy: WhenUnderutilized
+    consolidateAfter: 30s
+    expireAfter: 72h
+  limits:
+    cpu: "200"
+    memory: "800Gi"

@@ -1,13 +1,20 @@
+# Phase 5 — shared LimitRange defaults (per-NS ResourceQuota lives in service overlays)
 apiVersion: v1
 kind: LimitRange
 metadata:
   name: default-limits
 spec:
   limits:
-  - default:
-      cpu: 500m
-      memory: 1Gi
-    defaultRequest:
-      cpu: 100m
-      memory: 256Mi
-    type: Container
+    - type: Container
+      defaultRequest:
+        cpu: 100m
+        memory: 256Mi
+      default:
+        cpu: 500m
+        memory: 1Gi
+      max:
+        cpu: "2000m"
+        memory: 2Gi
+      min:
+        cpu: 50m
+        memory: 64Mi

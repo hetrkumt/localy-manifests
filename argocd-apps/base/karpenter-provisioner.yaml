@@ -9,12 +9,12 @@ spec:
   project: default
   source:
     repoURL: "https://github.com/hetrkumt/localy-manifests.git"
-    path: apps/karpenter/provisioners
+    path: platform/karpenter/overlays/prod
     targetRevision: HEAD
   destination:
     server: "https://kubernetes.default.svc"
     namespace: kube-system
   syncPolicy:
     automated:
-      prune: true
+      prune: false
       selfHeal: true

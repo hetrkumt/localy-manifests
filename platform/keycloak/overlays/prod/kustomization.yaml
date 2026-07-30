@@ -1,19 +1,16 @@
+# Phase 2: helmCharts RETIRED — Bitnami chart via Multi-Source Application
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
   - ../../base
-
-helmCharts:
-  - name: keycloak
-    repo: oci://registry-1.docker.io/bitnamicharts
-    version: 24.7.7
-    releaseName: keycloak
-    namespace: auth-namespace
-    valuesFile: values.yaml
+  # keycloak-tgb.yaml retired — Ingress (localy-external-alb-keycloak) + LBC
+  # creates TargetGroups. Readiness gate is namespace-injected.
 
 configMapGenerator:
   - name: keycloak-realm-config
     namespace: auth-namespace
     files:
       - realm-import.json
+    options:
+      disableNameSuffixHash: true

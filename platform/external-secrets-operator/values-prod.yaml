@@ -1,0 +1,116 @@
+# Phase 2 SSOT — External Secrets Operator HA
+# Multi-Source Helm values (enable-helm retired)
+installCRDs: true
+
+replicaCount: 2
+
+serviceAccount:
+  create: true
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::533003975005:role/prod-eks-eso-controller-role
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 10001
+  runAsGroup: 10001
+  fsGroup: 10001
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop: ["ALL"]
+
+networkPolicy:
+  enabled: true
+
+nodeSelector:
+  karpenter.sh/nodepool: system
+
+tolerations:
+  - key: system-only
+    operator: Equal
+    value: "true"
+    effect: NoSchedule
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
+
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: external-secrets
+          topologyKey: kubernetes.io/hostname
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+webhook:
+  replicaCount: 2
+  nodeSelector:
+    karpenter.sh/nodepool: system
+  tolerations:
+    - key: system-only
+      operator: Equal
+      value: "true"
+      effect: NoSchedule
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: external-secrets-webhook
+            topologyKey: kubernetes.io/hostname
+  podDisruptionBudget:
+    enabled: true
+    minAvailable: 1
+
+certController:
+  replicaCount: 2
+  nodeSelector:
+    karpenter.sh/nodepool: system
+  tolerations:
+    - key: system-only
+      operator: Equal
+      value: "true"
+      effect: NoSchedule
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: external-secrets-cert-controller
+            topologyKey: kubernetes.io/hostname
+  podDisruptionBudget:
+    enabled: true
+    minAvailable: 1

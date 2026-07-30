@@ -1,8 +1,4 @@
+# Phase 2: helmCharts RETIRED — SA patch folded into values-prod.yaml IRSA annotation
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-
-resources:
-  - ../../base
-
-patches:
-  - path: sa-patch.yaml
+resources: []

@@ -1,7 +1,13 @@
+# Phase 5 — KEDA SSOT (MSK lag)
+# Correction: MSK auth uses payment-service-sa → prod-eks-payment-service-irsa-role
 apiVersion: keda.sh/v1alpha1
 kind: TriggerAuthentication
 metadata:
   name: keda-aws-credentials-payment
+  namespace: payment-service
+  annotations:
+    localy.io/identity-owner: "pod-sa"
+    localy.io/irsa-role: "prod-eks-payment-service-irsa-role"
 spec:
   podIdentity:
     provider: aws-eks
@@ -9,18 +15,45 @@ spec:
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
-  name: payment-service-scaledobject
+  name: payment-service-scaler
+  namespace: payment-service
+  annotations:
+    localy.io/phase: "5"
 spec:
   scaleTargetRef:
     name: payment-service
-  minReplicaCount: 1
+  pollingInterval: 30
+  cooldownPeriod: 300
+  minReplicaCount: 2
   maxReplicaCount: 10
+  advanced:
+    horizontalPodAutoscalerConfig:
+      behavior:
+        scaleUp:
+          stabilizationWindowSeconds: 0
+          selectPolicy: Max
+          policies:
+            - type: Percent
+              value: 100
+              periodSeconds: 15
+            - type: Pods
+              value: 4
+              periodSeconds: 15
+        scaleDown:
+          stabilizationWindowSeconds: 300
+          selectPolicy: Min
+          policies:
+            - type: Percent
+              value: 10
+              periodSeconds: 60
   triggers:
     - type: aws-msk
       metadata:
+        identityOwner: pod
         bootstrapServersFromEnv: SPRING_KAFKA_BOOTSTRAP_SERVERS
         consumerGroup: payment-approved-group
         topic: order-approved
         lagThreshold: "10"
+        activationLagThreshold: "5"
       authenticationRef:
         name: keda-aws-credentials-payment

@@ -3,6 +3,10 @@ kind: Application
 metadata:
   name: workloads-root
   namespace: argocd
+  annotations:
+    localy.io/prune-freeze: "phase-0"
+    localy.io/cutover-mode: "legacy-frozen"
+    argocd.argoproj.io/sync-options: ServerSideApply=true,Delete=false,Prune=false
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
@@ -16,5 +20,9 @@ spec:
     namespace: argocd
   syncPolicy:
     automated:
-      prune: true
+      prune: false
       selfHeal: true
+    syncOptions:
+      - ServerSideApply=true
+      - Delete=false
+      - Prune=false

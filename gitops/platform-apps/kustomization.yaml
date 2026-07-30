@@ -1,0 +1,29 @@
+# =============================================================================
+# Phase 8 — Platform App of Apps catalog (coverage 100%)
+# Gate 8A: prune=false, selfHeal=true on child Applications
+# AppProjects live under gitops/base/projects (synced by root overlay, wave -15)
+# =============================================================================
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  # CRD / bootstrap (-20 ~ -10)
+  - kyverno.yaml
+  - cert-manager.yaml
+  # Core controllers (-9 ~ 0)
+  - alb-controller.yaml
+  - storage.yaml
+  - external-secrets.yaml
+  - node-local-dns.yaml
+  - karpenter-controller.yaml
+  - karpenter-provisioner.yaml
+  - keda.yaml
+  - reloader.yaml
+  # Observability (1 ~ 9)
+  - kube-prometheus-stack.yaml
+  - loki.yaml
+  - otel-gateway.yaml
+  - fluent-bit.yaml
+  # Ingress & Auth (10 ~ 19)
+  - ingress-core.yaml
+  - external-dns.yaml
+  - keycloak.yaml

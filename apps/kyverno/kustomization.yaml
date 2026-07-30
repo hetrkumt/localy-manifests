@@ -5,3 +5,4 @@ resources:
   - network-policy.yaml
   - policies/kyverno-policy.yaml
   - policies/protect-alertmanager.yaml
+  - policies/prevent-cross-namespace-secrets.yaml

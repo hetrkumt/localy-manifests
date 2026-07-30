@@ -1,0 +1,19 @@
+# Kyverno Helm values (prod) — referenced by Multi-Source Application
+# Policies (ClusterPolicy) sync via apps/kyverno kustomize path (3rd source).
+replicaCount: 2
+
+resources:
+  limits:
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 256Mi
+
+admissionController:
+  replicas: 2
+
+backgroundController:
+  replicas: 1
+
+reportsController:
+  replicas: 1

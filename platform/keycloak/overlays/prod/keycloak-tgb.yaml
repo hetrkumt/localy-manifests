@@ -1,0 +1,11 @@
+# DEPRECATED — Keycloak TargetGroup is created by LBC Ingress
+# (localy-external-alb-keycloak). Do not re-enable PLACEHOLDER ARNs.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: keycloak-tgb-deprecated
+  namespace: auth-namespace
+  annotations:
+    localy.io/status: "deprecated"
+data:
+  note: "TargetGroupBinding removed; Ingress + readiness-gate is SSOT"

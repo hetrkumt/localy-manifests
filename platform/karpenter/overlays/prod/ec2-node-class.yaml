@@ -21,3 +21,8 @@ spec:
         volumeSize: 50Gi
         volumeType: gp3
         encrypted: true
+  tags:
+    Environment: "prod"
+    ManagedBy: "karpenter"
+    localy.io/cost-center: "shared"
+    localy.io/finops: "enabled"

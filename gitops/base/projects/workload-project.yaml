@@ -1,0 +1,94 @@
+# AppProject: workload-project
+# L5 business microservices — ZERO cluster-scoped privileges.
+# Architect Ruling Phase 1 — developers cannot mutate Quota/IAM/CRDs.
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: workload-project
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-15"
+    localy.io/tier: "workloads"
+    localy.io/phase: "8"
+spec:
+  description: "L5 business microservices — namespace-scoped only (no cluster RBAC)"
+
+  sourceRepos:
+    - "https://github.com/hetrkumt/localy-manifests.git"
+    - "https://github.com/localy-project/localy-manifests.git"
+
+  destinations:
+    - namespace: "user-service"
+      server: "https://kubernetes.default.svc"
+    - namespace: "store-service"
+      server: "https://kubernetes.default.svc"
+    - namespace: "order-service"
+      server: "https://kubernetes.default.svc"
+    - namespace: "payment-service"
+      server: "https://kubernetes.default.svc"
+    - namespace: "cart-service"
+      server: "https://kubernetes.default.svc"
+    - namespace: "edge-service"
+      server: "https://kubernetes.default.svc"
+    - namespace: "prod-workloads"
+      server: "https://kubernetes.default.svc"
+    - namespace: "user-svc"
+      server: "https://kubernetes.default.svc"
+    - namespace: "store-svc"
+      server: "https://kubernetes.default.svc"
+    - namespace: "order-svc"
+      server: "https://kubernetes.default.svc"
+    - namespace: "payment-svc"
+      server: "https://kubernetes.default.svc"
+    - namespace: "cart-svc"
+      server: "https://kubernetes.default.svc"
+    - namespace: "edge-svc"
+      server: "https://kubernetes.default.svc"
+
+  # Hard deny: no cluster-scoped resources from workload apps
+  clusterResourceWhitelist: []
+
+  namespaceResourceWhitelist:
+    - group: ""
+      kind: "ConfigMap"
+    - group: ""
+      kind: "Secret"
+    - group: ""
+      kind: "Service"
+    - group: ""
+      kind: "ServiceAccount"
+    - group: ""
+      kind: "PersistentVolumeClaim"
+    - group: "apps"
+      kind: "Deployment"
+    - group: "apps"
+      kind: "StatefulSet"
+    - group: "batch"
+      kind: "Job"
+    - group: "batch"
+      kind: "CronJob"
+    - group: "autoscaling"
+      kind: "HorizontalPodAutoscaler"
+    - group: "policy"
+      kind: "PodDisruptionBudget"
+    - group: "networking.k8s.io"
+      kind: "NetworkPolicy"
+    - group: "networking.k8s.io"
+      kind: "Ingress"
+    - group: "elbv2.k8s.aws"
+      kind: "TargetGroupBinding"
+    - group: "external-secrets.io"
+      kind: "ExternalSecret"
+    - group: "external-secrets.io"
+      kind: "SecretStore"
+    - group: "keda.sh"
+      kind: "ScaledObject"
+    - group: "keda.sh"
+      kind: "TriggerAuthentication"
+    - group: "monitoring.coreos.com"
+      kind: "ServiceMonitor"
+    - group: "monitoring.coreos.com"
+      kind: "PodMonitor"
+
+  orphanedResources:
+    warn: true

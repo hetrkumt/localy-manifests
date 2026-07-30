@@ -2,16 +2,62 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: payment-service
+  annotations:
+    reloader.stakater.com/auto: "true"
 spec:
+  replicas: 2
   template:
+    metadata:
+      labels:
+        security.localy.io/zero-trust: "enforced"
     spec:
+      terminationGracePeriodSeconds: 60
+      nodeSelector:
+        karpenter.sh/nodepool: workload
+      tolerations:
+        - key: "workload-only"
+          operator: Equal
+          value: "true"
+          effect: NoSchedule
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app: payment-service
+                topologyKey: kubernetes.io/hostname
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: payment-service
-          envFrom:
-            - secretRef:
-                name: payment-service-secret
-            - configMapRef:
-                name: payment-service-config
+          env:
+            - name: HOST_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            - name: JAVA_OPTS
+              value: "-XX:MaxRAMPercentage=75.0 -XX:+UseG1GC"
+            - name: SPRING_CONFIG_IMPORT
+              value: "optional:configtree:/mnt/secrets/app-creds/,optional:configtree:/mnt/config/"
+          envFrom: []
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "sleep 25"]
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 10001
+            capabilities:
+              drop: ["ALL"]
           resources:
             requests:
               cpu: "250m"
@@ -20,10 +66,33 @@ spec:
               cpu: "1500m"
               memory: "2Gi"
           volumeMounts:
-            - name: secret-volume
-              mountPath: /workspace/configtree
+            - name: secret-app-creds
+              mountPath: /mnt/secrets/app-creds
               readOnly: true
+            - name: config-tree
+              mountPath: /mnt/config
+              readOnly: true
+            - name: tmp-volume
+              mountPath: /tmp
+            - name: app-logs-volume
+              mountPath: /app/logs
       volumes:
-        - name: secret-volume
+        - name: secret-app-creds
           secret:
             secretName: payment-service-secret
+            defaultMode: 0400
+        - name: config-tree
+          configMap:
+            name: payment-service-config
+        - name: tmp-volume
+          emptyDir:
+            medium: Memory
+            sizeLimit: 64Mi
+        - name: app-logs-volume
+          emptyDir:
+            medium: Memory
+            sizeLimit: 32Mi
+        - name: secrets-ram
+          emptyDir:
+            medium: Memory
+            sizeLimit: 8Mi

@@ -1,10 +1,5 @@
+# Phase 2: helmCharts / --enable-helm RETIRED.
+# Multi-Source: gitops/platform-apps/external-secrets.yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-
-helmCharts:
-  - name: external-secrets
-    repo: https://charts.external-secrets.io
-    version: 0.9.19
-    releaseName: external-secrets
-    namespace: external-secrets
-    includeCRDs: true
+resources: []

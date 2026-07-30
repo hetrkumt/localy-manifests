@@ -3,8 +3,10 @@ kind: PodDisruptionBudget
 metadata:
   name: store-service-pdb
   namespace: store-service
+  annotations:
+    localy.io/phase: "5"
 spec:
-  maxUnavailable: 1
+  maxUnavailable: 50%
   selector:
     matchLabels:
       app: store-service

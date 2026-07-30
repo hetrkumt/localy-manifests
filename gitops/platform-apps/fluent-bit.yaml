@@ -1,0 +1,39 @@
+# Phase 3/8 Multi-Source — fluent-bit (Wave 4)
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: fluent-bit
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"
+    argocd.argoproj.io/sync-options: ServerSideApply=true,Delete=false,Prune=false
+    localy.io/phase: "8"
+    localy.io/cutover-mode: "gate-8a"
+spec:
+  project: platform-project
+  sources:
+    - repoURL: "https://fluent.github.io/helm-charts"
+      chart: "fluent-bit"
+      targetRevision: "0.47.10"
+      helm:
+        releaseName: "fluent-bit"
+        valueFiles:
+          - $values/platform/observability/fluent-bit/values-prod.yaml
+    - repoURL: "https://github.com/hetrkumt/localy-manifests.git"
+      targetRevision: main
+      ref: values
+    - repoURL: "https://github.com/hetrkumt/localy-manifests.git"
+      targetRevision: main
+      path: platform/observability/fluent-bit
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+      - Delete=false
+      - Prune=false

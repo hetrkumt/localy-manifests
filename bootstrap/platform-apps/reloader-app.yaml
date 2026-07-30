@@ -1,3 +1,4 @@
+# Phase 2 — Reloader Multi-Source (bootstrap path retired from helmCharts)
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -5,22 +6,34 @@ metadata:
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "0"
+    argocd.argoproj.io/sync-options: ServerSideApply=true,Delete=false,Prune=false
+    localy.io/prune-freeze: "phase-0"
+    localy.io/packaging: "multi-source"
 spec:
   project: default
-  source:
-    repoURL: "https://github.com/hetrkumt/localy-manifests.git"
-    targetRevision: HEAD
-    path: platform/reloader/overlays/prod
+  sources:
+    - repoURL: "https://stakater.github.io/stakater-charts"
+      chart: "reloader"
+      targetRevision: "1.0.69"
+      helm:
+        releaseName: "reloader"
+        valueFiles:
+          - $values/platform/reloader/values-prod.yaml
+    - repoURL: "https://github.com/hetrkumt/localy-manifests.git"
+      targetRevision: main
+      ref: values
   destination:
     server: "https://kubernetes.default.svc"
     namespace: reloader
   syncPolicy:
     automated:
-      prune: true
+      prune: false
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
+      - Delete=false
+      - Prune=false
     retry:
       limit: 5
       backoff:

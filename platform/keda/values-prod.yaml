@@ -1,0 +1,88 @@
+# Phase 2 SSOT — KEDA HA (2+ replicas, PDB, anti-affinity, resources)
+# Consumed by ArgoCD Multi-Source Helm (NOT kustomize --enable-helm)
+operator:
+  replicaCount: 2
+  nodeSelector:
+    karpenter.sh/nodepool: system
+  tolerations:
+    - key: system-only
+      operator: Equal
+      value: "true"
+      effect: NoSchedule
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchLabels:
+                app: keda-operator
+            topologyKey: kubernetes.io/hostname
+  podDisruptionBudget:
+    enabled: true
+    minAvailable: 1
+
+metricsServer:
+  replicaCount: 2
+  nodeSelector:
+    karpenter.sh/nodepool: system
+  tolerations:
+    - key: system-only
+      operator: Equal
+      value: "true"
+      effect: NoSchedule
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchLabels:
+                app: keda-metrics-apiserver
+            topologyKey: kubernetes.io/hostname
+  podDisruptionBudget:
+    enabled: true
+    minAvailable: 1
+
+webhooks:
+  replicaCount: 2
+  nodeSelector:
+    karpenter.sh/nodepool: system
+  tolerations:
+    - key: system-only
+      operator: Equal
+      value: "true"
+      effect: NoSchedule
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchLabels:
+                app: keda-admission-webhooks
+            topologyKey: kubernetes.io/hostname
+  podDisruptionBudget:
+    enabled: true
+    minAvailable: 1

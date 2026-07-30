@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: localy-internal-alb-edge
+  namespace: edge-service
+  annotations:
+    kubernetes.io/ingress.class: "alb"
+    alb.ingress.kubernetes.io/scheme: "internal"
+    alb.ingress.kubernetes.io/group.name: "localy-internal-alb"
+    alb.ingress.kubernetes.io/group.order: "10"
+    alb.ingress.kubernetes.io/target-type: "ip"
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: "443"
+    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:ap-northeast-2:533003975005:certificate/ba159581-fb9b-4097-9a49-45a8568fe6da"
+spec:
+  rules:
+    - host: "feifo.click"
+      http:
+        paths:
+          - path: "/"
+            pathType: "Prefix"
+            backend:
+              service:
+                name: "edge-service"
+                port:
+                  number: 80
+

@@ -1,0 +1,30 @@
+# Phase 8 — Karpenter NodePools / EC2NodeClass (Wave -2)
+# SSOT: platform/karpenter/overlays/prod (Phase 6 4-pool topology)
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: karpenter-provisioner
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+    argocd.argoproj.io/sync-options: ServerSideApply=true,Delete=false,Prune=false
+    localy.io/phase: "8"
+    localy.io/cutover-mode: "gate-8a"
+spec:
+  project: platform-project
+  source:
+    repoURL: "https://github.com/hetrkumt/localy-manifests.git"
+    path: platform/karpenter/overlays/prod
+    targetRevision: main
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: kube-system
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+      - Delete=false
+      - Prune=false

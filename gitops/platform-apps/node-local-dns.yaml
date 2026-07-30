@@ -1,0 +1,36 @@
+# Phase 2/8 Multi-Source Helm — node-local-dns (Wave -4)
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: node-local-dns
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-4"
+    argocd.argoproj.io/sync-options: ServerSideApply=true,Delete=false,Prune=false
+    localy.io/phase: "8"
+    localy.io/cutover-mode: "gate-8a"
+spec:
+  project: platform-project
+  sources:
+    - repoURL: "ghcr.io/deliveryhero/helm-charts"
+      chart: "node-local-dns"
+      targetRevision: "2.8.0"
+      helm:
+        releaseName: "node-local-dns"
+        valueFiles:
+          - $values/platform/node-local-dns/values-prod.yaml
+    - repoURL: "https://github.com/hetrkumt/localy-manifests.git"
+      targetRevision: main
+      ref: values
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: kube-system
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+      - Delete=false
+      - Prune=false

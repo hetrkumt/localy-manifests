@@ -1,0 +1,39 @@
+# Phase 5 — KEDA SSOT replaces cart-service HPA (Prometheus RPS)
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: cart-service-scaler
+  namespace: cart-service
+  annotations:
+    localy.io/phase: "5"
+spec:
+  scaleTargetRef:
+    name: cart-service
+  pollingInterval: 30
+  cooldownPeriod: 300
+  minReplicaCount: 2
+  maxReplicaCount: 10
+  advanced:
+    horizontalPodAutoscalerConfig:
+      behavior:
+        scaleUp:
+          stabilizationWindowSeconds: 0
+          selectPolicy: Max
+          policies:
+            - type: Percent
+              value: 100
+              periodSeconds: 15
+        scaleDown:
+          stabilizationWindowSeconds: 300
+          selectPolicy: Min
+          policies:
+            - type: Percent
+              value: 10
+              periodSeconds: 60
+  triggers:
+    - type: prometheus
+      metadata:
+        serverAddress: http://kube-prometheus-stack-prometheus.monitoring:9090
+        metricName: http_rps_per_pod
+        query: sum(rate(http_requests_total{job="cart-service",status!~"5.*"}[2m])) / max(kube_endpoint_address_available{endpoint="cart-service"})
+        threshold: "100"

@@ -1,0 +1,31 @@
+# Phase 8 Cutover Ledger — Gate 8A code complete; Go-Live (8B/8C) deferred
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: localy-correction-ledger
+  namespace: argocd
+  labels:
+    localy.io/ledger: "correction"
+    localy.io/phase: "8"
+data:
+  summary: |
+    Phase 8 Gate 8A: l4-bootstrap retargeted to gitops/overlays/prod.
+    platform-apps coverage 100%. prune=false / selfHeal=true.
+    Physical archive (8C) and prune:true (8B) await infra restore + soak.
+  phase8_gate_8a: |
+    - TF path: argocd-apps/overlays/prod → gitops/overlays/prod
+    - Removed ArgoCD CM kustomize.buildOptions --enable-helm
+    - Migrated: kyverno, cert-manager, alb-controller, storage,
+      karpenter-controller, karpenter-provisioner, loki, ingress-core, external-dns
+    - Sync-wave bands (negative preserved): projects -15; CRD -12/-11;
+      controllers -7..0; obs 1..4; ingress/auth 10..12; workloads 20
+    - AppProjects: platform / workload / common (wave -15)
+    - Roots: root-platform + root-workloads (project=platform-project)
+  deferred_go_live: |
+    8B: enable prune:true after soak (OutOfSync/Missing cleared)
+    8C: move argocd-apps/ and bootstrap/ → _archive/ (refs must be zero)
+    Apply order: L1 → L2 → L3 → L4 (cost gate; state currently empty)
+  ops_required: |
+    1) Restore L1 network intentionally, then L2/L3/L4 apply
+    2) SM secrets: user-oauth, edge-oauth, platform/grafana
+    3) Verify ArgoCD apps Healthy before Gate 8B

@@ -13,9 +13,26 @@ spec:
     metadata:
       labels:
         app: payment-service
+        security.localy.io/zero-trust: "enforced"
     spec:
       serviceAccountName: payment-service-sa
-      terminationGracePeriodSeconds: 45
+      terminationGracePeriodSeconds: 60
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app: payment-service
+                topologyKey: kubernetes.io/hostname
       containers:
         - name: payment-service
           image: localy-payment-service:latest
@@ -27,13 +44,19 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.hostIP
-          envFrom:
-            - secretRef:
-                name: payment-service-secret
+            - name: SPRING_CONFIG_IMPORT
+              value: "optional:configtree:/mnt/secrets/app-creds/,optional:configtree:/mnt/config/"
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 10001
+            capabilities:
+              drop: ["ALL"]
           lifecycle:
             preStop:
               exec:
-                command: ["sleep", "15"]
+                command: ["/bin/sh", "-c", "sleep 25"]
           resources:
             requests:
               cpu: "100m"
@@ -50,3 +73,18 @@ spec:
               port: 9090
             initialDelaySeconds: 30
             periodSeconds: 15
+          volumeMounts:
+            - name: secret-app-creds
+              mountPath: /mnt/secrets/app-creds
+              readOnly: true
+            - name: tmp-volume
+              mountPath: /tmp
+      volumes:
+        - name: secret-app-creds
+          secret:
+            secretName: payment-service-secret
+            defaultMode: 0400
+        - name: tmp-volume
+          emptyDir:
+            medium: Memory
+            sizeLimit: 64Mi

@@ -63,7 +63,13 @@ topologySpreadConstraints:
 
 # Karpenter workload-pool 배치
 nodeSelector:
-  karpenter.sh/nodepool: default
+  karpenter.sh/nodepool: workload
+
+tolerations:
+  - key: "workload-only"
+    operator: Equal
+    value: "true"
+    effect: NoSchedule
 
 # 프로브 넉넉하게 조정 (느린 부팅 대응)
 startupProbe:

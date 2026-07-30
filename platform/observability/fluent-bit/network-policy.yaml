@@ -1,0 +1,46 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: fluent-bit-egress-zero-trust
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: fluent-bit
+    app.kubernetes.io/component: network-policy
+    app.kubernetes.io/part-of: localy-observability
+    managed-by: argocd
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: fluent-bit
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchExpressions:
+              - key: kubernetes.io/metadata.name
+                operator: In
+                values:
+                  - kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    - to:
+        - namespaceSelector:
+            matchExpressions:
+              - key: kubernetes.io/metadata.name
+                operator: In
+                values:
+                  - loki
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: loki
+              app.kubernetes.io/component: gateway
+      ports:
+        - protocol: TCP
+          port: 3100

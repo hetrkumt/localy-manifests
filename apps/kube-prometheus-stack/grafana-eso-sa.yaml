@@ -1,0 +1,10 @@
+# Dedicated SA for ESO→SM reads in monitoring (avoids chicken/egg with Helm Grafana SA)
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: grafana-eso-sa
+  namespace: monitoring
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::533003975005:role/prod-eks-grafana-role
+    localy.io/phase: "7-correction"
+automountServiceAccountToken: true

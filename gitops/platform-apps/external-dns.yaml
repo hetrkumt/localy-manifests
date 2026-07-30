@@ -1,0 +1,36 @@
+# Phase 8 — external-dns (Ingress & Auth band, Wave 11)
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: external-dns
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "11"
+    argocd.argoproj.io/sync-options: ServerSideApply=true,Delete=false,Prune=false
+    localy.io/phase: "8"
+    localy.io/cutover-mode: "gate-8a"
+spec:
+  project: platform-project
+  sources:
+    - repoURL: "https://kubernetes-sigs.github.io/external-dns/"
+      chart: "external-dns"
+      targetRevision: "1.14.3"
+      helm:
+        releaseName: "external-dns"
+        valueFiles:
+          - $values/apps/external-dns/values-prod.yaml
+    - repoURL: "https://github.com/hetrkumt/localy-manifests.git"
+      targetRevision: main
+      ref: values
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: kube-system
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+      - Delete=false
+      - Prune=false

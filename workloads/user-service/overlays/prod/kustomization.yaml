@@ -2,6 +2,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
+  - ../../base
   - pod-disruption-budget.yaml
   - service-monitor.yaml
   - service-account.yaml
@@ -9,7 +10,8 @@ resources:
   - external-secret.yaml
   - configmap.yaml
   - network-policy.yaml
-  - ../../base
+  - scaled-object.yaml
+  - resource-guards.yaml
 
 patches:
   - target:

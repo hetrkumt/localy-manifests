@@ -1,11 +1,15 @@
+# DEPRECATED — not wired in kustomization. Direct TG binding retired (edge Ingress SSOT).
+# Legacy ARN (rollback only): SSM /localy/prod/network/target_groups/user
 apiVersion: elbv2.k8s.aws/v1beta1
 kind: TargetGroupBinding
 metadata:
   name: user-service-tgb
   namespace: user-service
+  annotations:
+    localy.io/status: "deprecated"
 spec:
   serviceRef:
-    name: user-service-svc
+    name: user-service
     port: 9001
-  targetGroupARN: "PLACEHOLDER_ARN"
   targetType: ip
+  targetGroupARN: "arn:aws:elasticloadbalancing:ap-northeast-2:533003975005:targetgroup/DEPRECATED/0000000000000000"

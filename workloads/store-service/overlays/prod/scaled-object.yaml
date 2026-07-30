@@ -1,0 +1,41 @@
+# Phase 5 — KEDA SSOT (CPU utilization)
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: store-service-scaler
+  namespace: store-service
+  annotations:
+    localy.io/phase: "5"
+spec:
+  scaleTargetRef:
+    name: store-service
+  pollingInterval: 30
+  cooldownPeriod: 300
+  minReplicaCount: 2
+  maxReplicaCount: 10
+  advanced:
+    horizontalPodAutoscalerConfig:
+      behavior:
+        scaleUp:
+          stabilizationWindowSeconds: 0
+          selectPolicy: Max
+          policies:
+            - type: Percent
+              value: 100
+              periodSeconds: 15
+        scaleDown:
+          stabilizationWindowSeconds: 300
+          selectPolicy: Min
+          policies:
+            - type: Percent
+              value: 10
+              periodSeconds: 60
+  triggers:
+    - type: cpu
+      metricType: Utilization
+      metadata:
+        value: "70"
+    - type: memory
+      metricType: Utilization
+      metadata:
+        value: "80"

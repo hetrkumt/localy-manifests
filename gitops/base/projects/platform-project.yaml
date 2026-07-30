@@ -1,0 +1,54 @@
+# AppProject: platform-project
+# Cluster-scoped platform addons (CRDs, controllers, observability).
+# Architect Ruling Phase 1 — 3-tier AppProject isolation.
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: platform-project
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-15"
+    localy.io/tier: "platform"
+    localy.io/phase: "8"
+spec:
+  description: "L4 platform addons — cluster-scoped controllers and CRDs"
+
+  sourceRepos:
+    - "https://github.com/hetrkumt/localy-manifests.git"
+    - "https://github.com/localy-project/localy-manifests.git"
+    - "https://prometheus-community.github.io/helm-charts"
+    - "https://charts.jetstack.io"
+    - "https://kubernetes.github.io/ingress-nginx"
+    - "https://aws.github.io/eks-charts"
+    - "public.ecr.aws"
+    - "oci://public.ecr.aws"
+    - "oci://ghcr.io"
+    - "https://kedacore.github.io/charts"
+    - "https://charts.external-secrets.io"
+    - "https://kyverno.github.io/kyverno"
+    - "https://grafana.github.io/helm-charts"
+    - "https://kubernetes-sigs.github.io/external-dns/"
+    - "https://fluent.github.io/helm-charts"
+    - "https://open-telemetry.github.io/opentelemetry-helm-charts"
+    - "https://stakater.github.io/stakater-charts"
+    - "registry-1.docker.io/bitnamicharts"
+    - "ghcr.io/deliveryhero/helm-charts"
+    - "*"
+
+  destinations:
+    - namespace: "*"
+      server: "https://kubernetes.default.svc"
+    - namespace: "*"
+      server: "*"
+
+  # Platform may manage cluster-scoped resources (CRDs, ClusterRoles, PriorityClasses)
+  clusterResourceWhitelist:
+    - group: "*"
+      kind: "*"
+
+  namespaceResourceWhitelist:
+    - group: "*"
+      kind: "*"
+
+  orphanedResources:
+    warn: true

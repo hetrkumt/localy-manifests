@@ -1,0 +1,31 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: localy-external-alb-keycloak
+  namespace: auth-namespace
+  annotations:
+    kubernetes.io/ingress.class: "alb"
+    alb.ingress.kubernetes.io/scheme: "internet-facing"
+    alb.ingress.kubernetes.io/group.name: "localy-external-alb"
+    alb.ingress.kubernetes.io/group.order: "10"
+    alb.ingress.kubernetes.io/target-type: "ip"
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: "443"
+    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:ap-northeast-2:533003975005:certificate/ba159581-fb9b-4097-9a49-45a8568fe6da"
+    alb.ingress.kubernetes.io/wafv2-acl-arn: "arn:aws:wafv2:ap-northeast-2:533003975005:regional/webacl/prod-ingress-waf/19272c25-c193-4fee-8d24-c8ebda74014d"
+    # LBC readiness-gate injection for Keycloak
+    elbv2.k8s.aws/pod-readiness-gate-inject: "enabled"
+    alb.ingress.kubernetes.io/target-health.alb.ingress.k8s.aws/keycloak: "enabled"
+spec:
+  rules:
+    - host: "feifo.click"
+      http:
+        paths:
+          - path: "/auth"
+            pathType: "Prefix"
+            backend:
+              service:
+                name: "keycloak"
+                port:
+                  number: 80
+

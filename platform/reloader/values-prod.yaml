@@ -1,0 +1,26 @@
+# Phase 2 SSOT — Stakater Reloader HA
+# Multi-Source Helm values (enable-helm retired)
+reloader:
+  deployment:
+    replicas: 2
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app: reloader-reloader
+              topologyKey: kubernetes.io/hostname
+  podDisruptionBudget:
+    enabled: true
+    minAvailable: 1
+  watchGlobally: true
+  reloadStrategy: annotations

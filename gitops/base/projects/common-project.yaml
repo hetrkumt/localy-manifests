@@ -1,0 +1,65 @@
+# AppProject: common-project
+# Guardrails — ResourceQuota, LimitRange, NetworkPolicy, Kyverno policies.
+# Architect Ruling Phase 1 — security/quota enforcement plane.
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: common-project
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-15"
+    localy.io/tier: "guardrails"
+    localy.io/phase: "8"
+spec:
+  description: "Common security guardrails — Quota, LimitRange, NetworkPolicy, admission policies"
+
+  sourceRepos:
+    - "https://github.com/hetrkumt/localy-manifests.git"
+    - "https://github.com/localy-project/localy-manifests.git"
+
+  destinations:
+    - namespace: "*"
+      server: "https://kubernetes.default.svc"
+
+  clusterResourceWhitelist:
+    - group: "kyverno.io"
+      kind: "ClusterPolicy"
+    - group: "rbac.authorization.k8s.io"
+      kind: "ClusterRole"
+    - group: "rbac.authorization.k8s.io"
+      kind: "ClusterRoleBinding"
+    - group: "cilium.io"
+      kind: "CiliumClusterwideNetworkPolicy"
+    - group: "networking.k8s.io"
+      kind: "IngressClass"
+    - group: "storage.k8s.io"
+      kind: "StorageClass"
+    - group: "apiextensions.k8s.io"
+      kind: "CustomResourceDefinition"
+    - group: "external-secrets.io"
+      kind: "ClusterSecretStore"
+
+  namespaceResourceWhitelist:
+    - group: ""
+      kind: "ResourceQuota"
+    - group: ""
+      kind: "LimitRange"
+    - group: ""
+      kind: "ConfigMap"
+    - group: ""
+      kind: "Secret"
+    - group: ""
+      kind: "ServiceAccount"
+    - group: "networking.k8s.io"
+      kind: "NetworkPolicy"
+    - group: "cilium.io"
+      kind: "CiliumNetworkPolicy"
+    - group: "kyverno.io"
+      kind: "Policy"
+    - group: "rbac.authorization.k8s.io"
+      kind: "Role"
+    - group: "rbac.authorization.k8s.io"
+      kind: "RoleBinding"
+
+  orphanedResources:
+    warn: true

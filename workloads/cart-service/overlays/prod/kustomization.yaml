@@ -2,15 +2,16 @@
 kind: Kustomization
 
 resources:
+  - ../../base
   - pod-disruption-budget.yaml
   - service-monitor.yaml
-  - ../../base
   - external-secret.yaml
   - secret-store.yaml
   - configmap.yaml
   - service-account.yaml
-  - hpa.yaml
+  - scaled-object.yaml
   - network-policy.yaml
+  - resource-guards.yaml
 
 images:
   - name: localy/cart-service

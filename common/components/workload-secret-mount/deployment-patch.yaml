@@ -1,0 +1,66 @@
+# Phase 4 SSOT — ConfigTree mounts + RAM /tmp + PSS Restricted SecurityContext
+# Service overlays MUST set secretName via strategic merge / JSON patch if different.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: not-important
+  annotations:
+    reloader.stakater.com/auto: "true"
+spec:
+  template:
+    metadata:
+      labels:
+        security.localy.io/zero-trust: "enforced"
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: app
+          env:
+            - name: SPRING_CONFIG_IMPORT
+              value: "optional:configtree:/mnt/secrets/app-creds/,optional:configtree:/mnt/config/"
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 10001
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: secret-app-creds
+              mountPath: /mnt/secrets/app-creds
+              readOnly: true
+            - name: config-tree
+              mountPath: /mnt/config
+              readOnly: true
+            - name: tmp-volume
+              mountPath: /tmp
+            - name: app-logs-volume
+              mountPath: /app/logs
+      volumes:
+        - name: secret-app-creds
+          secret:
+            secretName: app-secret-volume
+            defaultMode: 0400
+        - name: config-tree
+          emptyDir:
+            medium: Memory
+            sizeLimit: 16Mi
+        - name: tmp-volume
+          emptyDir:
+            medium: Memory
+            sizeLimit: 64Mi
+        - name: app-logs-volume
+          emptyDir:
+            medium: Memory
+            sizeLimit: 32Mi
+        # /mnt/secrets parent as RAM disk (kubelet secret volume is also tmpfs)
+        - name: secrets-ram
+          emptyDir:
+            medium: Memory
+            sizeLimit: 8Mi

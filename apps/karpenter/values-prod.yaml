@@ -10,6 +10,13 @@ serviceAccount:
 
 nodeSelector:
   role: "system"
+  karpenter.sh/nodepool: "system"
+
+tolerations:
+  - key: "system-only"
+    operator: "Equal"
+    value: "true"
+    effect: "NoSchedule"
 
 serviceMonitor:
   enabled: true

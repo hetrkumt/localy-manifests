@@ -13,9 +13,26 @@ spec:
     metadata:
       labels:
         app: order-service
+        security.localy.io/zero-trust: "enforced"
     spec:
       serviceAccountName: order-service-sa
       terminationGracePeriodSeconds: 60
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app: order-service
+                topologyKey: kubernetes.io/hostname
       containers:
         - name: order-service
           image: localy-order-service:latest
@@ -29,13 +46,19 @@ spec:
                   fieldPath: status.hostIP
             - name: JAVA_OPTS
               value: "-XX:MaxRAMPercentage=75.0 -XX:+UseG1GC"
-          envFrom:
-            - secretRef:
-                name: order-service-secret
+            - name: SPRING_CONFIG_IMPORT
+              value: "optional:configtree:/mnt/secrets/app-creds/,optional:configtree:/mnt/config/"
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 10001
+            capabilities:
+              drop: ["ALL"]
           lifecycle:
             preStop:
               exec:
-                command: ["sleep", "15"]
+                command: ["/bin/sh", "-c", "sleep 25"]
           resources:
             requests:
               cpu: "100m"
@@ -54,3 +77,18 @@ spec:
               port: 9090
             initialDelaySeconds: 30
             periodSeconds: 15
+          volumeMounts:
+            - name: secret-app-creds
+              mountPath: /mnt/secrets/app-creds
+              readOnly: true
+            - name: tmp-volume
+              mountPath: /tmp
+      volumes:
+        - name: secret-app-creds
+          secret:
+            secretName: order-service-secret
+            defaultMode: 0400
+        - name: tmp-volume
+          emptyDir:
+            medium: Memory
+            sizeLimit: 64Mi

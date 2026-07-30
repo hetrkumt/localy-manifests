@@ -1,10 +1,6 @@
+# Phase 2: helmCharts RETIRED.
+# Live Karpenter uses Multi-Source: argocd-apps/base/karpenter-controller.yaml
+# + apps/karpenter/values-prod.yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-
-helmCharts:
-  - name: karpenter
-    repo: public.ecr.aws/karpenter
-    version: 0.37.0
-    releaseName: karpenter
-    namespace: kube-system
-    includeCRDs: true
+resources: []

@@ -1,0 +1,14 @@
+﻿apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: phase3-decommission-ledger
+  namespace: argocd
+  annotations:
+    localy.io/phase: "3"
+    localy.io/protocol: "4-step-orphan-burn-down"
+data:
+  archived: "cilium,jaeger,prometheus-adapter,kube-prometheus-stack-v58,otel-collector-jaeger-hop"
+  reason: "Agenda 3/10 FinOps reclaim + KEDA SSOT + OTel OpenSearch Direct Pipeline"
+  status: "archived-not-wired-to-any-root"
+  replaced_by: "platform/observability/otel-gateway + gitops/platform-apps/*"
+  reclaim_estimate: "4-5.5 CPU cores, 14Gi RAM, 65Gi+ EBS"

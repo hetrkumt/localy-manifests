@@ -3,3 +3,5 @@ kind: Component
 resources:
   - resource-quota.yaml
   - limit-range.yaml
+  # ClusterPolicy prevent-cross-namespace-secrets lives in apps/kyverno/policies
+  # (cluster-scoped). Do not re-apply via this Component to avoid 6× create.

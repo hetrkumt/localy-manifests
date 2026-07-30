@@ -1,0 +1,47 @@
+# Phase 5 — KEDA SSOT replaces edge-service HPA (CPU + Prometheus RPS)
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: edge-service-scaler
+  namespace: edge-service
+  annotations:
+    localy.io/phase: "5"
+spec:
+  scaleTargetRef:
+    name: edge-service
+  pollingInterval: 30
+  cooldownPeriod: 300
+  minReplicaCount: 2
+  maxReplicaCount: 10
+  advanced:
+    horizontalPodAutoscalerConfig:
+      behavior:
+        scaleUp:
+          stabilizationWindowSeconds: 0
+          selectPolicy: Max
+          policies:
+            - type: Percent
+              value: 100
+              periodSeconds: 15
+        scaleDown:
+          stabilizationWindowSeconds: 300
+          selectPolicy: Min
+          policies:
+            - type: Percent
+              value: 10
+              periodSeconds: 60
+  triggers:
+    - type: cpu
+      metricType: Utilization
+      metadata:
+        value: "60"
+    - type: memory
+      metricType: Utilization
+      metadata:
+        value: "75"
+    - type: prometheus
+      metadata:
+        serverAddress: http://kube-prometheus-stack-prometheus.monitoring:9090
+        metricName: http_rps_per_pod_edge
+        query: sum(rate(http_requests_total{job="edge-service",status!~"5.*"}[2m])) / max(kube_endpoint_address_available{endpoint="edge-service"})
+        threshold: "120"

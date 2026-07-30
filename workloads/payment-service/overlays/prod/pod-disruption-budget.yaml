@@ -3,8 +3,10 @@ kind: PodDisruptionBudget
 metadata:
   name: payment-service-pdb
   namespace: payment-service
+  annotations:
+    localy.io/phase: "5"
 spec:
-  maxUnavailable: 1
+  maxUnavailable: 50%
   selector:
     matchLabels:
       app: payment-service

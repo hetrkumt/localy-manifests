@@ -1,10 +1,14 @@
+# Deprecated as cluster-wide default — Phase 5 uses per-namespace ResourceQuota
+# in workloads/<service>/overlays/prod/resource-guards.yaml (KEDA-aligned).
+# Kept as fallback Component import only; hard values sized for maxReplicas=10 × 1.15.
 apiVersion: v1
 kind: ResourceQuota
 metadata:
   name: namespace-quota
 spec:
   hard:
-    requests.cpu: "2"
-    requests.memory: "4Gi"
-    limits.cpu: "4"
-    limits.memory: "8Gi"
+    pods: "12"
+    requests.cpu: "3"
+    requests.memory: "8Gi"
+    limits.cpu: "12"
+    limits.memory: "16Gi"

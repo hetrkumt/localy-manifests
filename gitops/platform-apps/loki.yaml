@@ -1,0 +1,39 @@
+# Phase 8 — Loki (Observability band, Wave 2)
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: loki
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+    argocd.argoproj.io/sync-options: ServerSideApply=true,Delete=false,Prune=false
+    localy.io/phase: "8"
+    localy.io/cutover-mode: "gate-8a"
+spec:
+  project: platform-project
+  sources:
+    - repoURL: "https://grafana.github.io/helm-charts"
+      chart: "loki"
+      targetRevision: "5.47.2"
+      helm:
+        releaseName: "loki"
+        valueFiles:
+          - $values/apps/loki/values-prod.yaml
+    - repoURL: "https://github.com/hetrkumt/localy-manifests.git"
+      targetRevision: main
+      ref: values
+    - repoURL: "https://github.com/hetrkumt/localy-manifests.git"
+      targetRevision: main
+      path: apps/loki
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: loki
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+      - Delete=false
+      - Prune=false

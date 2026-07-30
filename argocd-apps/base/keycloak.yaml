@@ -1,3 +1,4 @@
+# Phase 2 — Keycloak Multi-Source (enable-helm retired)
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -5,24 +6,37 @@ metadata:
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "10"
+    argocd.argoproj.io/sync-options: ServerSideApply=true,Delete=false,Prune=false
+    localy.io/prune-freeze: "phase-0"
+    localy.io/packaging: "multi-source"
 spec:
   project: default
-  source:
-    repoURL: "https://github.com/hetrkumt/localy-manifests.git"
-    targetRevision: main
-    path: platform/keycloak/overlays/prod
-    kustomize:
-      buildOptions: --enable-helm
+  sources:
+    - repoURL: "registry-1.docker.io/bitnamicharts"
+      chart: "keycloak"
+      targetRevision: "24.7.7"
+      helm:
+        releaseName: "keycloak"
+        valueFiles:
+          - $values/platform/keycloak/overlays/prod/values.yaml
+    - repoURL: "https://github.com/hetrkumt/localy-manifests.git"
+      targetRevision: main
+      ref: values
+    - repoURL: "https://github.com/hetrkumt/localy-manifests.git"
+      targetRevision: main
+      path: platform/keycloak/overlays/prod
   destination:
     server: "https://kubernetes.default.svc"
     namespace: auth-namespace
   syncPolicy:
     automated:
-      prune: true
+      prune: false
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
+      - Delete=false
+      - Prune=false
     retry:
       limit: 5
       backoff:

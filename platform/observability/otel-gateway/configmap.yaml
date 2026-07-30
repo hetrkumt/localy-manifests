@@ -1,0 +1,50 @@
+# Phase 3 / Agenda 10 — OTel Gateway Direct Pipeline ConfigMap
+# Jaeger 2nd hop destroyed. OpenSearch SigV4 + in-memory buffering.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: otel-collector-config
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: otel-gateway
+    app.kubernetes.io/part-of: localy-observability
+  annotations:
+    localy.io/phase: "3"
+    localy.io/pipeline: "opensearch-direct"
+data:
+  relay.yaml: |
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317
+          http:
+            endpoint: 0.0.0.0:4318
+    processors:
+      memory_limiter:
+        check_interval: 1s
+        limit_percentage: 75
+        spike_limit_percentage: 15
+      batch:
+        send_batch_size: 8192
+        timeout: 5s
+    exporters:
+      opensearch:
+        http:
+          endpoint: "https://opensearch.prod.localy.internal:443"
+          tls:
+            insecure: false
+        auth:
+          authenticator: sigv4auth
+    extensions:
+      health_check: {}
+      sigv4auth:
+        region: "ap-northeast-2"
+        service: "es"
+    service:
+      extensions: [health_check, sigv4auth]
+      pipelines:
+        traces:
+          receivers: [otlp]
+          processors: [memory_limiter, batch]
+          exporters: [opensearch]

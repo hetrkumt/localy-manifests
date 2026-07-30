@@ -1,10 +1,16 @@
+# DEPRECATED (Phase 7 correction)
+# TargetGroupBinding retired — 2-Tier ALB Ingress is SSOT.
+# Legacy ARN (if needed for rollback): SSM /localy/prod/network/target_groups/eks
 apiVersion: elbv2.k8s.aws/v1beta1
 kind: TargetGroupBinding
 metadata:
   name: edge-service-tgb
+  annotations:
+    localy.io/status: "deprecated"
+    localy.io/replaced-by: "apps/ingress-core external/internal Ingress"
 spec:
   serviceRef:
     name: edge-service
     port: 80
   targetType: ip
-  targetGroupARN: arn:aws:elasticloadbalancing:ap-northeast-2:111122223333:targetgroup/dummy-tg/placeholder # 2차 타격 overlays에서 실제 ARN 패치
+  targetGroupARN: "arn:aws:elasticloadbalancing:ap-northeast-2:533003975005:targetgroup/DEPRECATED-use-ingress/0000000000000000"

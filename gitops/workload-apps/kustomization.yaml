@@ -1,0 +1,11 @@
+# Phase 8 — Workload App of Apps catalog (Wave 20 band)
+# Live overlay SSOT remains workloads/<svc>/overlays/prod
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - order-service-app.yaml
+  - payment-service-app.yaml
+  - cart-service-app.yaml
+  - user-service-app.yaml
+  - product-service-app.yaml
+  - gateway-service-app.yaml

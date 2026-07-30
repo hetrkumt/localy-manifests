@@ -1,0 +1,38 @@
+# Gate 8A Root — Workloads App of Apps
+# Creates Application CRs only (platform-project). Children use workload-project.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: root-workloads
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-options: ServerSideApply=true,Delete=false,Prune=false
+    argocd.argoproj.io/sync-wave: "0"
+    localy.io/cutover-mode: "gate-8a"
+    localy.io/phase: "8"
+spec:
+  project: platform-project
+  source:
+    repoURL: "https://github.com/hetrkumt/localy-manifests.git"
+    targetRevision: main
+    path: gitops/workload-apps
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+      - ApplyOutOfSyncOnly=true
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/replicas
+    - group: argoproj.io
+      kind: Application
+      jsonPointers:
+        - /status

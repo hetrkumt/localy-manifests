@@ -4,7 +4,9 @@ kind: Kustomization
 resources:
   - deployment.yaml
   - service.yaml
-  - target-group-binding.yaml
+  # TargetGroupBinding retired — Phase 6 2-Tier ALB Ingress (localy-external-alb /
+  # localy-internal-alb) is SSOT. Legacy TG ARN remains in SSM
+  # /localy/prod/network/target_groups/eks for reference only.
 
 components:
   - ../../../common/guardrails
