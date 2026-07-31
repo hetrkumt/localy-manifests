@@ -13,6 +13,7 @@ resources:
   - external-secret.yaml
   - resource-guards.yaml
 
+# Image pin SSOT: workloads/image-pins.yaml (keep newTag in sync)
 images:
   - name: localy-order-service
     newName: 533003975005.dkr.ecr.ap-northeast-2.amazonaws.com/order-service

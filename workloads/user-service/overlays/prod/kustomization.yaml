@@ -28,6 +28,7 @@ patches:
       namespace: user-service
     path: service-patch.yaml
 
+# Image pin SSOT: workloads/image-pins.yaml (keep newTag in sync)
 images:
   - name: localy/user-service
     newName: 533003975005.dkr.ecr.ap-northeast-2.amazonaws.com/user-service
