@@ -11,11 +11,14 @@
 #   - Reloader PDB must stay disabled while enableHA=false (delete orphan PDB)
 #
 # Deferred:
-#   - ingress-core Missing → backlog #7
 #   - karpenter-provisioner NodePool/EC2NodeClass residual Diff → backlog #9
 #     (hash annotations + API defaults; ignoreDifferences applied but Argo still
 #      marks OutOfSync — investigate managedFields/SSA multi-manager in #9)
 #   - kube-prometheus-stack / kyverno Unknown health → observe
+#
+# Done:
+#   - backlog #7 ingress-core: Synced/Healthy; feifo.click → external ALB;
+#     internal edge host = internal.feifo.click (avoids ED collision)
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -27,10 +30,12 @@ metadata:
 data:
   summary: |
     Backlog #6 — workload + ESO OutOfSync false positives cleared (Synced).
+    Backlog #7 — ingress-core Synced/Healthy; public DNS on external ALB.
   ignore_policy: |
     RespectIgnoreDifferences=true on workload apps, keycloak, workload-dbs,
     karpenter-*, root-platform, root-workloads.
   verified_synced: |
     order/payment/cart/user/product/gateway, keycloak, workload-dbs,
-    reloader, karpenter-controller, root-platform, root-workloads, root-app-of-apps
+    reloader, karpenter-controller, root-platform, root-workloads, root-app-of-apps,
+    ingress-core
   
