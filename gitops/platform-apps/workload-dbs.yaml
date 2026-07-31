@@ -1,0 +1,40 @@
+# Logical DB bootstrap for orderdb/paymentdb/storedb (before workload apps wave 20).
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: workload-dbs
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "15"
+    localy.io/phase: "8"
+    localy.io/cutover-mode: "gate-8a"
+    localy.io/owns: "orderdb,paymentdb,storedb"
+spec:
+  project: platform-project
+  source:
+    repoURL: "https://github.com/hetrkumt/localy-manifests.git"
+    targetRevision: main
+    path: platform/workload-dbs/overlays/prod
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: workload-dbs
+  ignoreDifferences:
+    - group: ""
+      kind: Secret
+      name: workload-dbs-rds-secret
+      jqPathExpressions:
+        - .data
+        - .metadata
+        - .type
+    - group: external-secrets.io
+      kind: ExternalSecret
+      jqPathExpressions:
+        - .status
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+      - RespectIgnoreDifferences=true

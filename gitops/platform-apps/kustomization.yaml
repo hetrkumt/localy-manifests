@@ -27,3 +27,5 @@ resources:
   - ingress-core.yaml
   - external-dns.yaml
   - keycloak.yaml
+  # Logical DBs before workloads (wave 15 < workload apps wave 20)
+  - workload-dbs.yaml
