@@ -13,6 +13,17 @@
       "serviceAccountsEnabled": true,
       "publicClient": false,
       "protocol": "openid-connect"
+    },
+    {
+      "clientId": "edge-service",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": true,
+      "publicClient": false,
+      "protocol": "openid-connect"
     }
   ],
   "users": [

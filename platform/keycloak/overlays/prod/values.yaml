@@ -43,6 +43,22 @@ extraEnvVars:
       secretKeyRef:
         name: localy-keycloak-secret
         key: KEYCLOAK_DATABASE_HOST
+  # Bitnami 24 defaults bootstrap user to "user" unless these are set explicitly.
+  # Keep in sync with auth.adminUser / localy-prod-keycloak-admin (ESO).
+  - name: KC_BOOTSTRAP_ADMIN_USERNAME
+    value: "admin"
+  - name: KEYCLOAK_ADMIN
+    value: "admin"
+  - name: KEYCLOAK_ADMIN_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: localy-keycloak-secret
+        key: KEYCLOAK_ADMIN_PASSWORD
+  - name: KC_BOOTSTRAP_ADMIN_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: localy-keycloak-secret
+        key: KEYCLOAK_ADMIN_PASSWORD
   - name: KEYCLOAK_EXTRA_ARGS
     value: "--import-realm"
 
