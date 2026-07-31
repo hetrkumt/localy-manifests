@@ -14,11 +14,14 @@
 #   - karpenter-provisioner NodePool/EC2NodeClass residual Diff → backlog #9
 #     (hash annotations + API defaults; ignoreDifferences applied but Argo still
 #      marks OutOfSync — investigate managedFields/SSA multi-manager in #9)
-#   - kube-prometheus-stack / kyverno Unknown health → observe
+#   - kube-prometheus-stack Unknown (CRD schema diff / trackTimestampsStaleness)
+#   - kyverno Unknown health → observe
 #
 # Done:
 #   - backlog #7 ingress-core: Synced/Healthy; feifo.click → external ALB;
 #     internal edge host = internal.feifo.click (avoids ED collision)
+#   - backlog #8 platform SM: /localy/prod/platform/grafana via secrets_platform.tf;
+#     Grafana ESO SecretSynced (KPS app may still show Unknown from CRD schema)
 apiVersion: v1
 kind: ConfigMap
 metadata:
