@@ -18,7 +18,8 @@ spec:
     targetRevision: main
   destination:
     server: "https://kubernetes.default.svc"
-    namespace: kube-system
+    # Cluster-scoped CRs; avoid kube-system so AppProject orphan scan is quiet.
+    namespace: karpenter
   syncPolicy:
     automated:
       prune: false
@@ -30,18 +31,28 @@ spec:
       - Prune=false
       - RespectIgnoreDifferences=true
   ignoreDifferences:
-    # Karpenter / API defaults + controller hash annotations.
+    # Karpenter mutates hash annotations + status; API defaults budgets/IPv6.
     - group: karpenter.sh
       kind: NodePool
       jqPathExpressions:
         - .status
         - .metadata.annotations
+        - .metadata.labels
         - .metadata.managedFields
+        - .metadata.generation
+        - .metadata.resourceVersion
+        - .metadata.creationTimestamp
+        - .metadata.uid
         - .spec.disruption.budgets
     - group: karpenter.k8s.aws
       kind: EC2NodeClass
       jqPathExpressions:
         - .status
         - .metadata.annotations
+        - .metadata.labels
         - .metadata.managedFields
+        - .metadata.generation
+        - .metadata.resourceVersion
+        - .metadata.creationTimestamp
+        - .metadata.uid
         - .spec.metadataOptions.httpProtocolIPv6

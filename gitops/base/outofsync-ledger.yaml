@@ -11,9 +11,6 @@
 #   - Reloader PDB must stay disabled while enableHA=false (delete orphan PDB)
 #
 # Deferred:
-#   - karpenter-provisioner NodePool/EC2NodeClass residual Diff → backlog #9
-#     (hash annotations + API defaults; ignoreDifferences applied but Argo still
-#      marks OutOfSync — investigate managedFields/SSA multi-manager in #9)
 #   - kube-prometheus-stack Unknown (CRD schema diff / trackTimestampsStaleness)
 #   - kyverno Unknown health → observe
 #
@@ -22,6 +19,9 @@
 #     internal edge host = internal.feifo.click (avoids ED collision)
 #   - backlog #8 platform SM: /localy/prod/platform/grafana via secrets_platform.tf;
 #     Grafana ESO SecretSynced (KPS app may still show Unknown from CRD schema)
+#   - backlog #9 karpenter OutOfSync/orphans: platform-project orphan warn off
+#     (kube-system false positives); provisioner dest ns=karpenter;
+#     ignoreDifferences widened for hash/managedFields
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -34,11 +34,14 @@ data:
   summary: |
     Backlog #6 — workload + ESO OutOfSync false positives cleared (Synced).
     Backlog #7 — ingress-core Synced/Healthy; public DNS on external ALB.
+    Backlog #8 — platform Grafana SM SSOT + ESO SecretSynced.
+    Backlog #9 — karpenter-provisioner Synced; orphan warn noise cleared.
   ignore_policy: |
     RespectIgnoreDifferences=true on workload apps, keycloak, workload-dbs,
     karpenter-*, root-platform, root-workloads.
+    platform-project orphanedResources.warn=false (kube-system apps).
   verified_synced: |
     order/payment/cart/user/product/gateway, keycloak, workload-dbs,
-    reloader, karpenter-controller, root-platform, root-workloads, root-app-of-apps,
-    ingress-core
+    reloader, karpenter-controller, karpenter-provisioner,
+    root-platform, root-workloads, root-app-of-apps, ingress-core
   

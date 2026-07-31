@@ -50,5 +50,8 @@ spec:
     - group: "*"
       kind: "*"
 
+  # Many platform apps destination to kube-system; orphan warn then flags
+  # every unmanaged kube-system object (100+ false positives). Disable warn;
+  # prune remains false / explicit on Applications.
   orphanedResources:
-    warn: true
+    warn: false
