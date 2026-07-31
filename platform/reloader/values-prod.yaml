@@ -1,8 +1,15 @@
-# Phase 2 SSOT — Stakater Reloader HA
+# Phase 2 SSOT — Stakater Reloader
 # Multi-Source Helm values (enable-helm retired)
+#
+# Chart quirk (v1.0.69): if deployment.replicas > 1 while enableHA=false, the
+# template still adds --enable-ha=true but does NOT inject POD_NAME (or leases
+# RBAC). Pods then CrashLoop with "POD_NAME not set, cannot run in HA mode".
+# Enable HA only as a pair: enableHA=true AND replicas>=2 (chart then adds
+# POD_NAME + coordination.k8s.io/leases).
 reloader:
+  enableHA: false
   deployment:
-    replicas: 2
+    replicas: 1
     resources:
       requests:
         cpu: 50m
@@ -10,17 +17,7 @@ reloader:
       limits:
         cpu: 200m
         memory: 256Mi
-    affinity:
-      podAntiAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            podAffinityTerm:
-              labelSelector:
-                matchLabels:
-                  app: reloader-reloader
-              topologyKey: kubernetes.io/hostname
   podDisruptionBudget:
-    enabled: true
-    minAvailable: 1
+    enabled: false
   watchGlobally: true
   reloadStrategy: annotations
