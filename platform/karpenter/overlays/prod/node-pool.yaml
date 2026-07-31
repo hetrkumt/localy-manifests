@@ -35,6 +35,8 @@ spec:
   disruption:
     consolidationPolicy: WhenUnderutilized
     expireAfter: 336h
+    budgets:
+      - nodes: "10%"
   limits:
     cpu: "200"
     memory: "800Gi"
@@ -77,6 +79,8 @@ spec:
   disruption:
     consolidationPolicy: WhenUnderutilized
     expireAfter: 336h
+    budgets:
+      - nodes: "10%"
   limits:
     cpu: "100"
     memory: "400Gi"
@@ -129,6 +133,8 @@ spec:
   disruption:
     consolidationPolicy: WhenUnderutilized
     expireAfter: 168h
+    budgets:
+      - nodes: "10%"
   limits:
     cpu: "800"
     memory: "3200Gi"
@@ -182,6 +188,8 @@ spec:
   disruption:
     consolidationPolicy: WhenUnderutilized
     expireAfter: 72h
+    budgets:
+      - nodes: "10%"
   limits:
     cpu: "200"
     memory: "800Gi"
