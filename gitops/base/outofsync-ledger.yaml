@@ -1,20 +1,21 @@
 # Argo OutOfSync known causes & intentional ignores (Gate 8A)
 #
-# False positives fixed by Application ignoreDifferences:
+# False positives fixed by Application ignoreDifferences (backlog #6):
 #   - ExternalSecret: API-defaulted remoteRef fields + .status + force-sync annotation
 #   - Secret: ESO-owned .data/.metadata
 #   - Deployment /spec/replicas: KEDA
-#   - NodePool/EC2NodeClass: Karpenter hash annotations + .status
 #   - Root Application children: .status/.operation/refresh annotation
 #
 # Live cleanup (not in Git):
 #   - Never leave force-sync annotations on ExternalSecrets (causes OutOfSync)
 #   - Reloader PDB must stay disabled while enableHA=false (delete orphan PDB)
 #
-# Deferred (separate backlog):
+# Deferred:
 #   - ingress-core Missing → backlog #7
-#   - karpenter orphan/noise if ignore insufficient → backlog #9
-#   - kube-prometheus-stack / kyverno Unknown health → observe, not force
+#   - karpenter-provisioner NodePool/EC2NodeClass residual Diff → backlog #9
+#     (hash annotations + API defaults; ignoreDifferences applied but Argo still
+#      marks OutOfSync — investigate managedFields/SSA multi-manager in #9)
+#   - kube-prometheus-stack / kyverno Unknown health → observe
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -25,8 +26,11 @@ metadata:
     localy.io/phase: "8"
 data:
   summary: |
-    Backlog #6 — Argo OutOfSync cleanup for workloads + ESO/Karpenter false positives.
+    Backlog #6 — workload + ESO OutOfSync false positives cleared (Synced).
   ignore_policy: |
     RespectIgnoreDifferences=true on workload apps, keycloak, workload-dbs,
     karpenter-*, root-platform, root-workloads.
- 
+  verified_synced: |
+    order/payment/cart/user/product/gateway, keycloak, workload-dbs,
+    reloader, karpenter-controller, root-platform, root-workloads, root-app-of-apps
+  
