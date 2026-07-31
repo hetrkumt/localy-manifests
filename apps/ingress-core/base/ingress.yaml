@@ -11,8 +11,8 @@ metadata:
     alb.ingress.kubernetes.io/target-type: "ip"
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
     alb.ingress.kubernetes.io/ssl-redirect: "443"
-    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:ap-northeast-2:533003975005:certificate/ba159581-fb9b-4097-9a49-45a8568fe6da"
-    alb.ingress.kubernetes.io/wafv2-acl-arn: "arn:aws:wafv2:ap-northeast-2:533003975005:regional/webacl/prod-ingress-waf/19272c25-c193-4fee-8d24-c8ebda74014d"
+    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:ap-northeast-2:533003975005:certificate/6f155ea4-0e3c-4d7f-a2d4-652d1dfe263b"
+    alb.ingress.kubernetes.io/wafv2-acl-arn: "arn:aws:wafv2:ap-northeast-2:533003975005:regional/webacl/prod-ingress-waf/13be1902-bae5-4e13-8163-0bf56f2d4aca"
 spec:
   rules:
     - host: "feifo.click"

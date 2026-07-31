@@ -3,6 +3,7 @@ kind: Kustomization
 
 resources:
   - ../../base
+  - namespace.yaml
   - pod-disruption-budget.yaml
   - service-monitor.yaml
   - network-policy.yaml
