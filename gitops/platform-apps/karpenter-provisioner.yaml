@@ -30,15 +30,18 @@ spec:
       - Prune=false
       - RespectIgnoreDifferences=true
   ignoreDifferences:
-    # Karpenter mutates hash annotations + status; API defaults budgets if omitted.
+    # Karpenter / API defaults + controller hash annotations.
     - group: karpenter.sh
       kind: NodePool
       jqPathExpressions:
         - .status
         - .metadata.annotations
+        - .metadata.managedFields
         - .spec.disruption.budgets
     - group: karpenter.k8s.aws
       kind: EC2NodeClass
       jqPathExpressions:
         - .status
         - .metadata.annotations
+        - .metadata.managedFields
+        - .spec.metadataOptions.httpProtocolIPv6

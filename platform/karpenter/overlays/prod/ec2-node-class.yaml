@@ -17,6 +17,7 @@ spec:
     httpTokens: required
     httpPutResponseHopLimit: 1
     httpEndpoint: enabled
+    httpProtocolIPv6: disabled
   blockDeviceMappings:
     - deviceName: /dev/xvda
       ebs:
