@@ -27,12 +27,13 @@ spec:
       - CreateNamespace=true
       - ServerSideApply=true
       - ApplyOutOfSyncOnly=true
+      - RespectIgnoreDifferences=true
   ignoreDifferences:
-    - group: apps
-      kind: Deployment
-      jsonPointers:
-        - /spec/replicas
     - group: argoproj.io
       kind: Application
+      jqPathExpressions:
+        - .status
+        - .operation
+        - .metadata.annotations["argocd.argoproj.io/refresh"]
       jsonPointers:
         - /status

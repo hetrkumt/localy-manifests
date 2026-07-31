@@ -19,6 +19,15 @@ spec:
   destination:
     server: "https://kubernetes.default.svc"
     namespace: argocd
+  ignoreDifferences:
+    - group: argoproj.io
+      kind: Application
+      jqPathExpressions:
+        - .status
+        - .operation
+        - .metadata.annotations["argocd.argoproj.io/refresh"]
+      jsonPointers:
+        - /status
   syncPolicy:
     automated:
       prune: false
@@ -27,8 +36,4 @@ spec:
       - CreateNamespace=true
       - ServerSideApply=true
       - ApplyOutOfSyncOnly=true
-  ignoreDifferences:
-    - group: argoproj.io
-      kind: Application
-      jsonPointers:
-        - /status
+      - RespectIgnoreDifferences=true

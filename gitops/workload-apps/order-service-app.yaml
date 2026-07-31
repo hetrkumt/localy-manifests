@@ -1,4 +1,4 @@
-# Phase 8 Gate 8A — order-service (ignoreDifferences for KEDA)
+# Phase 8 Gate 8A — order-service (ignoreDifferences for KEDA + ESO defaults)
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -24,8 +24,25 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
+      - RespectIgnoreDifferences=true
   ignoreDifferences:
     - group: apps
       kind: Deployment
       jsonPointers:
         - /spec/replicas
+    # ESO CRD defaults + status (API fills conversionStrategy etc.)
+    - group: external-secrets.io
+      kind: ExternalSecret
+      jqPathExpressions:
+        - .status
+        - .metadata.annotations["force-sync"]
+        - .spec.data[].remoteRef.conversionStrategy
+        - .spec.data[].remoteRef.decodingStrategy
+        - .spec.data[].remoteRef.metadataPolicy
+        - .spec.target.template.mergePolicy
+    - group: ""
+      kind: Secret
+      jqPathExpressions:
+        - .data
+        - .metadata
+        - .type

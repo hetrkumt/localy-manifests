@@ -28,3 +28,18 @@ spec:
       - ServerSideApply=true
       - Delete=false
       - Prune=false
+      - RespectIgnoreDifferences=true
+  ignoreDifferences:
+    # Karpenter mutates hash annotations + status; kubectl/argo dual managers.
+    - group: karpenter.sh
+      kind: NodePool
+      jqPathExpressions:
+        - .status
+        - .metadata.annotations["karpenter.sh/nodepool-hash"]
+        - .metadata.annotations["karpenter.sh/nodepool-hash-version"]
+    - group: karpenter.k8s.aws
+      kind: EC2NodeClass
+      jqPathExpressions:
+        - .status
+        - .metadata.annotations["karpenter.k8s.aws/ec2nodeclass-hash"]
+        - .metadata.annotations["karpenter.k8s.aws/ec2nodeclass-hash-version"]

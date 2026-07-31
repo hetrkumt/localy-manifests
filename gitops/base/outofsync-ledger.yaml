@@ -1,0 +1,32 @@
+# Argo OutOfSync known causes & intentional ignores (Gate 8A)
+#
+# False positives fixed by Application ignoreDifferences:
+#   - ExternalSecret: API-defaulted remoteRef fields + .status + force-sync annotation
+#   - Secret: ESO-owned .data/.metadata
+#   - Deployment /spec/replicas: KEDA
+#   - NodePool/EC2NodeClass: Karpenter hash annotations + .status
+#   - Root Application children: .status/.operation/refresh annotation
+#
+# Live cleanup (not in Git):
+#   - Never leave force-sync annotations on ExternalSecrets (causes OutOfSync)
+#   - Reloader PDB must stay disabled while enableHA=false (delete orphan PDB)
+#
+# Deferred (separate backlog):
+#   - ingress-core Missing → backlog #7
+#   - karpenter orphan/noise if ignore insufficient → backlog #9
+#   - kube-prometheus-stack / kyverno Unknown health → observe, not force
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: localy-argocd-outofsync-ledger
+  namespace: argocd
+  labels:
+    localy.io/ledger: "argocd-outofsync"
+    localy.io/phase: "8"
+data:
+  summary: |
+    Backlog #6 — Argo OutOfSync cleanup for workloads + ESO/Karpenter false positives.
+  ignore_policy: |
+    RespectIgnoreDifferences=true on workload apps, keycloak, workload-dbs,
+    karpenter-*, root-platform, root-workloads.
+ 

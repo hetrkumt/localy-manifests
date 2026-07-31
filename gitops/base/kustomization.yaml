@@ -5,3 +5,4 @@ resources:
   - root-platform.yaml
   - root-workloads.yaml
   - correction-ledger.yaml
+  - outofsync-ledger.yaml
