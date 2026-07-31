@@ -23,6 +23,7 @@ spec:
       restartPolicy: Never
       nodeSelector:
         karpenter.sh/nodepool: workload
+        kubernetes.io/arch: amd64
       tolerations:
         - key: workload-only
           operator: Equal

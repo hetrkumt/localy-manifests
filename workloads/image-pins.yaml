@@ -5,6 +5,11 @@
 #   workloads/<svc>/overlays/prod/kustomization.yaml  →  images[].newTag
 # Those newTag values MUST match `services` below.
 #
+# Architecture: linux/amd64 only.
+#   - CI: docker buildx --platform linux/amd64
+#   - Karpenter NodePool "workload": kubernetes.io/arch=amd64 (no Graviton)
+#   - Pods/Jobs: nodeSelector kubernetes.io/arch=amd64
+#
 # CI (localy-backend .github/workflows/build-push-ecr.yml) pushes:
 #   - each gitops pin tag listed here
 #   - mutable alias `latest` (convenience only — NOT used by GitOps)
@@ -17,6 +22,7 @@
 # =============================================================================
 registry: 533003975005.dkr.ecr.ap-northeast-2.amazonaws.com
 region: ap-northeast-2
+architecture: amd64
 services:
   order-service: e2e4
   payment-service: e2e6

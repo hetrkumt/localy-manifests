@@ -81,9 +81,10 @@ topologySpreadConstraints:
       matchLabels:
         app.kubernetes.io/name: keycloak
 
-# Karpenter workload-pool 배치
+# Karpenter workload-pool 배치 (amd64-only images)
 nodeSelector:
   karpenter.sh/nodepool: workload
+  kubernetes.io/arch: amd64
 
 tolerations:
   - key: "workload-only"

@@ -104,9 +104,11 @@ spec:
         - key: karpenter.sh/capacity-type
           operator: In
           values: ["spot", "on-demand"]
+        # Workload images are linux/amd64 only (CI buildx). Do not re-add arm64
+        # or Graviton types until multi-arch manifests exist.
         - key: kubernetes.io/arch
           operator: In
-          values: ["amd64", "arm64"]
+          values: ["amd64"]
         - key: node.kubernetes.io/instance-type
           operator: In
           values:
@@ -116,18 +118,12 @@ spec:
             - c6a.large
             - c6a.xlarge
             - c6a.2xlarge
-            - c7g.large
-            - c7g.xlarge
-            - c7g.2xlarge
             - m6i.large
             - m6i.xlarge
             - m6i.2xlarge
             - m6a.large
             - m6a.xlarge
             - m6a.2xlarge
-            - m7g.large
-            - m7g.xlarge
-            - m7g.2xlarge
       nodeClassRef:
         name: default
   disruption:
