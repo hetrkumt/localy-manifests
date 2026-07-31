@@ -16,7 +16,7 @@ metadata:
     external-dns.alpha.kubernetes.io/exclude: "true"
 spec:
   rules:
-    - host: "feifo.click"
+    - host: "internal.feifo.click"
       http:
         paths:
           - path: "/"
