@@ -22,6 +22,9 @@
 #   - backlog #9 karpenter OutOfSync/orphans: platform-project orphan warn off
 #     (kube-system false positives); provisioner dest ns=karpenter;
 #     ignoreDifferences widened for hash/managedFields
+#   - backlog #10 Loki legacy KMS policy: AllowLokiIRSACrypto → current
+#     prod-loki-irsa-role ARN (kms_loki_legacy.tf); key stays Enabled for
+#     Object-Lock objects until retention expires
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -36,6 +39,7 @@ data:
     Backlog #7 — ingress-core Synced/Healthy; public DNS on external ALB.
     Backlog #8 — platform Grafana SM SSOT + ESO SecretSynced.
     Backlog #9 — karpenter-provisioner Synced; orphan warn noise cleared.
+    Backlog #10 — legacy Loki CMK policy aligned to current IRSA ARN.
   ignore_policy: |
     RespectIgnoreDifferences=true on workload apps, keycloak, workload-dbs,
     karpenter-*, root-platform, root-workloads.
