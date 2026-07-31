@@ -45,8 +45,11 @@ spec:
     - namespace: "edge-svc"
       server: "https://kubernetes.default.svc"
 
-  # Hard deny: no cluster-scoped resources from workload apps
-  clusterResourceWhitelist: []
+  # Namespace only: CreateNamespace=true on workload Applications.
+  # Deny broader cluster RBAC/CRDs; Quota/LimitRange stay namespace-scoped below.
+  clusterResourceWhitelist:
+    - group: ""
+      kind: "Namespace"
 
   namespaceResourceWhitelist:
     - group: ""
@@ -59,6 +62,10 @@ spec:
       kind: "ServiceAccount"
     - group: ""
       kind: "PersistentVolumeClaim"
+    - group: ""
+      kind: "ResourceQuota"
+    - group: ""
+      kind: "LimitRange"
     - group: "apps"
       kind: "Deployment"
     - group: "apps"
