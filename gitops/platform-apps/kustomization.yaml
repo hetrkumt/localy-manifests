@@ -9,6 +9,7 @@ resources:
   # CRD / bootstrap (-20 ~ -10)
   - kyverno.yaml
   - cert-manager.yaml
+  - argocd-notifications.yaml
   # Core controllers (-9 ~ 0)
   - alb-controller.yaml
   - storage.yaml

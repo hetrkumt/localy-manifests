@@ -1,0 +1,29 @@
+# Wave 4 SSOT — HTTP P95 latency AnalysisTemplate
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: spring-boot-latency-check
+  labels:
+    localy.io/phase: "wave4"
+    app.kubernetes.io/part-of: progressive-delivery
+spec:
+  args:
+    - name: namespace
+  metrics:
+    - name: latency-p95
+      interval: 30s
+      count: 3
+      # Pass when NaN (low traffic) OR p95 <= 500ms
+      successCondition: "isNaN(result) || result <= 0.5"
+      failureLimit: 3
+      provider:
+        prometheus:
+          address: http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090
+          query: |
+            (
+              localy:http_latency_p95:seconds{namespace="{{ args.namespace }}"}
+            )
+            and on (namespace)
+            (
+              localy:http_request_count:rate1m{namespace="{{ args.namespace }}"} * 60 > 50
+            )

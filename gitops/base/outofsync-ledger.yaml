@@ -11,6 +11,11 @@
 #   - Reloader PDB must stay disabled while enableHA=false (delete orphan PDB)
 #
 # Deferred / next work:
+#   - Wave 4 (Git): SLI recording rules + HTTP alarms as live PrometheusRule;
+#     AnalysisTemplates + order Rollout analysis steps; EventBridge ECR→SNS;
+#     ChatOps dispatch handler + concurrency=5; argocd-notifications CM/ESO.
+#   - Wave 4 cutover: enable notifications helm; wire ESO IRSA for
+#     argocd-notifications-eso-sa; verify AnalysisRun against Prometheus.
 #   - Wave 3 cutover (infra up): sync argo-rollouts app; order Rollout;
 #     delete orphan Deployment/order-service (Gate 8A prune=false).
 #   - Wave 3 remaining services: Deployment→Rollout one PR each;
@@ -29,6 +34,7 @@
 #   - kyverno Unknown health → observe
 #
 # Done:
+#   - Wave 4 (Git): see Deferred cutover notes above for live verify.
 #   - Wave 3 (Git): argo-rollouts platform app; workload-project Rollout
 #     whitelist; order-service Deployment→Rollout canary 5→20→50→100;
 #     KEDA scaleTargetRef→Rollout; Rollout ignoreDifferences on 6 apps;

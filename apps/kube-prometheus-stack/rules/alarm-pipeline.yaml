@@ -184,3 +184,70 @@ spec:
             description: >-
               Post-fact OOM confirmation. Pair with MemorySaturation for pre-OOM timeline.
               Alertmanager should inhibit if MemorySaturation already fired on same pod.
+
+    # -------------------------------------------------------------------------
+    # [Wave 4 / SRE] Spring Boot HTTP SLI — Blind Release 박멸
+    # Low-traffic guard: require meaningful request volume before firing.
+    # -------------------------------------------------------------------------
+    - name: alarm-pipeline.app.http-sli
+      rules:
+        - alert: Http5xxErrorRateSpike
+          expr: |
+            (
+              localy:http_error_rate:ratio_rate1m > 0.01
+            )
+            and on (namespace)
+            (
+              localy:http_request_count:rate1m * 60 > 50
+            )
+          for: 2m
+          labels:
+            severity: critical
+            signal: Http5xx
+            origin: alarm-pipeline
+            tier: "1"
+          annotations:
+            summary: "[SLI] HTTP 5xx error rate >1% on {{ $labels.namespace }}"
+            description: >-
+              Error ratio (1m) exceeds 1% with >50 requests/min equivalent.
+              Progressive delivery AnalysisTemplate should abort canaries on the same signal.
+
+        - alert: HttpLatencyP95High
+          expr: |
+            (
+              localy:http_latency_p95:seconds > 0.5
+            )
+            and on (namespace)
+            (
+              localy:http_request_count:rate1m * 60 > 50
+            )
+          for: 3m
+          labels:
+            severity: warning
+            signal: HttpLatencyP95
+            origin: alarm-pipeline
+            tier: "1"
+          annotations:
+            summary: "[SLI] HTTP P95 latency >500ms on {{ $labels.namespace }}"
+            description: >-
+              P95 latency (1m histogram) exceeds 500ms under sufficient traffic.
+
+        - alert: HttpLatencyP99High
+          expr: |
+            (
+              localy:http_latency_p99:seconds > 1.0
+            )
+            and on (namespace)
+            (
+              localy:http_request_count:rate1m * 60 > 50
+            )
+          for: 3m
+          labels:
+            severity: critical
+            signal: HttpLatencyP99
+            origin: alarm-pipeline
+            tier: "1"
+          annotations:
+            summary: "[SLI] HTTP P99 latency >1s on {{ $labels.namespace }}"
+            description: >-
+              P99 latency (1m histogram) exceeds 1s under sufficient traffic.

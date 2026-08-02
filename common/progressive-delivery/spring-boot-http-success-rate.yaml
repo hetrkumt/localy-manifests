@@ -1,0 +1,30 @@
+# Wave 4 SSOT — HTTP success rate AnalysisTemplate
+# Low-traffic guard: if request volume is too low, query returns empty → NaN → pass.
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: spring-boot-http-success-rate
+  labels:
+    localy.io/phase: "wave4"
+    app.kubernetes.io/part-of: progressive-delivery
+spec:
+  args:
+    - name: namespace
+  metrics:
+    - name: success-rate
+      interval: 30s
+      count: 3
+      # Pass when NaN (low traffic) OR success rate >= 99%
+      successCondition: "isNaN(result) || result >= 0.99"
+      failureLimit: 3
+      provider:
+        prometheus:
+          address: http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090
+          query: |
+            (
+              localy:http_success_rate:ratio_rate1m{namespace="{{ args.namespace }}"}
+            )
+            and on (namespace)
+            (
+              localy:http_request_count:rate1m{namespace="{{ args.namespace }}"} * 60 > 50
+            )

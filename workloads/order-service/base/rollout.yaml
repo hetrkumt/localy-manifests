@@ -114,11 +114,30 @@ spec:
       maxSurge: "25%"
       maxUnavailable: 0
       scaleDownDelaySeconds: 30
+      # Wave 4 — analysis between weight steps (auto-abort on SLI breach)
       steps:
         - setWeight: 5
-        - pause: { duration: 1m }
+        - analysis:
+            templates:
+              - templateName: spring-boot-http-success-rate
+              - templateName: spring-boot-latency-check
+            args:
+              - name: namespace
+                value: order-service
         - setWeight: 20
-        - pause: { duration: 1m }
+        - analysis:
+            templates:
+              - templateName: spring-boot-http-success-rate
+              - templateName: spring-boot-latency-check
+            args:
+              - name: namespace
+                value: order-service
         - setWeight: 50
-        - pause: { duration: 1m }
+        - analysis:
+            templates:
+              - templateName: spring-boot-http-success-rate
+              - templateName: spring-boot-latency-check
+            args:
+              - name: namespace
+                value: order-service
         - setWeight: 100

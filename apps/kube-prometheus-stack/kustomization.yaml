@@ -7,6 +7,10 @@ resources:
   - cert-manager-tls.yaml
   - grafana-eso-sa.yaml
   - grafana-admin-external-secret.yaml
+  # Wave 4 — live PrometheusRule / AlertmanagerConfig CRs (not ConfigMap-only)
+  - rules/alarm-pipeline.yaml
+  - rules/localy-sli-recording-rules.yaml
+  - alertmanager/alarm-pipeline.yaml
 
 configMapGenerator:
   - name: grafana-dashboards-custom
@@ -19,9 +23,11 @@ configMapGenerator:
       labels:
         grafana_dashboard: "1"
 
+  # Keep bytes mirror for operators who inspect ConfigMaps; CR resources are SSOT.
   - name: prometheus-rules-custom
     files:
       - rules/alarm-pipeline.yaml
+      - rules/localy-sli-recording-rules.yaml
     options:
       labels:
         prometheus_rule: "1"

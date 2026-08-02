@@ -12,6 +12,8 @@ resources:
   - secret-store.yaml
   - external-secret.yaml
   - resource-guards.yaml
+  # Wave 4 — AnalysisTemplate SSOT (namespaced with this overlay)
+  - ../../../../common/progressive-delivery
 
 # Image pin SSOT: workloads/image-pins.yaml (keep newTag in sync)
 images:
