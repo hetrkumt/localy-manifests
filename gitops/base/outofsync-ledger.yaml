@@ -10,11 +10,29 @@
 #   - Never leave force-sync annotations on ExternalSecrets (causes OutOfSync)
 #   - Reloader PDB must stay disabled while enableHA=false (delete orphan PDB)
 #
-# Deferred:
+# Deferred / next work:
+#   - OAuth sync: TF=SM SSOT; after apply (or random_password rotate) run
+#     keycloak-align-oauth.ps1 (or CI/Job) so Keycloak client secrets match SM;
+#     then client_credentials smoke. Do not make Keycloak the OAuth SSOT.
+#   - CI image tags: build-push-ecr.yml should read
+#     localy-manifests/workloads/image-pins.yaml (or synced copy) for gitops_tag
+#     instead of duplicating e2e* in the workflow matrix (drift risk).
+#   - Ingress rebuild hardening (backlog #7 leftovers):
+#     - Ingress ACM certificate-arn / WAFv2 ACL ARN: stop stale hardcodes
+#       (SSM lookup, tf output → values, or apply-time patch)
+#     - alb-controller values vpcId: same — pin to current VPC via TF/SSM,
+#       not a leftover VPC id in Git
 #   - kube-prometheus-stack Unknown (CRD schema diff / trackTimestampsStaleness)
 #   - kyverno Unknown health → observe
 #
 # Done:
+#   - P0 loki: teardown preserve set = Object-Lock vault + Loki CMK(s)
+#     (state-rm key, no ScheduleKeyDeletion; alias freed; PendingDeletion
+#     cancel+enable; loki-preserve-set.auto.tfvars + loki_legacy_kms_key_ids;
+#     aws_kms_key.loki_s3 prevent_destroy + ProtectedBy tags)
+#   - P0 ingress: public subnet kubernetes.io/cluster/<cluster>=shared in
+#     modules/network public_subnet_tags (was live-only; next L1 apply keeps
+#     internet-facing ALB discovery)
 #   - backlog #7 ingress-core: Synced/Healthy; feifo.click → external ALB;
 #     internal edge host = internal.feifo.click (avoids ED collision)
 #   - backlog #8 platform SM: /localy/prod/platform/grafana via secrets_platform.tf;

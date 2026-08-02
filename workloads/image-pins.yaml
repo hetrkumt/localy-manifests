@@ -1,24 +1,27 @@
 # =============================================================================
-# Prod workload image tag SSOT
+# Prod workload image tag SSOT (Wave 1+2)
 # =============================================================================
 # Deploy pins live in:
 #   workloads/<svc>/overlays/prod/kustomization.yaml  →  images[].newTag
 # Those newTag values MUST match `services` below.
 #
+# Tag contract:
+#   - Canonical deploy tag: sha-<12> (immutable, CI-owned)
+#   - Do NOT use: latest (banned under ECR IMMUTABLE)
+#   - Legacy e2e* pins remain only until the first successful promotion PR merges
+#
 # Architecture: linux/amd64 only.
 #   - CI: docker buildx --platform linux/amd64
-#   - Karpenter NodePool "workload": kubernetes.io/arch=amd64 (no Graviton)
-#   - Pods/Jobs: nodeSelector kubernetes.io/arch=amd64
+#   - Karpenter NodePool "workload": kubernetes.io/arch=amd64
 #
-# CI (localy-backend .github/workflows/build-push-ecr.yml) pushes:
-#   - each gitops pin tag listed here
-#   - mutable alias `latest` (convenience only — NOT used by GitOps)
+# CI (localy-backend .github/workflows/build-push-ecr.yml):
+#   1) Build/push sha-<12>
+#   2) Trivy HIGH/CRITICAL + Cosign keyless sign
+#   3) Open promotion PR updating this file + each overlay newTag
 #
-# After teardown / empty ECR:
-#   1) Fix TF OIDC+ECR push IAM if needed (l3 github_actions_oidc.tf)
-#   2) Run workflow_dispatch "Build and Push to Amazon ECR" on main
-#   3) Or: localy/infrastructure/scripts/rebuild-ecr-image-pins.ps1 -Execute
-#   4) Verify: localy/infrastructure/scripts/check-ecr-image-pins.ps1
+# Emergency rebuild (after IMMUTABLE):
+#   Prefer workflow_dispatch. Local script must push a NEW unique tag
+#   (never overwrite an existing pin). See rebuild-ecr-image-pins.ps1 -NewTag.
 # =============================================================================
 registry: 533003975005.dkr.ecr.ap-northeast-2.amazonaws.com
 region: ap-northeast-2
