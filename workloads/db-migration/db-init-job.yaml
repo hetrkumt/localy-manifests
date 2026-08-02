@@ -34,7 +34,7 @@ spec:
             sizeLimit: 32Mi
       containers:
         - name: psql-striker
-          image: postgres:15-alpine
+          image: public.ecr.aws/docker/library/postgres:15-alpine
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true

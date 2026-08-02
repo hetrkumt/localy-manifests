@@ -11,6 +11,12 @@
 #   - Reloader PDB must stay disabled while enableHA=false (delete orphan PDB)
 #
 # Deferred / next work:
+#   - Wave 5 (Git): restrict-image-registries Enforce (workload NS +
+#     public.ecr.aws util); verify-cosign-signature Audit (flip Enforce after
+#     signed sha-* promotion); retire apply-phase1.ps1; postgres Job → public.ecr.
+#   - Wave 5 cutover: after all workloads run signed sha-*, set
+#     verify-cosign-signature validationFailureAction=Enforce; ensure nodes
+#     can reach rekor.sigstore.dev for keyless verify.
 #   - Wave 4 (Git): SLI recording rules + HTTP alarms as live PrometheusRule;
 #     AnalysisTemplates + order Rollout analysis steps; EventBridge ECR→SNS;
 #     ChatOps dispatch handler + concurrency=5; argocd-notifications CM/ESO.
@@ -34,6 +40,7 @@
 #   - kyverno Unknown health → observe
 #
 # Done:
+#   - Wave 5 (Git): Cosign/registry policies + legacy script retirement.
 #   - Wave 4 (Git): see Deferred cutover notes above for live verify.
 #   - Wave 3 (Git): argo-rollouts platform app; workload-project Rollout
 #     whitelist; order-service Deployment→Rollout canary 5→20→50→100;

@@ -1,0 +1,53 @@
+# Wave 5 — Zero-Trust registry gate (workload namespaces only)
+# Platform namespaces (monitoring, kyverno, etc.) intentionally excluded —
+# they pull Grafana/AWS/Quay charts that are not account-ECR.
+#
+# Allowed:
+#   - Account ECR (app images)
+#   - public.ecr.aws/* (AWS Public Gallery utilities, e.g. postgres Jobs)
+# Banned: docker.io Hub (asfas244/*), ghcr.io, quay.io inside workload NS
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: restrict-image-registries
+  annotations:
+    policies.kyverno.io/title: Restrict Workload Image Registries
+    policies.kyverno.io/category: Supply Chain Security
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/subject: Pod
+    localy.io/phase: "wave5"
+spec:
+  validationFailureAction: Enforce
+  failurePolicy: Fail
+  background: true
+  webhookTimeoutSeconds: 10
+  rules:
+    - name: workload-registry-allowlist
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+              namespaces:
+                - order-service
+                - payment-service
+                - cart-service
+                - user-service
+                - store-service
+                - edge-service
+              operations:
+                - CREATE
+                - UPDATE
+      validate:
+        message: >-
+          Workload pods may only pull from account ECR
+          (533003975005.dkr.ecr.ap-northeast-2.amazonaws.com/*) or
+          AWS Public Gallery (public.ecr.aws/*). Docker Hub and other
+          registries are denied (Wave 5 Zero-Trust).
+        pattern:
+          spec:
+            =(initContainers):
+              - image: "533003975005.dkr.ecr.ap-northeast-2.amazonaws.com/* | public.ecr.aws/*"
+            containers:
+              - image: "533003975005.dkr.ecr.ap-northeast-2.amazonaws.com/* | public.ecr.aws/*"
+            X(ephemeralContainers): "null"
