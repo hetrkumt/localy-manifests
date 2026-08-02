@@ -1,0 +1,11 @@
+# Wave 3 — ALB canary traffic-shaping (template only; not auto-applied)
+#
+# order-service has NO Ingress → replica setWeight canary only.
+# For edge/gateway: copy examples/* into the service overlay, replace
+# REPLACE_* markers, then reference the customized files from that overlay.
+#
+# Do NOT add this Component to an overlay until examples are customized —
+# placeholder Services would break the cluster.
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+resources: []

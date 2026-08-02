@@ -1,0 +1,59 @@
+# Wave 3 — Audit first; blocks cross-NS / arbitrary ALB traffic hijack patterns
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: restrict-rollout-traffic-routing
+  annotations:
+    policies.kyverno.io/title: Restrict Rollout Traffic Routing
+    policies.kyverno.io/category: Progressive Delivery
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/subject: Rollout
+    localy.io/phase: "wave3"
+spec:
+  validationFailureAction: Audit
+  background: true
+  rules:
+    - name: canary-service-must-be-namespaced-local
+      match:
+        any:
+          - resources:
+              kinds:
+                - Rollout
+      preconditions:
+        all:
+          - key: "{{ request.object.spec.strategy.canary.trafficRouting || '' }}"
+            operator: NotEquals
+            value: ""
+      validate:
+        message: >-
+          Canary trafficRouting stable/canary Services must be simple names
+          (no cross-namespace or external ARN injection via service fields).
+        pattern:
+          spec:
+            strategy:
+              canary:
+                trafficRouting:
+                  =(alb):
+                    =(rootService): "?*"
+                    =(servicePort): "*"
+    - name: pause-duration-hardcap
+      match:
+        any:
+          - resources:
+              kinds:
+                - Rollout
+      validate:
+        message: "Indefinite canary pause (pause: {}) is forbidden; use bounded duration (Wave 3 hardcap)."
+        foreach:
+          - list: "request.object.spec.strategy.canary.steps[]"
+            preconditions:
+              all:
+                - key: "{{ element.pause || '' }}"
+                  operator: NotEquals
+                  value: ""
+            deny:
+              conditions:
+                any:
+                  - key: "{{ element.pause.duration || '' }}"
+                    operator: Equals
+                    value: ""

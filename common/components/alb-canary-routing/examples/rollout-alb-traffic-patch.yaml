@@ -1,0 +1,27 @@
+# Example only — merge into a Rollout that fronts an ALB Ingress.
+# Requires AWS Load Balancer Controller + Rollouts ALB trafficRouting.
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: edge-service
+spec:
+  strategy:
+    canary:
+      stableService: edge-service
+      canaryService: edge-service-canary
+      trafficRouting:
+        alb:
+          ingress: localy-internal-alb-edge
+          servicePort: 80
+          rootService: edge-service
+      maxSurge: "25%"
+      maxUnavailable: 0
+      scaleDownDelaySeconds: 30
+      steps:
+        - setWeight: 5
+        - pause: { duration: 1m }
+        - setWeight: 20
+        - pause: { duration: 1m }
+        - setWeight: 50
+        - pause: { duration: 1m }
+        - setWeight: 100

@@ -16,6 +16,7 @@ resources:
   - node-local-dns.yaml
   - karpenter-controller.yaml
   - karpenter-provisioner.yaml
+  - argo-rollouts.yaml
   - keda.yaml
   - reloader.yaml
   # Observability (1 ~ 9)

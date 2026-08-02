@@ -11,12 +11,15 @@
 #   - Reloader PDB must stay disabled while enableHA=false (delete orphan PDB)
 #
 # Deferred / next work:
+#   - Wave 3 cutover (infra up): sync argo-rollouts app; order Rollout;
+#     delete orphan Deployment/order-service (Gate 8A prune=false).
+#   - Wave 3 remaining services: Deployment→Rollout one PR each;
+#     edge/gateway attach alb-canary-routing examples (Ingress-backed).
 #   - OAuth sync: TF=SM SSOT; after apply (or random_password rotate) run
 #     keycloak-align-oauth.ps1 (or CI/Job) so Keycloak client secrets match SM;
 #     then client_credentials smoke. Do not make Keycloak the OAuth SSOT.
-#   - CI image tags: build-push-ecr.yml should read
-#     localy-manifests/workloads/image-pins.yaml (or synced copy) for gitops_tag
-#     instead of duplicating e2e* in the workflow matrix (drift risk).
+#   - CI image tags: sha-* promotion (Wave 1+2 branch); retire e2e* pins after
+#     first successful promote PR.
 #   - Ingress rebuild hardening (backlog #7 leftovers):
 #     - Ingress ACM certificate-arn / WAFv2 ACL ARN: stop stale hardcodes
 #       (SSM lookup, tf output → values, or apply-time patch)
@@ -26,6 +29,10 @@
 #   - kyverno Unknown health → observe
 #
 # Done:
+#   - Wave 3 (Git): argo-rollouts platform app; workload-project Rollout
+#     whitelist; order-service Deployment→Rollout canary 5→20→50→100;
+#     KEDA scaleTargetRef→Rollout; Rollout ignoreDifferences on 6 apps;
+#     Kyverno Audit policies for probes/traffic; ALB canary examples.
 #   - P0 loki: teardown preserve set = Object-Lock vault + Loki CMK(s)
 #     (state-rm key, no ScheduleKeyDeletion; alias freed; PendingDeletion
 #     cancel+enable; loki-preserve-set.auto.tfvars + loki_legacy_kms_key_ids;

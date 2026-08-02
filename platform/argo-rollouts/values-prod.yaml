@@ -1,0 +1,46 @@
+# Wave 3 SSOT — Argo Rollouts controller HA
+# Consumed by ArgoCD Multi-Source Helm (gitops/platform-apps/argo-rollouts.yaml)
+#
+# installCRDs: chart owns Rollout / AnalysisTemplate CRDs.
+# Dashboard off (FinOps); enable later if DevEx needs UI.
+controller:
+  replicas: 2
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  nodeSelector:
+    role: system
+  tolerations:
+    - key: system-only
+      operator: Equal
+      value: "true"
+      effect: NoSchedule
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: argo-rollouts
+            topologyKey: kubernetes.io/hostname
+  pdb:
+    enabled: true
+    minAvailable: 1
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: false
+
+dashboard:
+  enabled: false
+
+installCRDs: true
+
+notifications:
+  secret:
+    create: false

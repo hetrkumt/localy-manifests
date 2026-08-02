@@ -1,0 +1,16 @@
+# Example only — copy into workloads/<svc>/overlays/prod/ and customize.
+apiVersion: v1
+kind: Service
+metadata:
+  name: edge-service-canary
+  labels:
+    app: edge-service
+    localy.io/canary: "true"
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 80
+      targetPort: 9000
+  selector:
+    app: edge-service
