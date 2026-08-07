@@ -57,6 +57,6 @@ spec:
             deny:
               conditions:
                 any:
-                  - key: "{{ element.readinessProbe.periodSeconds || 60 }}"
+                  - key: "{{ element.readinessProbe.periodSeconds || `60` }}"
                     operator: GreaterThan
                     value: 5

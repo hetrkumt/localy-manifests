@@ -43,7 +43,9 @@ spec:
       verifyImages:
         - imageReferences:
             - "533003975005.dkr.ecr.ap-northeast-2.amazonaws.com/*"
-          mutateDigest: true
+          # Audit mode forbids mutateDigest=true on Kyverno 1.13 (webhook rejects policy).
+          # Keep false until flipping validationFailureAction → Enforce with signed sha-* pins.
+          mutateDigest: false
           verifyDigest: false
           required: true
           attestors:
