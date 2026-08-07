@@ -56,74 +56,74 @@ spec:
             operator: Equals
             value: alarm-pipeline-sns-publisher
       validate:
-          message: Container name must match its authorized image (alertmanager or config-reloader only). IRSA identity hijacking is denied.
-          foreach:
-          # 1. alertmanager ?대쫫?몃뜲 怨듭떇 ?대?吏媛 ?꾨땶 寃쎌슦 李⑤떒
+        message: Container name must match its authorized image (alertmanager or config-reloader only). IRSA identity hijacking is denied.
+        foreach:
+          # 1. Deny alertmanager container with non-official image
           - list: request.object.spec.containers
             deny:
               conditions:
                 all:
-                - key: '{{ element.name }}'
-                  operator: Equals
-                  value: alertmanager
-                - key: '{{ element.image }}'
-                  operator: NotEquals
-                  value: quay.io/prometheus/alertmanager:*
+                  - key: "{{ element.name }}"
+                    operator: Equals
+                    value: alertmanager
+                  - key: "{{ element.image }}"
+                    operator: NotEquals
+                    value: quay.io/prometheus/alertmanager:*
 
-          # 2. config-reloader ?대쫫?몃뜲 怨듭떇 ?대?吏媛 ?꾨땶 寃쎌슦 李⑤떒
+          # 2. Deny config-reloader container with non-official image
           - list: request.object.spec.containers
             deny:
               conditions:
                 all:
-                - key: '{{ element.name }}'
-                  operator: Equals
-                  value: config-reloader
-                - key: '{{ element.image }}'
-                  operator: NotEquals
-                  value: quay.io/prometheus-operator/prometheus-config-reloader:*
+                  - key: "{{ element.name }}"
+                    operator: Equals
+                    value: config-reloader
+                  - key: "{{ element.image }}"
+                    operator: NotEquals
+                    value: quay.io/prometheus-operator/prometheus-config-reloader:*
 
-          # 3. ?꾩삁 ?덉슜?섏? ?딆? ?됰슧??而⑦뀒?대꼫 ?대쫫??寃쎌슦 李⑤떒
+          # 3. Deny any other container name on this IRSA SA
           - list: request.object.spec.containers
             deny:
               conditions:
                 all:
-                - key: '{{ element.name }}'
-                  operator: NotIn
-                  value:
-                  - alertmanager
-                  - config-reloader
+                  - key: "{{ element.name }}"
+                    operator: NotIn
+                    value:
+                      - alertmanager
+                      - config-reloader
 
-          # 4. initContainers: alertmanager ?대쫫?몃뜲 怨듭떇 ?대?吏媛 ?꾨땶 寃쎌슦 李⑤떒
+          # 4. initContainers: deny alertmanager with non-official image
           - list: request.object.spec.initContainers
             deny:
               conditions:
                 all:
-                - key: '{{ element.name }}'
-                  operator: Equals
-                  value: alertmanager
-                - key: '{{ element.image }}'
-                  operator: NotEquals
-                  value: quay.io/prometheus/alertmanager:*
+                  - key: "{{ element.name }}"
+                    operator: Equals
+                    value: alertmanager
+                  - key: "{{ element.image }}"
+                    operator: NotEquals
+                    value: quay.io/prometheus/alertmanager:*
 
-          # 5. initContainers: config-reloader ?대쫫?몃뜲 怨듭떇 ?대?吏媛 ?꾨땶 寃쎌슦 李⑤떒
+          # 5. initContainers: deny config-reloader with non-official image
           - list: request.object.spec.initContainers
             deny:
               conditions:
                 all:
-                - key: '{{ element.name }}'
-                  operator: Equals
-                  value: config-reloader
-                - key: '{{ element.image }}'
-                  operator: NotEquals
-                  value: quay.io/prometheus-operator/prometheus-config-reloader:*
+                  - key: "{{ element.name }}"
+                    operator: Equals
+                    value: config-reloader
+                  - key: "{{ element.image }}"
+                    operator: NotEquals
+                    value: quay.io/prometheus-operator/prometheus-config-reloader:*
 
-          # 6. initContainers: ?꾩삁 ?덉슜?섏? ?딆? ?됰슧??而⑦뀒?대꼫 ?대쫫??寃쎌슦 李⑤떒
+          # 6. initContainers: deny any other container name on this IRSA SA
           - list: request.object.spec.initContainers
             deny:
               conditions:
                 all:
-                - key: '{{ element.name }}'
-                  operator: NotIn
-                  value:
-                  - alertmanager
-                  - config-reloader
+                  - key: "{{ element.name }}"
+                    operator: NotIn
+                    value:
+                      - alertmanager
+                      - config-reloader

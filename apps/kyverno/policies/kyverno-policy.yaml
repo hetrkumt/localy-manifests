@@ -40,6 +40,7 @@ spec:
               - image: "grafana/loki:* | docker.io/grafana/loki:* | nginxinc/nginx-unprivileged:* | ghcr.io/nginxinc/nginx-unprivileged:*"
             X(ephemeralContainers): "null"
 
+---
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
