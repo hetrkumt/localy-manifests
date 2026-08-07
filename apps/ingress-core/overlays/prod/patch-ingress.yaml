@@ -5,4 +5,4 @@ metadata:
   namespace: default
   annotations:
     alb.ingress.kubernetes.io/wafv2-acl-arn: "arn:aws:wafv2:ap-northeast-2:533003975005:regional/webacl/prod-ingress-waf/19272c25-c193-4fee-8d24-c8ebda74014d"
-    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:ap-northeast-2:533003975005:certificate/ba159581-fb9b-4097-9a49-45a8568fe6da"
+    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:ap-northeast-2:533003975005:certificate/75828507-ed10-4d01-a69c-29cf39f6cc85"
