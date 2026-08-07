@@ -10,6 +10,7 @@ metadata:
     # Kyverno autogen controller rules kept denying StatefulSet CREATE after
     # policy updates. Pod admission still Enforce-blocks IRSA hijacking.
     pod-controllers.kyverno.io/autogen-controllers: none
+    pod-policies.kyverno.io/autogen-controllers: none
 spec:
   validationFailureAction: Enforce
   failurePolicy: Fail
