@@ -17,3 +17,17 @@ backgroundController:
 
 reportsController:
   replicas: 1
+
+# Chart 3.3.x defaults to bitnami/kubectl:1.30.2 which was removed from Docker Hub.
+# Pin to the cluster-aligned official kubectl image for hook Jobs.
+webhooksCleanup:
+  image:
+    registry: registry.k8s.io
+    repository: kubectl
+    tag: v1.30.14
+
+policyReportsCleanup:
+  image:
+    registry: registry.k8s.io
+    repository: kubectl
+    tag: v1.30.14

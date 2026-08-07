@@ -1,0 +1,56 @@
+# Wave 5 — Cosign keyless verify (GitHub Actions OIDC → Fulcio/Rekor)
+#
+# Mode: Audit until CI sha-* signed images replace legacy e2e* pins.
+# Flip validationFailureAction → Enforce after:
+#   1) Wave 1+2 CI has pushed signed sha-* for all 6 services
+#   2) GitOps promotion merged (no unsigned e2e* running)
+#   3) kubectl get cpol verify-cosign-signature -o yaml shows clean Audit results
+#
+# Subject is pinned to localy-backend main workflow identity.
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: verify-cosign-signature
+  annotations:
+    policies.kyverno.io/title: Verify Cosign Keyless Signatures
+    policies.kyverno.io/category: Supply Chain Security
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/subject: Pod
+    localy.io/phase: "wave5"
+    localy.io/enforce-when: "all-workloads-on-signed-sha-tags"
+spec:
+  validationFailureAction: Audit
+  failurePolicy: Ignore
+  background: true
+  webhookTimeoutSeconds: 30
+  rules:
+    - name: verify-account-ecr-cosign-keyless
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+              namespaces:
+                - order-service
+                - payment-service
+                - cart-service
+                - user-service
+                - store-service
+                - edge-service
+              operations:
+                - CREATE
+                - UPDATE
+      verifyImages:
+        - imageReferences:
+            - "533003975005.dkr.ecr.ap-northeast-2.amazonaws.com/*"
+          mutateDigest: true
+          verifyDigest: false
+          required: true
+          attestors:
+            - count: 1
+              entries:
+                - keyless:
+                    subject: "https://github.com/hetrkumt/localy-backend/.github/workflows/build-push-ecr.yml@refs/heads/main"
+                    issuer: "https://token.actions.githubusercontent.com"
+                    rekor:
+                      url: https://rekor.sigstore.dev

@@ -15,7 +15,7 @@ spec:
     - Ingress
     - Egress
   ingress:
-    # Control plane / node CIDRs to admission webhook
+    # EKS control-plane ENIs / node subnets → admission webhook :9443
     - from:
         - ipBlock:
             cidr: 10.0.11.0/24
@@ -35,10 +35,22 @@ spec:
         - protocol: TCP
           port: 9443
   egress:
-    # Kubernetes API server
+    # kubernetes API ClusterIP (default/kubernetes → 172.20.0.1)
     - to:
         - ipBlock:
-            cidr: 10.100.0.1/32
+            cidr: 172.20.0.1/32
+      ports:
+        - protocol: TCP
+          port: 443
+    # EKS API endpoints + VPC interface endpoints (ECR/SM) live on private node subnets.
+    # AWS Network Policy evaluates post-DNAT destinations, so ClusterIP alone is not enough.
+    - to:
+        - ipBlock:
+            cidr: 10.0.11.0/24
+        - ipBlock:
+            cidr: 10.0.12.0/24
+        - ipBlock:
+            cidr: 10.0.13.0/24
       ports:
         - protocol: TCP
           port: 443
@@ -58,3 +70,16 @@ spec:
           port: 53
         - protocol: TCP
           port: 53
+    # Public HTTPS for Cosign keyless (Fulcio/Rekor/TUF). RFC1918 excluded;
+    # private API/VPC endpoints covered by the rules above.
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except:
+              - 10.0.0.0/8
+              - 172.16.0.0/12
+              - 192.168.0.0/16
+              - 100.64.0.0/10
+      ports:
+        - protocol: TCP
+          port: 443

@@ -6,3 +6,7 @@ resources:
   - policies/kyverno-policy.yaml
   - policies/protect-alertmanager.yaml
   - policies/prevent-cross-namespace-secrets.yaml
+  - policies/enforce-rollout-probes.yaml
+  - policies/restrict-rollout-traffic-routing.yaml
+  - policies/restrict-image-registries.yaml
+  - policies/verify-cosign-signature.yaml
