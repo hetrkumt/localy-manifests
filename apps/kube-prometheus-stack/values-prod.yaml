@@ -62,7 +62,7 @@ grafana:
       alb.ingress.kubernetes.io/target-type: "ip"
       alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
       alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:ap-northeast-2:533003975005:certificate/75828507-ed10-4d01-a69c-29cf39f6cc85"
-      alb.ingress.kubernetes.io/wafv2-acl-arn: "arn:aws:wafv2:ap-northeast-2:533003975005:regional/webacl/prod-ingress-waf/19272c25-c193-4fee-8d24-c8ebda74014d"
+      alb.ingress.kubernetes.io/wafv2-acl-arn: "arn:aws:wafv2:ap-northeast-2:533003975005:regional/webacl/prod-ingress-waf/22369cc2-004f-4469-9197-1f010fec52f5"
     hosts:
       - "grafana.feifo.click"
     paths:
@@ -182,33 +182,37 @@ alertmanager:
     clusterLabel: "prod-alertmanager-core"
     clusterGossipInterval: "2s"
     clusterPushpullInterval: "3m"
-    additionalConfig:
-      clusterTLS:
-        server:
-          cert:
-            secret:
-              name: "alertmanager-cluster-tls"
-              key: "tls.crt"
-          keySecret:
-            name: "alertmanager-cluster-tls"
-            key: "tls.key"
-          clientCA:
-            secret:
-              name: "alertmanager-cluster-tls"
-              key: "ca.crt"
-          clientAuthType: "RequireAndVerifyClientCert"
-        client:
-          ca:
-            secret:
-              name: "alertmanager-cluster-tls"
-              key: "ca.crt"
-          cert:
-            secret:
-              name: "alertmanager-cluster-tls"
-              key: "tls.crt"
-          keySecret:
-            name: "alertmanager-cluster-tls"
-            key: "tls.key"
+    # clusterTLS via additionalConfig is rejected by current Alertmanager CRD
+    # schema under Argo ServerSideApply dry-run:
+    #   .spec.clusterTLS.server.clientCA: field not declared in schema
+    # Re-enable after CRD/operator versions advertise clusterTLS in OpenAPI.
+    # additionalConfig:
+    #   clusterTLS:
+    #     server:
+    #       cert:
+    #         secret:
+    #           name: "alertmanager-cluster-tls"
+    #           key: "tls.crt"
+    #       keySecret:
+    #         name: "alertmanager-cluster-tls"
+    #         key: "tls.key"
+    #       clientCA:
+    #         secret:
+    #           name: "alertmanager-cluster-tls"
+    #           key: "ca.crt"
+    #       clientAuthType: "RequireAndVerifyClientCert"
+    #     client:
+    #       ca:
+    #         secret:
+    #           name: "alertmanager-cluster-tls"
+    #           key: "ca.crt"
+    #       cert:
+    #         secret:
+    #           name: "alertmanager-cluster-tls"
+    #           key: "tls.crt"
+    #       keySecret:
+    #         name: "alertmanager-cluster-tls"
+    #         key: "tls.key"
 
     alertmanagerConfigSelector:
       matchLabels:
