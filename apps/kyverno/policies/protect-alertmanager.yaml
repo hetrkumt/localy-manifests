@@ -6,6 +6,10 @@ metadata:
     policies.kyverno.io/title: Protect Alertmanager IRSA Identity
     policies.kyverno.io/category: DevSecOps
     policies.kyverno.io/severity: high
+    # Pod-only: prometheus-operator STS includes init-config-reloader; stale
+    # Kyverno autogen controller rules kept denying StatefulSet CREATE after
+    # policy updates. Pod admission still Enforce-blocks IRSA hijacking.
+    pod-controllers.kyverno.io/autogen-controllers: none
 spec:
   validationFailureAction: Enforce
   failurePolicy: Fail
