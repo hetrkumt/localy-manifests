@@ -113,7 +113,7 @@ spec:
     canary:
       maxSurge: "25%"
       maxUnavailable: 0
-      scaleDownDelaySeconds: 30
+      # scaleDownDelaySeconds requires trafficRouting; replica-weight canary omits it
       # Wave 4 — analysis between weight steps (auto-abort on SLI breach)
       steps:
         - setWeight: 5
