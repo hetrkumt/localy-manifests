@@ -10,11 +10,49 @@
 #   - Never leave force-sync annotations on ExternalSecrets (causes OutOfSync)
 #   - Reloader PDB must stay disabled while enableHA=false (delete orphan PDB)
 #
-# Deferred:
+# Deferred / next work:
+#   - Wave 5 (Git): restrict-image-registries Enforce (workload NS +
+#     public.ecr.aws util); verify-cosign-signature Audit (flip Enforce after
+#     signed sha-* promotion); retire apply-phase1.ps1; postgres Job → public.ecr.
+#   - Wave 5 cutover: after all workloads run signed sha-*, set
+#     verify-cosign-signature validationFailureAction=Enforce; ensure nodes
+#     can reach rekor.sigstore.dev for keyless verify.
+#   - Wave 4 (Git): SLI recording rules + HTTP alarms as live PrometheusRule;
+#     AnalysisTemplates + order Rollout analysis steps; EventBridge ECR→SNS;
+#     ChatOps dispatch handler + concurrency=5; argocd-notifications CM/ESO.
+#   - Wave 4 cutover: enable notifications helm; wire ESO IRSA for
+#     argocd-notifications-eso-sa; verify AnalysisRun against Prometheus.
+#   - Wave 3 cutover (infra up): sync argo-rollouts app; order Rollout;
+#     delete orphan Deployment/order-service (Gate 8A prune=false).
+#   - Wave 3 remaining services: Deployment→Rollout one PR each;
+#     edge/gateway attach alb-canary-routing examples (Ingress-backed).
+#   - OAuth sync: TF=SM SSOT; after apply (or random_password rotate) run
+#     keycloak-align-oauth.ps1 (or CI/Job) so Keycloak client secrets match SM;
+#     then client_credentials smoke. Do not make Keycloak the OAuth SSOT.
+#   - CI image tags: sha-* promotion (Wave 1+2 branch); retire e2e* pins after
+#     first successful promote PR.
+#   - Ingress rebuild hardening (backlog #7 leftovers):
+#     - Ingress ACM certificate-arn / WAFv2 ACL ARN: stop stale hardcodes
+#       (SSM lookup, tf output → values, or apply-time patch)
+#     - alb-controller values vpcId: same — pin to current VPC via TF/SSM,
+#       not a leftover VPC id in Git
 #   - kube-prometheus-stack Unknown (CRD schema diff / trackTimestampsStaleness)
 #   - kyverno Unknown health → observe
 #
 # Done:
+#   - Wave 5 (Git): Cosign/registry policies + legacy script retirement.
+#   - Wave 4 (Git): see Deferred cutover notes above for live verify.
+#   - Wave 3 (Git): argo-rollouts platform app; workload-project Rollout
+#     whitelist; order-service Deployment→Rollout canary 5→20→50→100;
+#     KEDA scaleTargetRef→Rollout; Rollout ignoreDifferences on 6 apps;
+#     Kyverno Audit policies for probes/traffic; ALB canary examples.
+#   - P0 loki: teardown preserve set = Object-Lock vault + Loki CMK(s)
+#     (state-rm key, no ScheduleKeyDeletion; alias freed; PendingDeletion
+#     cancel+enable; loki-preserve-set.auto.tfvars + loki_legacy_kms_key_ids;
+#     aws_kms_key.loki_s3 prevent_destroy + ProtectedBy tags)
+#   - P0 ingress: public subnet kubernetes.io/cluster/<cluster>=shared in
+#     modules/network public_subnet_tags (was live-only; next L1 apply keeps
+#     internet-facing ALB discovery)
 #   - backlog #7 ingress-core: Synced/Healthy; feifo.click → external ALB;
 #     internal edge host = internal.feifo.click (avoids ED collision)
 #   - backlog #8 platform SM: /localy/prod/platform/grafana via secrets_platform.tf;

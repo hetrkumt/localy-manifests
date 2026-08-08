@@ -1,11 +1,19 @@
-apiVersion: apps/v1
-kind: Deployment
+# Wave 3 — order-service Rollout (Deployment retired in Git SSOT)
+# Canary is replica-weight based (no Ingress on order). ALB traffic shaping
+# lives in common/components/alb-canary-routing for edge/gateway later.
+#
+# Cutover note (Gate 8A prune=false): after first Sync, delete orphan
+# Deployment/order-service if it still exists so only the Rollout owns pods.
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
 metadata:
   name: order-service
   labels:
     app: order-service
 spec:
   replicas: 2
+  revisionHistoryLimit: 3
+  progressDeadlineSeconds: 900
   selector:
     matchLabels:
       app: order-service
@@ -65,18 +73,27 @@ spec:
               memory: "512Mi"
             limits:
               memory: "512Mi"
+          # JVM boot budget isolated; readiness stays ≤5s for fast canary fail-fast
+          startupProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 9090
+            failureThreshold: 30
+            periodSeconds: 5
           readinessProbe:
             httpGet:
               path: /actuator/health/readiness
               port: 9090
-            initialDelaySeconds: 20
-            periodSeconds: 10
+            initialDelaySeconds: 0
+            periodSeconds: 5
+            failureThreshold: 3
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
               port: 9090
-            initialDelaySeconds: 30
-            periodSeconds: 15
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            failureThreshold: 3
           volumeMounts:
             - name: secret-app-creds
               mountPath: /mnt/secrets/app-creds
@@ -92,3 +109,35 @@ spec:
           emptyDir:
             medium: Memory
             sizeLimit: 64Mi
+  strategy:
+    canary:
+      maxSurge: "25%"
+      maxUnavailable: 0
+      scaleDownDelaySeconds: 30
+      # Wave 4 — analysis between weight steps (auto-abort on SLI breach)
+      steps:
+        - setWeight: 5
+        - analysis:
+            templates:
+              - templateName: spring-boot-http-success-rate
+              - templateName: spring-boot-latency-check
+            args:
+              - name: namespace
+                value: order-service
+        - setWeight: 20
+        - analysis:
+            templates:
+              - templateName: spring-boot-http-success-rate
+              - templateName: spring-boot-latency-check
+            args:
+              - name: namespace
+                value: order-service
+        - setWeight: 50
+        - analysis:
+            templates:
+              - templateName: spring-boot-http-success-rate
+              - templateName: spring-boot-latency-check
+            args:
+              - name: namespace
+                value: order-service
+        - setWeight: 100

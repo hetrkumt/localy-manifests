@@ -29,6 +29,10 @@ spec:
       kind: Deployment
       jsonPointers:
         - /spec/replicas
+    - group: argoproj.io
+      kind: Rollout
+      jsonPointers:
+        - /spec/replicas
     - group: external-secrets.io
       kind: ExternalSecret
       jqPathExpressions:

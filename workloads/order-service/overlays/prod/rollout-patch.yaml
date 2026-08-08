@@ -1,6 +1,6 @@
-# Phase 4 — ConfigTree + Zero-Trust (live path)
-apiVersion: apps/v1
-kind: Deployment
+# Phase 4 + Wave 3 — ConfigTree + Zero-Trust patch for Rollout
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
 metadata:
   name: order-service
   annotations:
@@ -67,6 +67,26 @@ spec:
             limits:
               cpu: "1000m"
               memory: "1536Mi"
+          startupProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 9090
+            failureThreshold: 30
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 9090
+            initialDelaySeconds: 0
+            periodSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 9090
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            failureThreshold: 3
           volumeMounts:
             - name: secret-app-creds
               mountPath: /mnt/secrets/app-creds

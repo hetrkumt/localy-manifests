@@ -21,6 +21,8 @@ metadata:
     localy.io/phase: "5"
 spec:
   scaleTargetRef:
+    apiVersion: argoproj.io/v1alpha1
+    kind: Rollout
     name: order-service
   pollingInterval: 30
   cooldownPeriod: 300

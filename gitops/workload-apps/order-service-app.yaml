@@ -30,6 +30,11 @@ spec:
       kind: Deployment
       jsonPointers:
         - /spec/replicas
+    # Wave 3 — KEDA scales Rollout replicas (order pilot; preemptive on all apps)
+    - group: argoproj.io
+      kind: Rollout
+      jsonPointers:
+        - /spec/replicas
     # ESO CRD defaults + status (API fills conversionStrategy etc.)
     - group: external-secrets.io
       kind: ExternalSecret
