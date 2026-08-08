@@ -1,0 +1,28 @@
+# Allow KEDA to scale Argo Rollouts (Batch B+)
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: keda-operator-rollouts
+  labels:
+    app.kubernetes.io/part-of: keda
+    localy.io/phase: "wave3"
+rules:
+  - apiGroups: ["argoproj.io"]
+    resources: ["rollouts", "rollouts/scale", "rollouts/status"]
+    verbs: ["get", "list", "watch", "patch", "update"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: keda-operator-rollouts
+  labels:
+    app.kubernetes.io/part-of: keda
+    localy.io/phase: "wave3"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: keda-operator-rollouts
+subjects:
+  - kind: ServiceAccount
+    name: keda-operator
+    namespace: keda
