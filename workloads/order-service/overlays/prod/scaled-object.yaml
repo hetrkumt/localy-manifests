@@ -1,5 +1,5 @@
 # Phase 5 — KEDA SSOT (MSK lag) — HPA retired
-# Auth: KEDA assumes workload IRSA (order-service-sa role) via identityOwner=workload
+# Auth: KEDA operator IRSA (prod-eks-keda-operator-irsa-role) + MSK IAM
 # KEDA 2.14: apache-kafka + aws_msk_iam (aws-msk type does not exist)
 apiVersion: keda.sh/v1alpha1
 kind: TriggerAuthentication
@@ -7,12 +7,12 @@ metadata:
   name: keda-aws-credentials
   namespace: order-service
   annotations:
-    localy.io/identity-owner: "workload"
-    localy.io/irsa-role: "prod-eks-order-service-irsa-role"
+    localy.io/identity-owner: "keda"
+    localy.io/irsa-role: "prod-eks-keda-operator-irsa-role"
 spec:
   podIdentity:
     provider: aws
-    identityOwner: workload
+    identityOwner: keda
 ---
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
