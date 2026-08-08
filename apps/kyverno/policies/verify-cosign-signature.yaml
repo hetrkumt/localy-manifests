@@ -4,7 +4,8 @@
 # Flip validationFailureAction → Enforce after:
 #   1) Wave 1+2 CI has pushed signed sha-* for all 6 services
 #   2) GitOps promotion merged (no unsigned e2e* running)
-#   3) kubectl get cpol verify-cosign-signature -o yaml shows clean Audit results
+#   3) Kyverno IRSA can pull ECR (verify must not 401)
+#   4) Audit events show signature match (not "no signatures found")
 #
 # Subject is pinned to localy-backend main workflow identity.
 apiVersion: kyverno.io/v1
