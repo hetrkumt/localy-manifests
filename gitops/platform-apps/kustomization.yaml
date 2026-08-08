@@ -1,5 +1,5 @@
 # =============================================================================
-# Phase 8 — Platform App of Apps catalog (coverage 100%)
+# Phase 8 ??Platform App of Apps catalog (coverage 100%)
 # Gate 8A: prune=false, selfHeal=true on child Applications
 # AppProjects live under gitops/base/projects (synced by root overlay, wave -15)
 # =============================================================================
@@ -16,6 +16,7 @@ resources:
   - node-local-dns.yaml
   - karpenter-controller.yaml
   - karpenter-provisioner.yaml
+  - argo-rollouts.yaml
   - keda.yaml
   - reloader.yaml
   # Observability (1 ~ 9)
