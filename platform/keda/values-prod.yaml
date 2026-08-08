@@ -29,6 +29,13 @@ operator:
     enabled: true
     minAvailable: 1
 
+# IRSA for apache-kafka / MSK IAM scalers (operator + metrics-server)
+podIdentity:
+  aws:
+    irsa:
+      enabled: true
+      roleArn: "arn:aws:iam::533003975005:role/prod-eks-keda-operator-irsa-role"
+
 metricsServer:
   replicaCount: 2
   nodeSelector:
