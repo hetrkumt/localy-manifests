@@ -1,0 +1,28 @@
+# Wave 4 — Argo CD Notifications config + ESO webhook (controller via l4 helm)
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd-notifications
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-5"
+    argocd.argoproj.io/sync-options: ServerSideApply=true,Delete=false,Prune=false
+    localy.io/phase: "wave4"
+spec:
+  project: platform-project
+  source:
+    repoURL: "https://github.com/hetrkumt/localy-manifests.git"
+    targetRevision: main
+    path: apps/argocd-notifications
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false
+      - ServerSideApply=true
+      - Delete=false
+      - Prune=false

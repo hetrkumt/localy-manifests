@@ -1,0 +1,59 @@
+# Wave 4 — pre-aggregated SLI recording rules (5s scrape / 1m rate)
+# Keeps AnalysisTemplate queries cheap (avoid raw histogram every step).
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: localy-sli-recording-rules
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
+    app: kube-prometheus-stack
+    app.kubernetes.io/part-of: progressive-delivery
+    localy.io/phase: "wave4"
+spec:
+  groups:
+    - name: localy.sli.http
+      interval: 15s
+      rules:
+        - record: localy:http_request_count:rate1m
+          expr: |
+            sum by (namespace) (
+              rate(http_server_requests_seconds_count[1m])
+            )
+
+        - record: localy:http_error_rate:ratio_rate1m
+          expr: |
+            (
+              sum by (namespace) (
+                rate(http_server_requests_seconds_count{status=~"5.."}[1m])
+              )
+              /
+              clamp_min(
+                sum by (namespace) (
+                  rate(http_server_requests_seconds_count[1m])
+                ),
+                1e-9
+              )
+            )
+
+        - record: localy:http_success_rate:ratio_rate1m
+          expr: |
+            (1 - localy:http_error_rate:ratio_rate1m)
+
+        - record: localy:http_latency_p95:seconds
+          expr: |
+            histogram_quantile(
+              0.95,
+              sum by (namespace, le) (
+                rate(http_server_requests_seconds_bucket[1m])
+              )
+            )
+
+        - record: localy:http_latency_p99:seconds
+          expr: |
+            histogram_quantile(
+              0.99,
+              sum by (namespace, le) (
+                rate(http_server_requests_seconds_bucket[1m])
+              )
+            )

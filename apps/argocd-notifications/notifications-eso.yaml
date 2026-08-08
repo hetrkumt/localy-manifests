@@ -1,0 +1,55 @@
+# Wave 4 — ESO wiring for notifications webhook (DEFERRED until IRSA exists)
+# Role prod-eks-argocd-notifications-eso-role is not in AWS yet; keep this file
+# out of kustomization until TF creates the role and SA annotation is uncommented.
+apiVersion: external-secrets.io/v1beta1
+kind: SecretStore
+metadata:
+  name: argocd-notifications-secret-store
+  namespace: argocd
+  annotations:
+    localy.io/phase: "wave4"
+    localy.io/allowed-sm-path: "prod-chatops-slack-webhook*"
+spec:
+  provider:
+    aws:
+      service: SecretsManager
+      region: ap-northeast-2
+      auth:
+        jwt:
+          serviceAccountRef:
+            name: argocd-notifications-eso-sa
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: argocd-notifications-eso-sa
+  namespace: argocd
+  annotations:
+    localy.io/phase: "wave4"
+    # eks.amazonaws.com/role-arn: arn:aws:iam::533003975005:role/prod-eks-argocd-notifications-eso-role
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: argocd-notifications-secret
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
+    localy.io/phase: "wave4"
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    name: argocd-notifications-secret-store
+    kind: SecretStore
+  target:
+    name: argocd-notifications-secret
+    creationPolicy: Owner
+    deletionPolicy: Retain
+    template:
+      type: Opaque
+      data:
+        slack-webhook-url: "{{ .webhookUrl }}"
+  data:
+    - secretKey: webhookUrl
+      remoteRef:
+        key: prod-chatops-slack-webhook
