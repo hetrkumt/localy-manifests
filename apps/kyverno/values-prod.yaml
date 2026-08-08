@@ -11,12 +11,24 @@ resources:
 
 admissionController:
   replicas: 2
+  rbac:
+    serviceAccount:
+      annotations:
+        eks.amazonaws.com/role-arn: "arn:aws:iam::533003975005:role/prod-eks-kyverno-ecr-irsa-role"
 
 backgroundController:
   replicas: 1
+  rbac:
+    serviceAccount:
+      annotations:
+        eks.amazonaws.com/role-arn: "arn:aws:iam::533003975005:role/prod-eks-kyverno-ecr-irsa-role"
 
 reportsController:
   replicas: 1
+  rbac:
+    serviceAccount:
+      annotations:
+        eks.amazonaws.com/role-arn: "arn:aws:iam::533003975005:role/prod-eks-kyverno-ecr-irsa-role"
 
 # Chart hooks exec /bin/bash. registry.k8s.io/kubectl is distroless (no shell).
 # bitnami/kubectl:1.30.2 was removed from Docker Hub; use the legacy mirror.
