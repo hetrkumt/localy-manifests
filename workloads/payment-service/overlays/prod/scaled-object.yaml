@@ -1,5 +1,5 @@
 # Phase 5 — KEDA SSOT (MSK lag)
-# Auth: payment-service-sa → prod-eks-payment-service-irsa-role
+# Auth: KEDA assumes workload IRSA via identityOwner=workload
 # KEDA 2.14: apache-kafka + aws_msk_iam (aws-msk type does not exist)
 apiVersion: keda.sh/v1alpha1
 kind: TriggerAuthentication
@@ -7,11 +7,12 @@ metadata:
   name: keda-aws-credentials-payment
   namespace: payment-service
   annotations:
-    localy.io/identity-owner: "pod-sa"
+    localy.io/identity-owner: "workload"
     localy.io/irsa-role: "prod-eks-payment-service-irsa-role"
 spec:
   podIdentity:
-    provider: aws-eks
+    provider: aws
+    identityOwner: workload
 ---
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
@@ -58,6 +59,5 @@ spec:
         sasl: aws_msk_iam
         tls: enable
         awsRegion: ap-northeast-2
-        identityOwner: pod
       authenticationRef:
         name: keda-aws-credentials-payment
