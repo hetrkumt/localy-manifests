@@ -1,0 +1,6 @@
+# Teach kustomize images: transformer about Argo Rollouts
+images:
+  - kind: Rollout
+    path: spec/template/spec/containers/image
+  - kind: Rollout
+    path: spec/template/spec/initContainers/image
