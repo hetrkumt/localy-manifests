@@ -84,6 +84,15 @@ extraObjects:
                   summary: "Elevated error-class log rate"
                   description: "Possible query storm, ingest failure, or upstream dependency issue."
 
+# grafana-agent-operator ships stale monitoring.coreos.com CRDs that strip
+# ServiceMonitor.trackTimestampsStaleness and break kube-prometheus-stack sync.
+# Cluster already has prometheus-operator v0.81 CRDs; do not let Loki own them.
+monitoring:
+  selfMonitoring:
+    enabled: false
+    grafanaAgent:
+      installOperator: false
+
 loki:
   auth_enabled: true
 

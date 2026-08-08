@@ -28,6 +28,27 @@ spec:
   destination:
     server: "https://kubernetes.default.svc"
     namespace: loki
+  # If agent-operator CRDs ever reappear in desired state, do not overwrite
+  # cluster prometheus-operator CRD schemas.
+  ignoreDifferences:
+    - group: apiextensions.k8s.io
+      kind: CustomResourceDefinition
+      name: servicemonitors.monitoring.coreos.com
+      jqPathExpressions:
+        - .spec.versions
+        - .spec.conversion
+    - group: apiextensions.k8s.io
+      kind: CustomResourceDefinition
+      name: podmonitors.monitoring.coreos.com
+      jqPathExpressions:
+        - .spec.versions
+        - .spec.conversion
+    - group: apiextensions.k8s.io
+      kind: CustomResourceDefinition
+      name: probes.monitoring.coreos.com
+      jqPathExpressions:
+        - .spec.versions
+        - .spec.conversion
   syncPolicy:
     automated:
       prune: false
@@ -37,3 +58,4 @@ spec:
       - ServerSideApply=true
       - Delete=false
       - Prune=false
+      - RespectIgnoreDifferences=true
