@@ -1,0 +1,56 @@
+# Wave 4 — Argo CD Notifications config (controller enabled in l4-bootstrap)
+# Secret materialization: bootstrap Secret until prod-eks-argocd-notifications-eso-role exists.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-notifications-cm
+  namespace: argocd
+  labels:
+    localy.io/phase: "wave4"
+    app.kubernetes.io/part-of: argocd-notifications
+data:
+  service.webhook.chatops-slack: |
+    url: $slack-webhook-url
+    headers:
+    - name: Content-Type
+      value: application/json
+  template.app-sync-succeeded: |
+    webhook:
+      chatops-slack:
+        method: POST
+        body: |
+          {
+            "text": ":white_check_mark: ArgoCD sync succeeded — {{.app.metadata.name}} ({{.app.spec.destination.namespace}})"
+          }
+  template.app-health-degraded: |
+    webhook:
+      chatops-slack:
+        method: POST
+        body: |
+          {
+            "text": ":warning: ArgoCD health degraded — {{.app.metadata.name}} status={{.app.status.health.status}}"
+          }
+  template.app-sync-failed: |
+    webhook:
+      chatops-slack:
+        method: POST
+        body: |
+          {
+            "text": ":x: ArgoCD sync failed — {{.app.metadata.name}}"
+          }
+  trigger.on-sync-succeeded: |
+    - when: app.status.operationState.phase in ['Succeeded']
+      send: [app-sync-succeeded]
+  trigger.on-health-degraded: |
+    - when: app.status.health.status == 'Degraded'
+      send: [app-health-degraded]
+  trigger.on-sync-failed: |
+    - when: app.status.operationState.phase in ['Error', 'Failed']
+      send: [app-sync-failed]
+  subscriptions: |
+    - recipients:
+      - chatops-slack
+      triggers:
+      - on-sync-succeeded
+      - on-health-degraded
+      - on-sync-failed
