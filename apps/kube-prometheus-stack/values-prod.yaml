@@ -1,3 +1,9 @@
+# Chart 70.0.0 emits ServiceMonitor.trackTimestampsStaleness but ships CRDs
+# that reject the field. Manage monitoring.coreos.com CRDs out-of-band
+# (prometheus-operator v0.81+) and keep Helm from owning them.
+crds:
+  enabled: false
+
 grafana:
   # Phase 0: plaintext adminPassword destroyed — ESO/SM via existingSecret
   admin:

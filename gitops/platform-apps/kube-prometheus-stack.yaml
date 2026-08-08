@@ -28,6 +28,26 @@ spec:
   destination:
     server: "https://kubernetes.default.svc"
     namespace: monitoring
+  # CRD schema is managed out-of-band (prometheus-operator v0.81+) so chart
+  # ServiceMonitor fields like trackTimestampsStaleness validate correctly.
+  # Admission webhook caBundle is cert-controller owned.
+  ignoreDifferences:
+    - group: apiextensions.k8s.io
+      kind: CustomResourceDefinition
+      jqPathExpressions:
+        - .spec.versions
+        - .spec.conversion
+        - .metadata.annotations
+    - group: admissionregistration.k8s.io
+      kind: ValidatingWebhookConfiguration
+      name: kube-prometheus-stack-admission
+      jqPathExpressions:
+        - .webhooks[].clientConfig.caBundle
+    - group: admissionregistration.k8s.io
+      kind: MutatingWebhookConfiguration
+      name: kube-prometheus-stack-admission
+      jqPathExpressions:
+        - .webhooks[].clientConfig.caBundle
   syncPolicy:
     automated:
       prune: false
@@ -37,3 +57,4 @@ spec:
       - ServerSideApply=true
       - Delete=false
       - Prune=false
+      - RespectIgnoreDifferences=true
