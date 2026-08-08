@@ -20,10 +20,13 @@ spec:
           port: 9090
     - from:
         - ipBlock:
-            cidr: 10.0.0.0/16 # [보안 교정] 0.0.0.0/0 전면 개방을 취소하고 AWS VPC 내부(ALB 노드) 대역폭만 허용
+            # ALB nodes (traffic :9000 + healthcheck :9090)
+            cidr: 10.0.0.0/16
       ports:
         - protocol: TCP
           port: 9000
+        - protocol: TCP
+          port: 9090
   egress:
     # 1. 인프라 필수 통신 (CoreDNS)
     - to:
