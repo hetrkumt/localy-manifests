@@ -17,7 +17,7 @@ resources:
 images:
   - name: localy-payment-service
     newName: 533003975005.dkr.ecr.ap-northeast-2.amazonaws.com/payment-service
-    newTag: e2e6
+    newTag: sha-42def0a1cdc4
 
 patches:
   - path: deployment-patch.yaml
