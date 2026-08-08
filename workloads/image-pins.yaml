@@ -2,7 +2,7 @@
 # Prod workload image tag SSOT
 # =============================================================================
 # Deploy pins live in:
-#   workloads/<svc>/overlays/prod/kustomization.yaml  →  images[].newTag
+#   workloads/<svc>/overlays/prod/kustomization.yaml  ?? images[].newTag
 # Those newTag values MUST match `services` below.
 #
 # Architecture: linux/amd64 only.
@@ -12,7 +12,7 @@
 #
 # CI (localy-backend .github/workflows/build-push-ecr.yml) pushes:
 #   - each gitops pin tag listed here
-#   - mutable alias `latest` (convenience only — NOT used by GitOps)
+#   - mutable alias `latest` (convenience only ??NOT used by GitOps)
 #
 # After teardown / empty ECR:
 #   1) Fix TF OIDC+ECR push IAM if needed (l3 github_actions_oidc.tf)
@@ -24,9 +24,9 @@ registry: 533003975005.dkr.ecr.ap-northeast-2.amazonaws.com
 region: ap-northeast-2
 architecture: amd64
 services:
-  order-service: e2e4
-  payment-service: e2e6
-  cart-service: e2e1
-  user-service: e2e1
-  store-service: e2e2
-  edge-service: e2e1
+  order-service: sha-42def0a1cdc4
+  payment-service: sha-42def0a1cdc4
+  cart-service: sha-42def0a1cdc4
+  user-service: sha-42def0a1cdc4
+  store-service: sha-42def0a1cdc4
+  edge-service: sha-42def0a1cdc4
