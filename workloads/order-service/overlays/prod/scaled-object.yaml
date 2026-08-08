@@ -1,5 +1,6 @@
 # Phase 5 — KEDA SSOT (MSK lag) — HPA retired
-# Correction: MSK auth uses scaled Pod's SA IRSA (order-service-sa → prod-eks-order-service-irsa-role)
+# Auth: scaled Pod SA IRSA (order-service-sa → prod-eks-order-service-irsa-role)
+# KEDA 2.14 has no aws-msk scaler type; use apache-kafka + aws_msk_iam.
 apiVersion: keda.sh/v1alpha1
 kind: TriggerAuthentication
 metadata:
@@ -49,13 +50,16 @@ spec:
               value: 10
               periodSeconds: 60
   triggers:
-    - type: aws-msk
+    - type: apache-kafka
       metadata:
-        identityOwner: pod
-        bootstrapServers: b-1.mskcluster.amazonaws.com:9098,b-2.mskcluster.amazonaws.com:9098
+        bootstrapServers: b-1.prodlocalymsk.d3mxd8.c2.kafka.ap-northeast-2.amazonaws.com:9098,b-2.prodlocalymsk.d3mxd8.c2.kafka.ap-northeast-2.amazonaws.com:9098,b-3.prodlocalymsk.d3mxd8.c2.kafka.ap-northeast-2.amazonaws.com:9098
         topic: payment-result
         consumerGroup: order-payment-result-group
         lagThreshold: "50"
         activationLagThreshold: "10"
+        sasl: aws_msk_iam
+        tls: enable
+        awsRegion: ap-northeast-2
+        identityOwner: pod
       authenticationRef:
         name: keda-aws-credentials

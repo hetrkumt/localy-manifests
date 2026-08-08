@@ -1,5 +1,6 @@
 # Phase 5 — KEDA SSOT (MSK lag)
-# Correction: MSK auth uses payment-service-sa → prod-eks-payment-service-irsa-role
+# Auth: payment-service-sa → prod-eks-payment-service-irsa-role
+# KEDA 2.14: apache-kafka + aws_msk_iam (aws-msk type does not exist)
 apiVersion: keda.sh/v1alpha1
 kind: TriggerAuthentication
 metadata:
@@ -47,13 +48,16 @@ spec:
               value: 10
               periodSeconds: 60
   triggers:
-    - type: aws-msk
+    - type: apache-kafka
       metadata:
-        identityOwner: pod
-        bootstrapServersFromEnv: SPRING_KAFKA_BOOTSTRAP_SERVERS
+        bootstrapServers: b-1.prodlocalymsk.d3mxd8.c2.kafka.ap-northeast-2.amazonaws.com:9098,b-2.prodlocalymsk.d3mxd8.c2.kafka.ap-northeast-2.amazonaws.com:9098,b-3.prodlocalymsk.d3mxd8.c2.kafka.ap-northeast-2.amazonaws.com:9098
         consumerGroup: payment-approved-group
         topic: order-approved
         lagThreshold: "10"
         activationLagThreshold: "5"
+        sasl: aws_msk_iam
+        tls: enable
+        awsRegion: ap-northeast-2
+        identityOwner: pod
       authenticationRef:
         name: keda-aws-credentials-payment

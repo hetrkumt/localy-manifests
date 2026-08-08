@@ -22,6 +22,10 @@ spec:
     - repoURL: "https://github.com/hetrkumt/localy-manifests.git"
       targetRevision: main
       ref: values
+    # Extra RBAC for scaling Rollouts (not in upstream chart)
+    - repoURL: "https://github.com/hetrkumt/localy-manifests.git"
+      targetRevision: main
+      path: platform/keda/overlays/prod
   destination:
     server: "https://kubernetes.default.svc"
     namespace: keda
