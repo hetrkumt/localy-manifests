@@ -87,6 +87,10 @@ extraObjects:
 # grafana-agent-operator ships stale monitoring.coreos.com CRDs that strip
 # ServiceMonitor.trackTimestampsStaleness and break kube-prometheus-stack sync.
 # Cluster already has prometheus-operator v0.81 CRDs; do not let Loki own them.
+# test.enabled must be false when selfMonitoring is off (chart validate.yaml).
+test:
+  enabled: false
+
 monitoring:
   selfMonitoring:
     enabled: false
