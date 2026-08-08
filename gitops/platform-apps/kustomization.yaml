@@ -1,5 +1,5 @@
 # =============================================================================
-# Phase 8 — Platform App of Apps catalog (coverage 100%)
+# Phase 8 ??Platform App of Apps catalog (coverage 100%)
 # Gate 8A: prune=false, selfHeal=true on child Applications
 # AppProjects live under gitops/base/projects (synced by root overlay, wave -15)
 # =============================================================================
