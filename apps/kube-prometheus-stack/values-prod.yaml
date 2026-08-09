@@ -5,7 +5,7 @@ crds:
   enabled: false
 
 grafana:
-  # Phase 0: plaintext adminPassword destroyed — ESO/SM via existingSecret
+  # Phase 0: plaintext adminPassword destroyed ??ESO/SM via existingSecret
   admin:
     existingSecret: grafana-admin-credentials
     userKey: admin-user
@@ -67,8 +67,8 @@ grafana:
       alb.ingress.kubernetes.io/group.name: "prod-ingress-group"
       alb.ingress.kubernetes.io/target-type: "ip"
       alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
-      alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:ap-northeast-2:533003975005:certificate/75828507-ed10-4d01-a69c-29cf39f6cc85"
-      alb.ingress.kubernetes.io/wafv2-acl-arn: "arn:aws:wafv2:ap-northeast-2:533003975005:regional/webacl/prod-ingress-waf/22369cc2-004f-4469-9197-1f010fec52f5"
+      alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:ap-northeast-2:533003975005:certificate/9c6d9adb-1dae-453d-bd05-2574a93820de"
+      alb.ingress.kubernetes.io/wafv2-acl-arn: "arn:aws:wafv2:ap-northeast-2:533003975005:regional/webacl/prod-ingress-waf/a5da2535-03bf-424c-9d52-82f152c9047d"
     hosts:
       - "grafana.feifo.click"
     paths:
