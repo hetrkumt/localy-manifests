@@ -21,11 +21,21 @@ spec:
               rate(http_server_requests_seconds_count[1m])
             )
 
+        # When no 5xx series exist, bare rate(...{status=~"5.."}) is empty and
+        # would drop success_rate entirely — pad missing numerator with 0.
         - record: localy:http_error_rate:ratio_rate1m
           expr: |
             (
-              sum by (namespace) (
-                rate(http_server_requests_seconds_count{status=~"5.."}[1m])
+              (
+                sum by (namespace) (
+                  rate(http_server_requests_seconds_count{status=~"5.."}[1m])
+                )
+                or on (namespace)
+                (
+                  sum by (namespace) (
+                    rate(http_server_requests_seconds_count[1m])
+                  ) * 0
+                )
               )
               /
               clamp_min(
