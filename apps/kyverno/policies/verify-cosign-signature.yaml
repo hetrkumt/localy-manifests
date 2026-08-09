@@ -1,11 +1,11 @@
 # Wave 5 — Cosign keyless verify (GitHub Actions OIDC → Fulcio/Rekor)
 #
-# Mode: Audit until CI sha-* signed images replace legacy e2e* pins.
-# Flip validationFailureAction → Enforce after:
-#   1) Wave 1+2 CI has pushed signed sha-* for all 6 services
-#   2) GitOps promotion merged (no unsigned e2e* running)
-#   3) Kyverno IRSA can pull ECR (verify must not 401)
-#   4) Audit events show signature match (not "no signatures found")
+# Mode: Enforce (Batch C cutover 2026-08-10).
+# Preconditions met:
+#   1) Wave 1+2 CI pushed signed sha-* for all 6 services
+#   2) GitOps promotion merged (sha-19fb5177fe35)
+#   3) Kyverno IRSA trust retargeted to current EKS OIDC (post-teardown)
+#   4) Audit PolicyReports: Pod-level passes (no "no signatures found")
 #
 # Subject is pinned to localy-backend main workflow identity.
 apiVersion: kyverno.io/v1
@@ -20,7 +20,7 @@ metadata:
     localy.io/phase: "wave5"
     localy.io/enforce-when: "all-workloads-on-signed-sha-tags"
 spec:
-  validationFailureAction: Audit
+  validationFailureAction: Enforce
   failurePolicy: Ignore
   background: true
   webhookTimeoutSeconds: 30
@@ -44,10 +44,9 @@ spec:
       verifyImages:
         - imageReferences:
             - "533003975005.dkr.ecr.ap-northeast-2.amazonaws.com/*"
-          # Audit mode forbids mutateDigest=true on Kyverno 1.13 (webhook rejects policy).
-          # Keep false until flipping validationFailureAction → Enforce with signed sha-* pins.
-          mutateDigest: false
-          verifyDigest: false
+          # Digest mutation on admit; unsigned/tag-only pulls are rejected under Enforce.
+          mutateDigest: true
+          verifyDigest: true
           required: true
           attestors:
             - count: 1
