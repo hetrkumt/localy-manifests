@@ -32,4 +32,4 @@ patches:
 images:
   - name: localy/user-service
     newName: 533003975005.dkr.ecr.ap-northeast-2.amazonaws.com/user-service
-    newTag: sha-42def0a1cdc4
+    newTag: sha-19fb5177fe35
