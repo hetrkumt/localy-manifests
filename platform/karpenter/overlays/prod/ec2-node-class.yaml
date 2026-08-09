@@ -4,8 +4,10 @@ metadata:
   name: default
 spec:
   amiFamily: AL2
-  # Must match L2 IAM role: ${cluster_name}-karpenter-node-role
-  role: "prod-eks-karpenter-node-role"
+  # Prefer TF-managed instance profile (not Karpenter-managed role→profile rebind).
+  # After teardown/recreate, role-managed profiles can lag IAM credential propagation
+  # and EKS bootstrap fails on aws ec2 describe-instances ("Unable to locate credentials").
+  instanceProfile: "prod-eks-karpenter-node-role"
   subnetSelectorTerms:
     - tags:
         # Must match EKS/VPC subnet tags from Terraform
@@ -15,7 +17,7 @@ spec:
         karpenter.sh/discovery: prod-eks
   metadataOptions:
     httpTokens: required
-    httpPutResponseHopLimit: 1
+    httpPutResponseHopLimit: 2
     httpEndpoint: enabled
     httpProtocolIPv6: disabled
   blockDeviceMappings:
