@@ -40,7 +40,9 @@
 #   - kyverno Unknown health ??observe
 #
 # Done:
-#   - Wave 5 (ops): Kyverno admission/background/reports IRSA for ECR verifyImages (prod-eks-kyverno-ecr-irsa-role); Cosign remains Audit until GHA signs sha-* pins.
+#   - Wave 5 (ops): Kyverno IRSA for ECR verifyImages; Cosign Enforce on signed sha-*.
+#   - P0 (2026-08-10): alb-controller vpcId retargeted to live VPC after teardown;
+#     Kyverno IRSA brought under L3 Terraform SSOT (SSM oidc_*).
 #   - Wave 5 (Git): Cosign/registry policies + legacy script retirement.
 #   - Wave 4 (Git): see Deferred cutover notes above for live verify.
 #   - Wave 3 (Git): argo-rollouts platform app; workload-project Rollout
