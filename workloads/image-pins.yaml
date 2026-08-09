@@ -24,9 +24,9 @@ registry: 533003975005.dkr.ecr.ap-northeast-2.amazonaws.com
 region: ap-northeast-2
 architecture: amd64
 services:
-  order-service: sha-42def0a1cdc4
-  payment-service: sha-42def0a1cdc4
-  cart-service: sha-42def0a1cdc4
-  user-service: sha-42def0a1cdc4
-  store-service: sha-42def0a1cdc4
-  edge-service: sha-30b9e39fe677
+  order-service: sha-19fb5177fe35
+  payment-service: sha-19fb5177fe35
+  cart-service: sha-19fb5177fe35
+  user-service: sha-19fb5177fe35
+  store-service: sha-19fb5177fe35
+  edge-service: sha-19fb5177fe35

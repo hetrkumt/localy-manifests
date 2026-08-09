@@ -17,7 +17,7 @@ resources:
 images:
   - name: localy/cart-service
     newName: 533003975005.dkr.ecr.ap-northeast-2.amazonaws.com/cart-service
-    newTag: sha-42def0a1cdc4
+    newTag: sha-19fb5177fe35
 
 patches:
   - path: deployment-patch.yaml
