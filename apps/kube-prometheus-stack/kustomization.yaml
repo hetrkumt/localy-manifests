@@ -32,6 +32,9 @@ configMapGenerator:
       labels:
         prometheus_rule: "1"
 
+  # Alertmanager CR mounts configMaps by exact name; hash suffix breaks mount.
   - name: alertmanager-templates
     files:
       - alertmanager/chatops-top3.tmpl
+    options:
+      disableNameSuffixHash: true
