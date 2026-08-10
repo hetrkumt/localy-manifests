@@ -26,9 +26,8 @@
 #     delete orphan Deployment/order-service (Gate 8A prune=false).
 #   - Wave 3 remaining services: Deployment?뭃ollout one PR each;
 #     edge/gateway attach alb-canary-routing examples (Ingress-backed).
-#   - OAuth sync: TF=SM SSOT; after apply (or random_password rotate) run
-#     keycloak-align-oauth.ps1 (or CI/Job) so Keycloak client secrets match SM;
-#     then client_credentials smoke. Do not make Keycloak the OAuth SSOT.
+#   - OAuth sync: (done 2026-08-10b) keycloak-align-oauth.ps1 — kcadm --config /tmp;
+#     SkipDbRecreate supported; client_credentials smoke OK for user/edge
 #   - CI image tags: sha-* promotion (Wave 1+2 branch); retire e2e* pins after
 #     first successful promote PR.
 #   - Ingress rebuild hardening: Git still embeds ARN/vpcId; after rebuild run
