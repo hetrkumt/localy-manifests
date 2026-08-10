@@ -36,6 +36,6 @@ tolerations:
     effect: "NoSchedule"
 
 serviceMonitor:
-  enabled: true
+  enabled: false
   additionalLabels:
     release: "kube-prometheus-stack"
