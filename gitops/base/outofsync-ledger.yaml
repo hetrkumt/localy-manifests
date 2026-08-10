@@ -31,15 +31,16 @@
 #     then client_credentials smoke. Do not make Keycloak the OAuth SSOT.
 #   - CI image tags: sha-* promotion (Wave 1+2 branch); retire e2e* pins after
 #     first successful promote PR.
-#   - Ingress rebuild hardening (backlog #7 leftovers):
-#     - Ingress ACM certificate-arn / WAFv2 ACL ARN: stop stale hardcodes
-#       (SSM lookup, tf output ??values, or apply-time patch)
-#     - alb-controller values vpcId: same ??pin to current VPC via TF/SSM,
-#       not a leftover VPC id in Git
+#   - Ingress rebuild hardening: Git still embeds ARN/vpcId; after rebuild run
+#     localy/infrastructure/scripts/retarget-ingress-aws-ids.ps1 then commit/push
+#     (SSOT = TF→SSM; script copies into manifests)
 #   - kube-prometheus-stack Unknown (CRD schema diff / trackTimestampsStaleness)
-#   - kyverno Unknown health ??observe
+#   - kyverno Unknown health → observe
 #
 # Done:
+#   - Ingress retarget (2026-08-10b): alb-controller vpcId + ingress/KPS ACM/WAF
+#     → live SSM (/localy/prod/network/vpc_id, apps/acm/cert_arn, apps/waf/arn);
+#     retarget-ingress-aws-ids.ps1 added
 #   - Wave 5 (ops): Kyverno IRSA for ECR verifyImages; Cosign Enforce on signed sha-*.
 #   - P0 (2026-08-10): alb-controller vpcId retargeted to live VPC after teardown;
 #     ACM/WAF ARNs retargeted to SSM live values after teardown.

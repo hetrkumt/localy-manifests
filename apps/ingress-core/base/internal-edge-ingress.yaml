@@ -14,7 +14,7 @@ metadata:
     alb.ingress.kubernetes.io/healthcheck-path: "/actuator/health/readiness"
     alb.ingress.kubernetes.io/healthcheck-port: "9090"
     alb.ingress.kubernetes.io/success-codes: "200"
-    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:ap-northeast-2:533003975005:certificate/9c6d9adb-1dae-453d-bd05-2574a93820de"
+    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:ap-northeast-2:533003975005:certificate/691f8d34-4153-4541-b3d4-ebf10bb9292a"
 spec:
   rules:
     - host: "internal.feifo.click"

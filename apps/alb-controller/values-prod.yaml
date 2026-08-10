@@ -1,7 +1,7 @@
 # Keep in sync with SSM /localy/prod/network/vpc_id and cluster name after redeploy.
 clusterName: "prod-eks"
 region: "ap-northeast-2"
-vpcId: "vpc-0adb5b65547670768"
+vpcId: "vpc-0859e63d04253daaa"
 
 serviceAccount:
   create: true
