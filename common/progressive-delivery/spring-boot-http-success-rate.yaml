@@ -14,17 +14,18 @@ spec:
     - name: success-rate
       interval: 30s
       count: 3
-      # Pass when NaN (low traffic) OR success rate >= 99%
+      # Pass when NaN (low traffic / empty scalar) OR success rate >= 99%.
+      # scalar() required: vector results make result a []float64 and break isNaN().
       successCondition: "isNaN(result) || result >= 0.99"
       failureLimit: 3
       provider:
         prometheus:
           address: http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090
           query: |
-            (
+            scalar(
               localy:http_success_rate:ratio_rate1m{namespace="{{ args.namespace }}"}
-            )
-            and on (namespace)
-            (
-              localy:http_request_count:rate1m{namespace="{{ args.namespace }}"} * 60 > 50
+              and on (namespace)
+              (
+                localy:http_request_count:rate1m{namespace="{{ args.namespace }}"} * 60 > 50
+              )
             )

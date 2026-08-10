@@ -13,17 +13,18 @@ spec:
     - name: latency-p95
       interval: 30s
       count: 3
-      # Pass when NaN (low traffic) OR p95 <= 500ms
+      # Pass when NaN (low traffic / empty scalar) OR p95 <= 500ms.
+      # scalar() required: vector results make result a []float64 and break isNaN().
       successCondition: "isNaN(result) || result <= 0.5"
       failureLimit: 3
       provider:
         prometheus:
           address: http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090
           query: |
-            (
+            scalar(
               localy:http_latency_p95:seconds{namespace="{{ args.namespace }}"}
-            )
-            and on (namespace)
-            (
-              localy:http_request_count:rate1m{namespace="{{ args.namespace }}"} * 60 > 50
+              and on (namespace)
+              (
+                localy:http_request_count:rate1m{namespace="{{ args.namespace }}"} * 60 > 50
+              )
             )
