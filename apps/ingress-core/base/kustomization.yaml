@@ -4,4 +4,5 @@ kind: Kustomization
 resources:
   - ingress.yaml
   - external-keycloak-ingress.yaml
+  - external-argocd-ingress.yaml
   - internal-edge-ingress.yaml

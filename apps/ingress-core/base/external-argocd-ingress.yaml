@@ -1,0 +1,35 @@
+# Argo CD UI — shared external ALB (path A: TLS at ALB, HTTP to server:80)
+# Temporary for bring-up/verify; keep in Git for possible reuse. IP-allowlisted.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: argocd-server
+  namespace: argocd
+  annotations:
+    kubernetes.io/ingress.class: "alb"
+    alb.ingress.kubernetes.io/scheme: "internet-facing"
+    alb.ingress.kubernetes.io/group.name: "localy-external-alb"
+    alb.ingress.kubernetes.io/group.order: "5"
+    alb.ingress.kubernetes.io/target-type: "ip"
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: "443"
+    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:ap-northeast-2:533003975005:certificate/6f813339-8d53-49fc-a44a-c2bdb90649e3"
+    alb.ingress.kubernetes.io/wafv2-acl-arn: "arn:aws:wafv2:ap-northeast-2:533003975005:regional/webacl/prod-ingress-waf/7aec41cf-e821-4521-82df-f1eabaf0402f"
+    alb.ingress.kubernetes.io/inbound-cidrs: "1.251.148.107/32"
+    alb.ingress.kubernetes.io/healthcheck-path: "/healthz"
+    alb.ingress.kubernetes.io/success-codes: "200"
+    alb.ingress.kubernetes.io/backend-protocol: "HTTP"
+    alb.ingress.kubernetes.io/healthcheck-protocol: "HTTP"
+    external-dns.alpha.kubernetes.io/hostname: "argo.feifo.click"
+spec:
+  rules:
+    - host: "argo.feifo.click"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: argocd-server
+                port:
+                  number: 80
