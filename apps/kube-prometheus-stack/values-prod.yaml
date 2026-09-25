@@ -64,11 +64,14 @@ grafana:
     ingressClassName: "alb"
     annotations:
       alb.ingress.kubernetes.io/scheme: "internet-facing"
-      alb.ingress.kubernetes.io/group.name: "prod-ingress-group"
+      # Share external ALB with argo/edge (post-rebuild group name)
+      alb.ingress.kubernetes.io/group.name: "localy-external-alb"
       alb.ingress.kubernetes.io/target-type: "ip"
       alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
-      alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:ap-northeast-2:533003975005:certificate/691f8d34-4153-4541-b3d4-ebf10bb9292a"
-      alb.ingress.kubernetes.io/wafv2-acl-arn: "arn:aws:wafv2:ap-northeast-2:533003975005:regional/webacl/prod-ingress-waf/7aec41cf-e821-4521-82df-f1eabaf0402f"
+      # Stage 3/4: no ACM/WAF ARN literals — Kyverno injects from
+      # kube-system/Secret/alb-ingress-aws-ids (ESO ← SSM)
+      localy.io/inject-alb-aws-ids: "true"
+      external-dns.alpha.kubernetes.io/hostname: "grafana.feifo.click"
     hosts:
       - "grafana.feifo.click"
     paths:

@@ -1,0 +1,47 @@
+# Stage 3 — Inject ACM/WAF ARNs from shared ESO Secret into Ingress annotations.
+# Opt-in: metadata.annotations["localy.io/inject-alb-aws-ids"] = "true"
+# Source: kube-system/Secret/alb-ingress-aws-ids (keys acm-arn, waf-arn)
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: inject-alb-ingress-aws-ids
+  annotations:
+    policies.kyverno.io/title: Inject ALB ACM/WAF ARNs from SSM (via ESO Secret)
+    policies.kyverno.io/category: GitOps
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Ingress
+    localy.io/phase: "eso-inject-s3"
+spec:
+  # Mutate must run in admission path (not background-only)
+  background: false
+  failurePolicy: Fail
+  rules:
+    - name: inject-certificate-and-waf-arns
+      match:
+        any:
+          - resources:
+              kinds:
+                - Ingress
+              operations:
+                - CREATE
+                - UPDATE
+      preconditions:
+        all:
+          - key: "{{ request.object.metadata.annotations.\"localy.io/inject-alb-aws-ids\" || '' }}"
+            operator: Equals
+            value: "true"
+      context:
+        - name: acmArn
+          apiCall:
+            urlPath: "/api/v1/namespaces/kube-system/secrets/alb-ingress-aws-ids"
+            jmesPath: "data.\"acm-arn\" | base64_decode(@)"
+        - name: wafArn
+          apiCall:
+            urlPath: "/api/v1/namespaces/kube-system/secrets/alb-ingress-aws-ids"
+            jmesPath: "data.\"waf-arn\" | base64_decode(@)"
+      mutate:
+        patchStrategicMerge:
+          metadata:
+            annotations:
+              alb.ingress.kubernetes.io/certificate-arn: "{{ acmArn }}"
+              alb.ingress.kubernetes.io/wafv2-acl-arn: "{{ wafArn }}"

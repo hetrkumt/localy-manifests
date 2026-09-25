@@ -6,6 +6,7 @@ resources:
   - policies/kyverno-policy.yaml
   - policies/protect-alertmanager.yaml
   - policies/prevent-cross-namespace-secrets.yaml
+  - policies/inject-alb-ingress-aws-ids.yaml
   - policies/restrict-image-registries.yaml
   - policies/verify-cosign-signature.yaml
   # Deferred: Rollout CRD is not installed yet (argo-rollouts App).
