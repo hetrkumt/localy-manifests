@@ -10,6 +10,7 @@ resources:
   - kyverno.yaml
   - cert-manager.yaml
   - argocd-notifications.yaml
+  - prometheus-operator-crds.yaml
   # Core controllers (-9 ~ 0)
   - alb-controller.yaml
   - storage.yaml
@@ -26,6 +27,7 @@ resources:
   - otel-gateway.yaml
   - fluent-bit.yaml
   # Ingress & Auth (10 ~ 19)
+  - alb-ingress-aws-ids.yaml
   - ingress-core.yaml
   - external-dns.yaml
   - keycloak.yaml
