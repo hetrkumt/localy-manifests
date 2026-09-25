@@ -1,4 +1,4 @@
-# Argo CD UI — shared external ALB (path A: TLS at ALB, HTTP to server:80)
+# Argo CD UI ??shared external ALB (path A: TLS at ALB, HTTP to server:80)
 # Temporary for bring-up/verify; keep in Git for possible reuse. IP-allowlisted.
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -13,7 +13,7 @@ metadata:
     alb.ingress.kubernetes.io/target-type: "ip"
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
     alb.ingress.kubernetes.io/ssl-redirect: "443"
-    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:ap-northeast-2:533003975005:certificate/6f813339-8d53-49fc-a44a-c2bdb90649e3"
+    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:ap-northeast-2:533003975005:certificate/855cf562-fcfa-4465-ae1e-9f3e17420b8f"
     alb.ingress.kubernetes.io/inbound-cidrs: "1.251.148.107/32"
     alb.ingress.kubernetes.io/healthcheck-path: "/healthz"
     alb.ingress.kubernetes.io/success-codes: "200"

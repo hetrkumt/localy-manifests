@@ -11,7 +11,7 @@ metadata:
     alb.ingress.kubernetes.io/target-type: "ip"
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
     alb.ingress.kubernetes.io/ssl-redirect: "443"
-    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:ap-northeast-2:533003975005:certificate/6f813339-8d53-49fc-a44a-c2bdb90649e3"
+    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:ap-northeast-2:533003975005:certificate/855cf562-fcfa-4465-ae1e-9f3e17420b8f"
     # Readiness-gate injection is a Namespace label (auth-namespace), not an Ingress annotation.
 spec:
   rules:
