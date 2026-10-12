@@ -4,4 +4,4 @@ metadata:
   name: prod-platform-ingress
   namespace: default
   annotations:
-    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:ap-northeast-2:533003975005:certificate/855cf562-fcfa-4465-ae1e-9f3e17420b8f"
+    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:ap-northeast-2:533003975005:certificate/aec20695-0dca-49f1-a06b-84384467d645"
