@@ -5,7 +5,7 @@ metadata:
   namespace: cart-service
   labels:
     app: cart-service
-    release: prometheus
+    release: kube-prometheus-stack
 spec:
   selector:
     matchLabels:

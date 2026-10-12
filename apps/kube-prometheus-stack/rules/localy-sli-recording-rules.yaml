@@ -67,3 +67,20 @@ spec:
                 rate(http_server_requests_seconds_bucket[1m])
               )
             )
+
+    # F2/C3: KEDA per-pod RPS (not Analysis SLI — do not reuse success_rate/latency rules)
+    - name: localy.keda.http
+      interval: 15s
+      rules:
+        - record: localy:http_rps_per_pod:rate2m
+          expr: |
+            sum by (namespace) (
+              rate(http_server_requests_seconds_count{status!~"5.."}[2m])
+            )
+            /
+            clamp_min(
+              max by (namespace) (
+                kube_endpoint_address_available
+              ),
+              1
+            )

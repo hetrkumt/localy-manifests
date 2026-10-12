@@ -9,20 +9,45 @@ serviceAccount:
   annotations:
     eks.amazonaws.com/role-arn: "arn:aws:iam::533003975005:role/prod-loki-irsa-role"
 
+# F1/C2: pin SimpleScalable components to observability NodePool (NS loki unchanged)
 write:
   replicas: 3
   terminationGracePeriodSeconds: 300
   persistence:
     volumeClaimsEnabled: false
+  nodeSelector:
+    karpenter.sh/nodepool: observability
+    karpenter.sh/capacity-type: on-demand
+  tolerations:
+    - key: observability-only
+      operator: Equal
+      value: "true"
+      effect: NoSchedule
 
 read:
   legacyReadTarget: false
+  nodeSelector:
+    karpenter.sh/nodepool: observability
+    karpenter.sh/capacity-type: on-demand
+  tolerations:
+    - key: observability-only
+      operator: Equal
+      value: "true"
+      effect: NoSchedule
 
 backend:
   persistence:
     volumeClaimsEnabled: true
     size: 20Gi
     storageClass: gp3
+  nodeSelector:
+    karpenter.sh/nodepool: observability
+    karpenter.sh/capacity-type: on-demand
+  tolerations:
+    - key: observability-only
+      operator: Equal
+      value: "true"
+      effect: NoSchedule
 
 gateway:
   replicas: 3
@@ -36,6 +61,14 @@ gateway:
   service:
     annotations:
       service.kubernetes.io/topology-mode: "auto"
+  nodeSelector:
+    karpenter.sh/nodepool: observability
+    karpenter.sh/capacity-type: on-demand
+  tolerations:
+    - key: observability-only
+      operator: Equal
+      value: "true"
+      effect: NoSchedule
 
 ruler:
   enabled: true
@@ -48,6 +81,14 @@ ruler:
     limits:
       cpu: 1000m
       memory: 1Gi
+  nodeSelector:
+    karpenter.sh/nodepool: observability
+    karpenter.sh/capacity-type: on-demand
+  tolerations:
+    - key: observability-only
+      operator: Equal
+      value: "true"
+      effect: NoSchedule
 
 extraObjects:
   - apiVersion: v1

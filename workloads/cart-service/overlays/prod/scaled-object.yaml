@@ -35,5 +35,6 @@ spec:
       metadata:
         serverAddress: http://kube-prometheus-stack-prometheus.monitoring:9090
         metricName: http_rps_per_pod
-        query: sum(rate(http_requests_total{job="cart-service",status!~"5.*"}[2m])) / max(kube_endpoint_address_available{endpoint="cart-service"})
+        # F2/C3: use recording rule (Micrometer SSOT); raw http_requests_total removed
+        query: localy:http_rps_per_pod:rate2m{namespace="cart-service"}
         threshold: "100"

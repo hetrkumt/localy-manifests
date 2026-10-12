@@ -5,7 +5,7 @@ metadata:
   namespace: user-service
   labels:
     app: user-service
-    release: prometheus
+    release: kube-prometheus-stack
 spec:
   selector:
     matchLabels:

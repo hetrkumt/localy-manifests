@@ -11,6 +11,16 @@ grafana:
     userKey: admin-user
     passwordKey: admin-password
 
+  # F1/C2: pin to observability NodePool (same contract as Prometheus/Alertmanager)
+  nodeSelector:
+    karpenter.sh/nodepool: "observability"
+    karpenter.sh/capacity-type: "on-demand"
+  tolerations:
+    - key: "observability-only"
+      operator: "Equal"
+      value: "true"
+      effect: "NoSchedule"
+
   serviceAccount:
     create: true
     annotations:
