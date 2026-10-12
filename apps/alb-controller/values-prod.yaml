@@ -1,6 +1,7 @@
-# clusterName + IRSA: LBC auto-discovers VPC (do not pin vpcId — drifts after teardown/redeploy).
+# IMDS/EC2Metadata 401 on nodes → pin vpcId (auto-discover fails after bring-up).
 clusterName: "prod-eks"
 region: "ap-northeast-2"
+vpcId: "vpc-070d34242d72eed35"
 
 serviceAccount:
   create: true
