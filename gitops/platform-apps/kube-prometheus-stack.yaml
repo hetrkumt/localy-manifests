@@ -48,6 +48,18 @@ spec:
       name: kube-prometheus-stack-admission
       jqPathExpressions:
         - .webhooks[].clientConfig.caBundle
+    # ESO API-defaults + status (same contract as keycloak / outofsync-ledger)
+    - group: external-secrets.io
+      kind: ExternalSecret
+      name: grafana-admin-credentials
+      jqPathExpressions:
+        - .status
+        - .metadata.annotations["force-sync"]
+        - .spec.data[].remoteRef.conversionStrategy
+        - .spec.data[].remoteRef.decodingStrategy
+        - .spec.data[].remoteRef.metadataPolicy
+        - .spec.target.template.mergePolicy
+        - .spec.target.template.engineVersion
   syncPolicy:
     automated:
       prune: false
