@@ -27,6 +27,6 @@ services:
   order-service: sha-669b8f323241
   payment-service: sha-c1f052efda39
   cart-service: sha-669b8f323241
-  user-service: sha-669b8f323241
+  user-service: sha-8de53e88e526
   store-service: sha-7870e994a919
   edge-service: sha-7870e994a919
