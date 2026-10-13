@@ -6,6 +6,9 @@ metadata:
     app: edge-service
 spec:
   type: ClusterIP
+  # ALB TargetGroupBinding readinessGates keep Pod Ready=False until TG healthy;
+  # still allow Prometheus EndpointSlice membership for :9090 scrape.
+  publishNotReadyAddresses: true
   selector:
     app: edge-service
   ports:
