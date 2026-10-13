@@ -28,5 +28,5 @@ services:
   payment-service: sha-550bf9083799
   cart-service: sha-550bf9083799
   user-service: sha-550bf9083799
-  store-service: sha-550bf9083799
+  store-service: sha-7870e994a919
   edge-service: sha-550bf9083799
