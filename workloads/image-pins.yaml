@@ -29,4 +29,4 @@ services:
   cart-service: sha-669b8f323241
   user-service: sha-8de53e88e526
   store-service: sha-7870e994a919
-  edge-service: sha-7870e994a919
+  edge-service: sha-533c36899a25
