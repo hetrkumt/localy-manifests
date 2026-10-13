@@ -21,7 +21,7 @@ configurations:
 images:
   - name: localy-order-service
     newName: 533003975005.dkr.ecr.ap-northeast-2.amazonaws.com/order-service
-    newTag: sha-c1f052efda39
+    newTag: sha-669b8f323241
 
 patches:
   - path: rollout-patch.yaml
