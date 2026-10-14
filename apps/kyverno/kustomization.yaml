@@ -9,7 +9,6 @@ resources:
   - policies/inject-alb-ingress-aws-ids.yaml
   - policies/restrict-image-registries.yaml
   - policies/verify-cosign-signature.yaml
-  # Deferred: Rollout CRD is not installed yet (argo-rollouts App).
-  # Re-add after `kubectl get crd rollouts.argoproj.io` succeeds.
-  # - policies/enforce-rollout-probes.yaml
-  # - policies/restrict-rollout-traffic-routing.yaml
+  # V73: Rollout CRD present — enable probe/traffic policies
+  - policies/enforce-rollout-probes.yaml
+  - policies/restrict-rollout-traffic-routing.yaml

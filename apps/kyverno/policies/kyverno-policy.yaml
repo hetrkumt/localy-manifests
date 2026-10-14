@@ -19,7 +19,8 @@ spec:
               kinds:
                 - Pod
               namespaces:
-                - observability
+                # V71: Loki App destination is `loki` (not observability)
+                - loki
               operations:
                 - CREATE
                 - UPDATE
