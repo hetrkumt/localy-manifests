@@ -5,6 +5,8 @@ metadata:
   name: order-service
   annotations:
     reloader.stakater.com/auto: "true"
+    # GitOps drift 최소: pod template patch 대신 pod restart
+    reloader.stakater.com/rollout-strategy: "restart"
 spec:
   replicas: 2
   template:

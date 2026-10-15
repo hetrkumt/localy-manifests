@@ -35,6 +35,8 @@ spec:
       kind: Rollout
       jsonPointers:
         - /spec/replicas
+        # Reloader annotations strategy (if not using rollout-strategy=restart)
+        - /spec/template/metadata/annotations/reloader.stakater.com~1last-reloaded-from
     # ESO CRD defaults + status (API fills conversionStrategy etc.)
     - group: external-secrets.io
       kind: ExternalSecret

@@ -21,3 +21,6 @@ reloader:
     enabled: false
   watchGlobally: true
   reloadStrategy: annotations
+  # order-service 등은 Argo Rollout — 기본 false면 Deployment만 reload되고
+  # Rollout의 reloader.stakater.com/auto 는 무시된다 (S2 R4 트리거 미발동 원인).
+  isArgoRollouts: true
