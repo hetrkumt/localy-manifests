@@ -26,6 +26,13 @@ grafana:
     annotations:
       eks.amazonaws.com/role-arn: "arn:aws:iam::533003975005:role/prod-eks-grafana-role"
 
+  # OpenSearch Traces Explore (waterfall) — plugin reinstalled on each pod start
+  plugins:
+    - grafana-opensearch-datasource
+  env:
+    GF_AUTH_SIGV4_AUTH_ENABLED: "true"
+    GF_INSTALL_PLUGINS: "grafana-opensearch-datasource"
+
   additionalDataSources:
     - name: "Prometheus TF"
       type: "prometheus"
@@ -62,6 +69,21 @@ grafana:
         httpHeaderName1: "X-Scope-OrgID"
       secureJsonData:
         httpHeaderValue1: "secops-admin"
+    # Obs L7 E2E UI: OTel → ss4o_traces-localy-traces → Explore Trace waterfall
+    - name: "OpenSearch Traces"
+      type: "grafana-opensearch-datasource"
+      uid: "OpenSearch_Traces"
+      url: "https://vpc-prod-jaeger-backend-sanyd6apx4tikocssvd2lbx3le.ap-northeast-2.es.amazonaws.com"
+      access: "proxy"
+      jsonData:
+        database: "ss4o_traces-localy-traces"
+        flavor: "opensearch"
+        version: "2.11.0"
+        timeField: "startTime"
+        pplEnabled: true
+        sigV4Auth: true
+        sigV4AuthType: "default"
+        sigV4Region: "ap-northeast-2"
 
   sidecar:
     dashboards:

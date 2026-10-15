@@ -1,0 +1,28 @@
+# Provisional live/sidecar datasource for OpenSearch trace waterfall (Explore).
+# SSOT also mirrored in values-prod.yaml additionalDataSources (Helm).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-datasource-opensearch-traces
+  namespace: monitoring
+  labels:
+    grafana_datasource: "1"
+    app.kubernetes.io/part-of: localy-observability
+data:
+  opensearch-traces.yaml: |-
+    apiVersion: 1
+    datasources:
+      - name: OpenSearch Traces
+        type: grafana-opensearch-datasource
+        uid: OpenSearch_Traces
+        url: https://vpc-prod-jaeger-backend-sanyd6apx4tikocssvd2lbx3le.ap-northeast-2.es.amazonaws.com
+        access: proxy
+        jsonData:
+          database: ss4o_traces-localy-traces
+          flavor: opensearch
+          version: "2.11.0"
+          timeField: startTime
+          pplEnabled: true
+          sigV4Auth: true
+          sigV4AuthType: default
+          sigV4Region: ap-northeast-2

@@ -7,6 +7,7 @@ resources:
   - cert-manager-tls.yaml
   - grafana-eso-sa.yaml
   - grafana-admin-external-secret.yaml
+  - grafana-datasource-opensearch-traces.yaml
   # Wave 4 — live PrometheusRule / AlertmanagerConfig CRs (not ConfigMap-only)
   - rules/alarm-pipeline.yaml
   - rules/localy-sli-recording-rules.yaml
